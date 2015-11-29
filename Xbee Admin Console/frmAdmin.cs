@@ -1,23 +1,39 @@
-﻿using System;
+﻿using Singleton;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using XbeeUtils;
 
 namespace XbeeAdminConsole
 {
     public partial class frmAdmin : Form
     {
-       public frmAdmin()
+        #region Variables Globales
+        XbeeSingleton instancia = XbeeSingleton.Instance;
+        #endregion
+
+        #region Constructor
+        public frmAdmin()
         {
             InitializeComponent();
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.ResizeRedraw, true);
+            ColocarFecha();
+            instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
+            NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 1);
+            NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 2);
+            instancia.ListNodes = new List<NodosXbee>();
+            instancia.AgregarNodo(_nodoPrueba);
+            instancia.AgregarNodo(_nodoPrueba2);
         }
+        #endregion
 
         #region Eventos Mover Ventana
        
@@ -113,5 +129,126 @@ namespace XbeeAdminConsole
             }
         }
         #endregion
+
+        #region Eventos Formulario
+        private void SFbtnCerrar_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Esta seguro que desea salir?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                Application.Exit();
+            }
+            
+        }
+        private void SFbtnMaximizar_Click(object sender, EventArgs e)
+        {
+            if (this.WindowState == FormWindowState.Maximized)
+            {
+                this.WindowState = FormWindowState.Normal;
+            }
+            else
+            {
+                this.WindowState = FormWindowState.Maximized;
+            }
+        }
+        private void SFbtnMinimizar_Click(object sender, EventArgs e)
+        {
+            this.WindowState = FormWindowState.Minimized;            
+        }
+
+        
+
+        private void TimerFecha_Tick(object sender, EventArgs e)
+        {
+            ColocarFecha();
+        }
+
+        void CargarConfiguracionMysql()
+        {
+            instancia.SqlServidor = ConfigurationManager.AppSettings["servidor"];
+            instancia.SqlUsuario = ConfigurationManager.AppSettings["usuario"];
+            instancia.SqlPassword = ConfigurationManager.AppSettings["password"];
+            instancia.SqlBaseDatos = ConfigurationManager.AppSettings["bd"];
+        }
+        #endregion
+
+        #region Metodos
+
+        void NodoAgregadoEventHandler(NodosXbee e)
+        { 
+            if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador)
+            {
+                string cara1 = "";
+                string cara2 = "";
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 1)
+                {
+                    cara1 = "SFPanelCara1";
+                    cara2 = "SFPanelCara2";
+                }
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 2)
+                {
+                    cara1 = "SFPanelCara3";
+                    cara2 = "SFPanelCara4";
+                }
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 3)
+                {
+                    cara1 = "SFPanelCara5";
+                    cara2 = "SFPanelCara6";
+                }
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 4)
+                {
+                    cara1 = "SFPanelCara7";
+                    cara2 = "SFPanelCara8";
+                }
+
+                Panel PanelCara1 = FindPanel(SFLayoutContainer, cara1);
+                Panel PanelCara2 = FindPanel(SFLayoutContainer, cara2);
+
+                ctrCara newCara1 = new ctrCara();
+                newCara1.Cara = 1;
+                newCara1.EstadoCara = EnumEstadoCara.Normal;
+                newCara1.NombreCara = "Cara 1";
+                newCara1.idXbee = e.IdXbee;
+                newCara1.NombreNodo = e.Nombre;
+                PanelCara1.Controls.Add(newCara1);
+                newCara1.Dock = DockStyle.Fill;
+
+                ctrCara newCara2 = new ctrCara();
+                newCara1.Cara = 2;
+                newCara2.EstadoCara = EnumEstadoCara.Normal;
+                newCara2.NombreCara = "Cara 2";
+                newCara2.idXbee = e.IdXbee;
+                newCara2.NombreNodo = e.Nombre;
+                PanelCara2.Controls.Add(newCara2);
+                newCara2.Dock = DockStyle.Fill;
+            }
+
+        }
+
+        private Panel FindPanel(Panel parent, string ctlName)
+        {
+            foreach (Control ctl in parent.Controls)
+            {
+                if (ctl.Name.Equals(ctlName))
+                {
+                    return (Panel)ctl;
+                }
+
+                //FindPanel((Panel)ctl, ctlName);
+            }
+            return null;
+        }
+        
+        void ColocarFecha()
+        {
+            SFlbHora.Text = DateTime.Now.ToLongTimeString();
+            SFlbFechaHora.Text = DateTime.Now.ToLongDateString();
+        }
+        #endregion
+
     }
 }

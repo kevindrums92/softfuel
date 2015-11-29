@@ -36,8 +36,18 @@ namespace Singleton
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
+
+        public delegate void NodoAgregadoEventHandler(NodosXbee e);
+        public event NodoAgregadoEventHandler NodoAgregadoEvent;
         #endregion
 
+        #region "Metodos"
+        public void AgregarNodo(NodosXbee _nodo)
+        {
+            ListNodes.Add(_nodo);
+            NodoAgregadoEvent(_nodo);
+        }
+        #endregion
     }
 
 
@@ -86,7 +96,6 @@ namespace Singleton
             Thread.Sleep(TiempoEspera);
         }
         #endregion
-
-
     }
+
 }

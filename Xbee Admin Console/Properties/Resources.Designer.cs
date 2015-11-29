@@ -59,5 +59,15 @@ namespace XbeeAdminConsole.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dispensador {
+            get {
+                object obj = ResourceManager.GetObject("dispensador", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
