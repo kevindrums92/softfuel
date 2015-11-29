@@ -17,7 +17,6 @@ namespace XbeeAdminConsole
             InitializeComponent();
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.ResizeRedraw, true);
-
         }
 
         #region Eventos Mover Ventana
