@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle22 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle23 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle24 = new System.Windows.Forms.DataGridViewCellStyle();
             this.SFbtnBarraTitulo = new System.Windows.Forms.Panel();
             this.SFbtnMinimizar = new System.Windows.Forms.Button();
             this.SFbtnMaximizar = new System.Windows.Forms.Button();
@@ -53,11 +50,8 @@
             this.SFPanelPOS2 = new System.Windows.Forms.Panel();
             this.SFPanelPOS3 = new System.Windows.Forms.Panel();
             this.SFPanelPOS4 = new System.Windows.Forms.Panel();
-            this.SFPanelLog = new System.Windows.Forms.Panel();
-            this.SFGridLog = new System.Windows.Forms.DataGridView();
-            this.SFbtnMaximizarMinimizar = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
-            this.SFbtnDesconectar = new System.Windows.Forms.Button();
             this.SFbtnConectar = new System.Windows.Forms.Button();
             this.SFbtnEscanearRed = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
@@ -65,17 +59,13 @@
             this.SFlbHora = new System.Windows.Forms.Label();
             this.SFlbFechaHora = new System.Windows.Forms.Label();
             this.TimerFecha = new System.Windows.Forms.Timer(this.components);
-            this.Fecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Mensaje = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.SFtxtBuscar = new System.Windows.Forms.TextBox();
-            this.SFbtnBuscar = new System.Windows.Forms.Button();
+            this.SFbtnMaximizarMinimizar = new System.Windows.Forms.Button();
             this.SFbtnBarraTitulo.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SFLyContainer.SuspendLayout();
             this.SFlyContainerDispensadores.SuspendLayout();
             this.SFLayoutContainer.SuspendLayout();
-            this.SFPanelLog.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SFGridLog)).BeginInit();
+            this.panel1.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -175,7 +165,7 @@
             this.SFLyContainer.ColumnCount = 1;
             this.SFLyContainer.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.SFLyContainer.Controls.Add(this.SFlyContainerDispensadores, 0, 0);
-            this.SFLyContainer.Controls.Add(this.SFPanelLog, 0, 1);
+            this.SFLyContainer.Controls.Add(this.panel1, 0, 1);
             this.SFLyContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SFLyContainer.Location = new System.Drawing.Point(137, 3);
             this.SFLyContainer.Name = "SFLyContainer";
@@ -324,145 +314,60 @@
             this.SFPanelPOS4.Size = new System.Drawing.Size(106, 105);
             this.SFPanelPOS4.TabIndex = 11;
             // 
-            // SFPanelLog
+            // panel1
             // 
-            this.SFPanelLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            this.SFPanelLog.Controls.Add(this.SFbtnBuscar);
-            this.SFPanelLog.Controls.Add(this.SFtxtBuscar);
-            this.SFPanelLog.Controls.Add(this.SFGridLog);
-            this.SFPanelLog.Controls.Add(this.SFbtnMaximizarMinimizar);
-            this.SFPanelLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelLog.Location = new System.Drawing.Point(3, 344);
-            this.SFPanelLog.Name = "SFPanelLog";
-            this.SFPanelLog.Size = new System.Drawing.Size(748, 213);
-            this.SFPanelLog.TabIndex = 1;
-            // 
-            // SFGridLog
-            // 
-            this.SFGridLog.AllowUserToAddRows = false;
-            this.SFGridLog.AllowUserToDeleteRows = false;
-            this.SFGridLog.AllowUserToOrderColumns = true;
-            this.SFGridLog.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.SFGridLog.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.SFGridLog.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            this.SFGridLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle22.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle22.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle22.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
-            dataGridViewCellStyle22.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle22.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(148)))), ((int)(((byte)(175)))));
-            dataGridViewCellStyle22.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle22.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SFGridLog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle22;
-            this.SFGridLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.SFGridLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Fecha,
-            this.Mensaje});
-            dataGridViewCellStyle23.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle23.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle23.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle23.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle23.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle23.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle23.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SFGridLog.DefaultCellStyle = dataGridViewCellStyle23;
-            this.SFGridLog.EnableHeadersVisualStyles = false;
-            this.SFGridLog.Location = new System.Drawing.Point(3, 56);
-            this.SFGridLog.Name = "SFGridLog";
-            this.SFGridLog.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle24.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle24.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle24.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle24.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle24.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle24.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle24.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SFGridLog.RowHeadersDefaultCellStyle = dataGridViewCellStyle24;
-            this.SFGridLog.RowHeadersVisible = false;
-            this.SFGridLog.RowTemplate.DefaultCellStyle.BackColor = System.Drawing.Color.Empty;
-            this.SFGridLog.Size = new System.Drawing.Size(742, 154);
-            this.SFGridLog.TabIndex = 1;
-            // 
-            // SFbtnMaximizarMinimizar
-            // 
-            this.SFbtnMaximizarMinimizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.SFbtnMaximizarMinimizar.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this.SFbtnMaximizarMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SFbtnMaximizarMinimizar.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
-            this.SFbtnMaximizarMinimizar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnMaximizarMinimizar.Location = new System.Drawing.Point(650, 3);
-            this.SFbtnMaximizarMinimizar.Name = "SFbtnMaximizarMinimizar";
-            this.SFbtnMaximizarMinimizar.Size = new System.Drawing.Size(95, 30);
-            this.SFbtnMaximizarMinimizar.TabIndex = 0;
-            this.SFbtnMaximizarMinimizar.Text = "Maximizar";
-            this.SFbtnMaximizarMinimizar.UseVisualStyleBackColor = true;
-            this.SFbtnMaximizarMinimizar.Click += new System.EventHandler(this.SFbtnMaximizarMinimizar_Click);
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.panel1.Controls.Add(this.SFbtnMaximizarMinimizar);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(3, 344);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(748, 213);
+            this.panel1.TabIndex = 1;
             // 
             // tableLayoutPanel3
             // 
             this.tableLayoutPanel3.ColumnCount = 1;
             this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel3.Controls.Add(this.SFbtnDesconectar, 0, 2);
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
             this.tableLayoutPanel3.Controls.Add(this.SFbtnConectar, 0, 0);
             this.tableLayoutPanel3.Controls.Add(this.SFbtnEscanearRed, 0, 1);
             this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel3.Location = new System.Drawing.Point(3, 3);
             this.tableLayoutPanel3.Name = "tableLayoutPanel3";
-            this.tableLayoutPanel3.RowCount = 3;
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
+            this.tableLayoutPanel3.RowCount = 2;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(128, 560);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
-            // SFbtnDesconectar
-            // 
-            this.SFbtnDesconectar.Anchor = System.Windows.Forms.AnchorStyles.Top;
-            this.SFbtnDesconectar.Enabled = false;
-            this.SFbtnDesconectar.FlatAppearance.BorderSize = 0;
-            this.SFbtnDesconectar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SFbtnDesconectar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
-            this.SFbtnDesconectar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnDesconectar.Location = new System.Drawing.Point(3, 375);
-            this.SFbtnDesconectar.Name = "SFbtnDesconectar";
-            this.SFbtnDesconectar.Size = new System.Drawing.Size(122, 100);
-            this.SFbtnDesconectar.TabIndex = 2;
-            this.SFbtnDesconectar.Text = "Desconectar";
-            this.SFbtnDesconectar.UseVisualStyleBackColor = true;
-            this.SFbtnDesconectar.Click += new System.EventHandler(this.SFbtnDesconectar_Click);
-            // 
             // SFbtnConectar
             // 
-            this.SFbtnConectar.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.SFbtnConectar.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.SFbtnConectar.FlatAppearance.BorderSize = 0;
             this.SFbtnConectar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnConectar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFbtnConectar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnConectar.Location = new System.Drawing.Point(3, 83);
+            this.SFbtnConectar.Location = new System.Drawing.Point(3, 177);
             this.SFbtnConectar.Name = "SFbtnConectar";
             this.SFbtnConectar.Size = new System.Drawing.Size(122, 100);
             this.SFbtnConectar.TabIndex = 0;
-            this.SFbtnConectar.Text = "Conectar";
+            this.SFbtnConectar.Text = "Conexión";
             this.SFbtnConectar.UseVisualStyleBackColor = true;
             this.SFbtnConectar.Click += new System.EventHandler(this.SFbtnConectar_Click);
             // 
             // SFbtnEscanearRed
             // 
-            this.SFbtnEscanearRed.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.SFbtnEscanearRed.Enabled = false;
+            this.SFbtnEscanearRed.Dock = System.Windows.Forms.DockStyle.Top;
             this.SFbtnEscanearRed.FlatAppearance.BorderSize = 0;
             this.SFbtnEscanearRed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnEscanearRed.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFbtnEscanearRed.ForeColor = System.Drawing.Color.White;
-            this.SFbtnEscanearRed.Location = new System.Drawing.Point(3, 229);
+            this.SFbtnEscanearRed.Location = new System.Drawing.Point(3, 283);
             this.SFbtnEscanearRed.Name = "SFbtnEscanearRed";
             this.SFbtnEscanearRed.Size = new System.Drawing.Size(122, 100);
             this.SFbtnEscanearRed.TabIndex = 1;
             this.SFbtnEscanearRed.Text = "Buscar Red";
             this.SFbtnEscanearRed.UseVisualStyleBackColor = true;
-            this.SFbtnEscanearRed.Click += new System.EventHandler(this.SFbtnEscanearRed_Click);
             // 
             // panel2
             // 
@@ -514,48 +419,23 @@
             // 
             // TimerFecha
             // 
-            this.TimerFecha.Enabled = true;
             this.TimerFecha.Interval = 1000;
             this.TimerFecha.Tick += new System.EventHandler(this.TimerFecha_Tick);
             // 
-            // Fecha
+            // SFbtnMaximizarMinimizar
             // 
-            this.Fecha.DataPropertyName = "Fecha";
-            this.Fecha.HeaderText = "Fecha";
-            this.Fecha.MinimumWidth = 50;
-            this.Fecha.Name = "Fecha";
-            this.Fecha.ReadOnly = true;
-            // 
-            // Mensaje
-            // 
-            this.Mensaje.DataPropertyName = "Mensaje";
-            this.Mensaje.FillWeight = 300F;
-            this.Mensaje.HeaderText = "Mensaje";
-            this.Mensaje.MinimumWidth = 50;
-            this.Mensaje.Name = "Mensaje";
-            this.Mensaje.ReadOnly = true;
-            // 
-            // SFtxtBuscar
-            // 
-            this.SFtxtBuscar.Location = new System.Drawing.Point(6, 29);
-            this.SFtxtBuscar.Name = "SFtxtBuscar";
-            this.SFtxtBuscar.Size = new System.Drawing.Size(312, 20);
-            this.SFtxtBuscar.TabIndex = 2;
-            this.SFtxtBuscar.KeyDown += new System.Windows.Forms.KeyEventHandler(this.SFtxtBuscar_KeyDown);
-            this.SFtxtBuscar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SFtxtBuscar_KeyPress);
-            // 
-            // SFbtnBuscar
-            // 
-            this.SFbtnBuscar.FlatAppearance.BorderColor = System.Drawing.Color.White;
-            this.SFbtnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SFbtnBuscar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnBuscar.Location = new System.Drawing.Point(324, 27);
-            this.SFbtnBuscar.Name = "SFbtnBuscar";
-            this.SFbtnBuscar.Size = new System.Drawing.Size(75, 23);
-            this.SFbtnBuscar.TabIndex = 3;
-            this.SFbtnBuscar.Text = "Buscar";
-            this.SFbtnBuscar.UseVisualStyleBackColor = true;
-            this.SFbtnBuscar.Click += new System.EventHandler(this.SFbtnBuscar_Click);
+            this.SFbtnMaximizarMinimizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SFbtnMaximizarMinimizar.FlatAppearance.BorderSize = 0;
+            this.SFbtnMaximizarMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.SFbtnMaximizarMinimizar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SFbtnMaximizarMinimizar.ForeColor = System.Drawing.Color.White;
+            this.SFbtnMaximizarMinimizar.Location = new System.Drawing.Point(640, 16);
+            this.SFbtnMaximizarMinimizar.Name = "SFbtnMaximizarMinimizar";
+            this.SFbtnMaximizarMinimizar.Size = new System.Drawing.Size(75, 23);
+            this.SFbtnMaximizarMinimizar.TabIndex = 0;
+            this.SFbtnMaximizarMinimizar.Text = "Maximizar";
+            this.SFbtnMaximizarMinimizar.UseVisualStyleBackColor = true;
+            this.SFbtnMaximizarMinimizar.Click += new System.EventHandler(this.SFbtnMaximizarMinimizar_Click);
             // 
             // frmAdmin
             // 
@@ -578,9 +458,7 @@
             this.SFLyContainer.ResumeLayout(false);
             this.SFlyContainerDispensadores.ResumeLayout(false);
             this.SFLayoutContainer.ResumeLayout(false);
-            this.SFPanelLog.ResumeLayout(false);
-            this.SFPanelLog.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SFGridLog)).EndInit();
+            this.panel1.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
@@ -611,7 +489,7 @@
         private System.Windows.Forms.Panel SFPanelPOS2;
         private System.Windows.Forms.Panel SFPanelPOS3;
         private System.Windows.Forms.Panel SFPanelPOS4;
-        private System.Windows.Forms.Panel SFPanelLog;
+        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
         private System.Windows.Forms.Button SFbtnConectar;
         private System.Windows.Forms.Button SFbtnEscanearRed;
@@ -621,11 +499,5 @@
         private System.Windows.Forms.Label SFlbHora;
         private System.Windows.Forms.Label SFVersion;
         private System.Windows.Forms.Button SFbtnMaximizarMinimizar;
-        private System.Windows.Forms.Button SFbtnDesconectar;
-        private System.Windows.Forms.DataGridView SFGridLog;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Fecha;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Mensaje;
-        private System.Windows.Forms.Button SFbtnBuscar;
-        private System.Windows.Forms.TextBox SFtxtBuscar;
     }
 }

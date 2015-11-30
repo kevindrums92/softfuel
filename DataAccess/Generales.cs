@@ -29,6 +29,11 @@ namespace DataAccess
             return GetTable("select idXbee, nomXbee, macXbee, puertoXbee, velocidadXbee from xbee where tipoXbee = " + (int)Enumeraciones.TipoDispositivo.Cordinador + "");
         }
 
+        public DataTable ObtenerTodosLosXbee()
+        {
+            return GetTable("select * from Xbee where tipoXbee <> 1");
+        }
+
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
         // Dispose() calls Dispose(true)

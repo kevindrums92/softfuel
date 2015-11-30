@@ -38,7 +38,7 @@ namespace BusinessLayer
                     var XbeeCoordinador = modGenerales.ObtenerXbeeCoordinador();
                     if (XbeeCoordinador == null)
                     {
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Error Sql al momento de obtener el xbee coordinador",ETipoEvento.Error,0,""));
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Error Sql al momento de obtener el xbee coordinador"));
                     }
                     if (XbeeCoordinador != null && XbeeCoordinador.Rows.Count > 0)
                     {
@@ -47,7 +47,7 @@ namespace BusinessLayer
                     }
                     else
                     {
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se encontró Xbee Coordinador en base de datos!", ETipoEvento.Error, 0, ""));
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se encontró Xbee Coordinador en base de datos!"));
                         return;
                     }
                 }
@@ -57,12 +57,12 @@ namespace BusinessLayer
                 //Configuro manejador para escuchar el metodo que descubre los xbee en red
                 instancia.Controller.NodeDiscovered += NodeDiscovered_controller;
                 instancia.Controller.OpenAsync(puerto, velocidadTrasmision);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " ", ETipoEvento.Exitoso, 0, ""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " "));
                 //instancia.Controller.Dispose();
             }
             catch (Exception e)
             {
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message));
                 LocalLogManager.EscribeLog(e.Message,LocalLogManager.TipoImagen.TipoError);
             }
         }
@@ -74,12 +74,12 @@ namespace BusinessLayer
         {
             if (instancia.Controller == null || instancia.Controller.IsOpen == false)
             {
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Realizando Conexión...", ETipoEvento.Exitoso, 0, ""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Realizando Conexión..."));
                 Conectar();
             }
             if (instancia.Controller != null)
             {
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se va a escanear Red!",ETipoEvento.Exitoso,0,""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se va a escanear Red!"));
                 //instancia.Controller.DiscoverNetwork();
                 EscanearRed();
             }
@@ -93,48 +93,45 @@ namespace BusinessLayer
         /// <param name="args"></param>
         private void NodeDiscovered_controller(object sender, NodeDiscoveredEventArgs args)
         {
-            try
+            if (instancia.ListNodes == null)
             {
-                if (instancia.ListNodes == null)
-                {
-                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red...", ETipoEvento.Exitoso, 0, ""));
-                    instancia.ListNodes = new List<NodosXbee>();
-                }
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red..."));
+                instancia.ListNodes = new List<NodosXbee>();
+            }
 
-                string _macNodoEncontrado = args.Node.Address.LongAddress.Value.ToString("X");
-                string _macImpresora = "";
-                int _tiempoEspera = 0;
-                int _idXbee = 0;
-                Enumeraciones.TipoDispositivo _tipDisp;
-                using (Generales modGenerales = new Generales())
+            string _macNodoEncontrado = args.Node.Address.LongAddress.Value.ToString("X");
+            string _macImpresora = "";
+            int _tiempoEspera = 0;
+            int _idXbee = 0;
+            Enumeraciones.TipoDispositivo _tipDisp;
+            using (Generales modGenerales = new Generales())
+            {
+                DataTable XbeeConsultado = modGenerales.ObtenerXbeePorMac(_macNodoEncontrado);
+                if (XbeeConsultado != null && XbeeConsultado.Rows.Count > 0)
                 {
-                    DataTable XbeeConsultado = modGenerales.ObtenerXbeePorMac(_macNodoEncontrado);
-                    if (XbeeConsultado != null && XbeeConsultado.Rows.Count > 0)
+                    _macImpresora = (string)XbeeConsultado.Rows[0]["impresoraXbee"];
+                    _tiempoEspera = (int)XbeeConsultado.Rows[0]["tiempoEspXbee"];
+                    _idXbee = (int)XbeeConsultado.Rows[0]["idXbee"];
+                    _tipDisp = (Enumeraciones.TipoDispositivo)XbeeConsultado.Rows[0]["tipoXbee"];
+                    NodosXbee newDispositivo = new NodosXbee(args.Node, args.Name, _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
+                    instancia.ListNodes.Add(newDispositivo);
+                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + args.Name + " MAC:" + _macNodoEncontrado + ""));
+                    args.Node.SampleReceived += NodeSampleReceived;
+                    if (_tipDisp == Enumeraciones.TipoDispositivo.Dispensador)
                     {
-                        _macImpresora = (string)XbeeConsultado.Rows[0]["impresoraXbee"];
-                        _tiempoEspera = (int)XbeeConsultado.Rows[0]["tiempoEspXbee"];
-                        _idXbee = (int)XbeeConsultado.Rows[0]["idXbee"];
-                        _tipDisp = (Enumeraciones.TipoDispositivo)XbeeConsultado.Rows[0]["tipoXbee"];
-                        NodosXbee newDispositivo = new NodosXbee(args.Node, args.Name, _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
-                        instancia.ListNodes.Add(newDispositivo);
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + args.Name + " MAC:" + _macNodoEncontrado + "", ETipoEvento.Exitoso, 0, ""));
-                        if (_tipDisp == Enumeraciones.TipoDispositivo.Dispensador)
-                        {
-                            ActualizarDatosDispensador(newDispositivo.IdXbee);
-                        }
-                    }
-                    else
-                    {
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se encontro dispositivo pero no esta registrado en base de datos: " + args.Name + " MAC: " + _macNodoEncontrado + "", ETipoEvento.Exitoso, 0, ""));
+                        ActualizarDatosDispensador(newDispositivo.IdXbee);
                     }
                 }
+                else
+                {
+                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se encontro dispositivo pero no esta registrado en base de datos: " + args.Name + " MAC: " + _macNodoEncontrado + ""));
+                }
             }
-            catch (Exception e)
-            {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
-            }
-            
+        }
+
+        public void NodeSampleReceived(object node, SampleReceivedEventArgs sample)
+        { 
+        
         }
 
         /// <summary>
@@ -163,7 +160,7 @@ namespace BusinessLayer
                                 ProcesarTrama(arrayTramaRecibida, nodoImpresion);
                             }
                             else {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se encontró el dispositivo con mac " + nodeXbee.MacImpresion + " para impresión", ETipoEvento.Error, nodeXbee.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se encontró el dispositivo con mac " + nodeXbee.MacImpresion + " para impresión"));
                             }
                         }
                         else {
@@ -178,8 +175,8 @@ namespace BusinessLayer
             }
             catch (Exception ex)
             {
+
                 LocalLogManager.EscribeLog(ex.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + ex.Message, ETipoEvento.Error, 0, ""));
             }
             
         }
@@ -189,25 +186,18 @@ namespace BusinessLayer
         /// </summary>
         public void Desconectar()
         {
-            try
+            if (instancia.Controller != null)
             {
-                if (instancia.Controller != null)
-                {
-                    instancia.Controller.Dispose();
-                    instancia.Controller.Close();
-                    instancia.Controller = null;
-                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se ha cerrado la conexión!", ETipoEvento.Exitoso, 0, ""));
-                }
-                if (instancia.ListNodes != null && instancia.ListNodes.Count > 0)
-                {
-                    instancia.ListNodes = null;
-                }
+                instancia.Controller.Dispose();
+                instancia.Controller.Close();
+                instancia.Controller = null;
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se ha cerrado la conexión!"));
             }
-            catch (Exception e)
+            if (instancia.ListNodes != null && instancia.ListNodes.Count > 0)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
+                instancia.ListNodes = null;
             }
+            
         }
 
         public async void EscanearRed()
@@ -216,7 +206,7 @@ namespace BusinessLayer
             {
                 if (instancia.ListNodes == null)
                 {
-                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red...", ETipoEvento.Exitoso, 0, ""));
+                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red..."));
                     instancia.ListNodes = new List<NodosXbee>();
                 }
                 string _macNodoEncontrado;
@@ -236,57 +226,50 @@ namespace BusinessLayer
                     _tiempoEspera = (int)_row["tiempoEspXbee"];
                     _idXbee = (int)_row["idXbee"];
                     _tipDisp = (Enumeraciones.TipoDispositivo)_row["tipoXbee"];
-                    NodosXbee newDispositivo = new NodosXbee(null, (string)_row["nomXbee"].ToString(), _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
+                    NodosXbee newDispositivo = new NodosXbee(nodoXbee, (string)_row["nomXbee"].ToString(), _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
 
                     //Buscar nodo en red
                     ulong _ulong = Convert.ToUInt64(_row["macXbee"].ToString(), 16);
                     NodeAddress Address = new NodeAddress(new LongAddress(_ulong));
-                    XBeeNode nodoXbee = null;
-                    //nodoXbee = await instancia.Controller.GetRemoteAsync(new NodeAddress());
+                    XBeeNode nodoXbee;
+                    nodoXbee = await instancia.Controller.GetRemoteAsync(new NodeAddress());
                     if (nodoXbee != null)
                     {
-                        newDispositivo.Nodo = nodoXbee;
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + newDispositivo.Nombre + " MAC:" + _macNodoEncontrado + "", ETipoEvento.Exitoso, newDispositivo.IdXbee, ""));
+                        
+                        instancia.ListNodes.Add(newDispositivo);
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + newDispositivo.Nombre + " MAC:" + _macNodoEncontrado + ""));
+                        nodoXbee.SampleReceived += NodeSampleReceived;
                         if (_tipDisp == Enumeraciones.TipoDispositivo.Dispensador)
                         {
                             ActualizarDatosDispensador(newDispositivo.IdXbee);
                         }
                     }
-                    instancia.AgregarNodo(newDispositivo);
+
+
                 }
             }
             catch (Exception e)
             {
                 LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
+                throw e;
             }
+           
+
         }
 
-        /// <summary>
-        /// Metodo que autoriza ventas en dispensador
-        /// </summary>
-        /// <param name="IdXbee"></param>
+
         public void ActualizarDatosDispensador(int IdXbee)
         {
-            try
+            NodosXbee nodo = instancia.ListNodes.Find(item => item.IdXbee == IdXbee);
+            if (nodo != null)
             {
-                NodosXbee nodo = instancia.ListNodes.Find(item => item.IdXbee == IdXbee);
-                if (nodo != null)
+                var result = _tramasPOS.TramaAutorizarVentaDispensador(nodo.IdXbee.ToString());
+                foreach (Byte[] data in result)
                 {
-                    var result = _tramasPOS.TramaAutorizarVentaDispensador(nodo.IdXbee.ToString());
-                    foreach (Byte[] data in result)
-                    {
-                        nodo.EnviarTrama(data);
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama a " + nodo.Nombre + ": " + UtilidadesTramas.ObtenerStringDeBytes(data), ETipoEvento.Exitoso, nodo.IdXbee, ""));
-                    }
+                    nodo.EnviarTrama(data);
+                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama a " + nodo.Nombre + ": " + UtilidadesTramas.ObtenerStringDeBytes(data)));
                 }
             }
-            catch (Exception e)
-            {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
-            }
-            
         }
 
         
@@ -297,7 +280,7 @@ namespace BusinessLayer
         {
             if (arrayTramaRecibida.Count() > 1)
             {
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Llegó un paquete de " + nodo.Nombre + "", ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Llegó un paquete de " + nodo.Nombre + ""));
                 if (nodo.TipoDispositivo == Enumeraciones.TipoDispositivo.moduloPOS)
                 {//Recibo petición de MOD POS
                     switch (arrayTramaRecibida[0])
@@ -311,11 +294,11 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado)));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nombre + "\n" + result.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + result.Mensaje));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -325,16 +308,18 @@ namespace BusinessLayer
                             var resultAbrirTurno = _tramasPOS.AbrirTurno(arrayTramaRecibida);
                             if (resultAbrirTurno.Resultado == true)
                             {
+                                int contador = 0;
                                 foreach (Byte[] data in resultAbrirTurno.TramaResultado)
                                 {
+                                    contador += 1;
 
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + " se envió:\n " + UtilidadesTramas.MensajeQueEnvióTrama(resultAbrirTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se enviaron " + contador.ToString() + " tramas a " + nodo.Nombre + ""));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultAbrirTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + resultAbrirTurno.Mensaje));
                             }
                             if (resultAbrirTurno.IdXbee > 0) ActualizarDatosDispensador(resultAbrirTurno.IdXbee);
                             
@@ -346,15 +331,18 @@ namespace BusinessLayer
                             var resultVentaCanasta = _tramasPOS.VentaCanasta(arrayTramaRecibida);
                             if (resultVentaCanasta.Resultado == true)
                             {
+                                int contador = 0;
                                 foreach (Byte[] data in resultVentaCanasta.TramaResultado)
                                 {
+                                    contador += 1;
+
                                     nodo.EnviarTrama(data);
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama N° " + contador.ToString() + " a " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + ""));
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + " se envio: \n" + UtilidadesTramas.MensajeQueEnvióTrama(resultVentaCanasta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultVentaCanasta.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + resultVentaCanasta.Mensaje));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -363,15 +351,18 @@ namespace BusinessLayer
                             var resultCerrarTurno = _tramasPOS.CerrarTurno(arrayTramaRecibida);
                             if (resultCerrarTurno.Resultado == true)
                             {
+                                int contador = 0;
                                 foreach (Byte[] data in resultCerrarTurno.TramaResultado)
                                 {
+                                    contador += 1;
+
                                     nodo.EnviarTrama(data);
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama N° " + contador.ToString() + " a " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + ""));
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultCerrarTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultCerrarTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + resultCerrarTurno.Mensaje));
                             }
                             if (resultCerrarTurno.IdXbee > 0) ActualizarDatosDispensador(resultCerrarTurno.IdXbee);
                             _tramasPOS.Dispose();
@@ -381,15 +372,18 @@ namespace BusinessLayer
                             var resultConsecutivoTurno = _tramasPOS.ConsecutivoCerrarTurno(arrayTramaRecibida);
                             if (resultConsecutivoTurno.Resultado == true)
                             {
+                                int contador = 0;
                                 foreach (Byte[] data in resultConsecutivoTurno.TramaResultado)
                                 {
+                                    contador += 1;
+
                                     nodo.EnviarTrama(data);
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama N° " + contador.ToString() + " a " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + ""));
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultConsecutivoTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultConsecutivoTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + resultConsecutivoTurno.Mensaje));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -399,15 +393,18 @@ namespace BusinessLayer
                             var resultUltimaVenta = _tramasPOS.UltimaVenta(arrayTramaRecibida);
                             if (resultUltimaVenta.Resultado == true)
                             {
+                                int contador = 0;
                                 foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado))
                                 {
+                                    contador += 1;
+
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVenta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió " + contador.ToString() + " tramas a " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + ""));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultUltimaVenta.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + resultUltimaVenta.Mensaje));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -416,21 +413,23 @@ namespace BusinessLayer
                             var resultUltimaVentaConsecutivo = _tramasPOS.ConsecutivoUltimaVenta(arrayTramaRecibida);
                             if (resultUltimaVentaConsecutivo.Resultado == true)
                             {
+                                int contador = 0;
                                 foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado))
                                 {
+                                    contador += 1;
+
                                     nodo.EnviarTrama(data);
-                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama N° " + contador.ToString() + " a " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + ""));
                                 }
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultUltimaVentaConsecutivo.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + "\n" + resultUltimaVentaConsecutivo.Mensaje));
                             }
                             _tramasPOS.Dispose();
                             break;
 
                         default:
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, ""));
                             break;
                     }
                 }
@@ -442,17 +441,21 @@ namespace BusinessLayer
                             var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
                             if (resultEnvioTotales.Resultado == true)
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardaron unas ventas totales enviadas de: " + nodo.Nombre + ", en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardaron unas ventas totales enviadas de: " + nodo.Nodo.Address.LongAddress.Value.ToString("X") + ""));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
+                                string trama = "";
+                                foreach (string txt in arrayTramaRecibida)
+                                {
+                                    trama = trama + txt + ":";
+                                }
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(trama + "No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultEnvioTotales.Mensaje));
                             }
                             _tramaDIS.Dispose();
                             break;
 
                         default:
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, ""));
                             break;
                     }
                 }
@@ -486,23 +489,9 @@ namespace BusinessLayer
         #endregion
     }
 
-    #region Evento Log
     public class MonitoreoEventArgs
     {
         public string Texto { get; private set; }
-        public ETipoEvento TipoEvento { get; private set; }
-        public int IdXbee { get; private set; }
-        public string Cara { get; private set; }
-        public MonitoreoEventArgs(string s, ETipoEvento t, int idXbee, string cara) { Texto = s; TipoEvento = t; IdXbee = idXbee; Cara = cara; }
+        public MonitoreoEventArgs(string s) { Texto = s; }
     }
-    /// <summary>
-    /// Para identificar si un tipo de evento se realizó satisfactoriamente o erroneo
-    /// </summary>
-    public enum ETipoEvento
-    { 
-        Exitoso,
-        Error
-    }
-    #endregion
-    
 }

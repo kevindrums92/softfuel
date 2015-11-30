@@ -54,7 +54,17 @@ namespace XbeeAdminConsole
                 SFlbNombreNodo.Text = value;
             }
         }
-        public int Cara { get; set; }
+        int _numCara;
+        public int NumCara {
+            get
+            {
+                return _numCara;
+            }
+            set 
+            {
+                _numCara = value;
+            }
+        }
 
         #endregion
 
@@ -65,14 +75,10 @@ namespace XbeeAdminConsole
             { 
                 case EnumEstadoCara.Normal:
                     this.BackColor = Color.FromArgb(66, 73, 92);
-                    this.SFlbNombreCara.Text = "Cara " + Cara.ToString();
-                    this.SFlbNombreCara.ForeColor = Color.White;
                     break;
 
                 case EnumEstadoCara.Atendiendo:
                     this.BackColor = Color.FromArgb(75, 175, 79);
-                    this.SFlbNombreCara.Text = "Cara " + Cara.ToString() + " Vendiendo...";
-                    this.SFlbNombreCara.ForeColor = Color.FromArgb(254, 193, 7);
                     break;
 
                 default:

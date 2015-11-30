@@ -30,9 +30,9 @@
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.SFPictureBox = new System.Windows.Forms.PictureBox();
-            this.SFlbNombreNodo = new System.Windows.Forms.Label();
             this.SBPanelFooter = new System.Windows.Forms.Panel();
             this.SFlbNombreCara = new System.Windows.Forms.Label();
+            this.SFlbNombreNodo = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFPictureBox)).BeginInit();
             this.SBPanelFooter.SuspendLayout();
@@ -68,18 +68,6 @@
             this.SFPictureBox.TabIndex = 0;
             this.SFPictureBox.TabStop = false;
             // 
-            // SFlbNombreNodo
-            // 
-            this.SFlbNombreNodo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.SFlbNombreNodo.AutoSize = true;
-            this.SFlbNombreNodo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.SFlbNombreNodo.ForeColor = System.Drawing.Color.White;
-            this.SFlbNombreNodo.Location = new System.Drawing.Point(3, 17);
-            this.SFlbNombreNodo.Name = "SFlbNombreNodo";
-            this.SFlbNombreNodo.Size = new System.Drawing.Size(94, 13);
-            this.SFlbNombreNodo.TabIndex = 2;
-            this.SFlbNombreNodo.Text = "DISPENSADOR 1";
-            // 
             // SBPanelFooter
             // 
             this.SBPanelFooter.Controls.Add(this.SFlbNombreCara);
@@ -92,14 +80,26 @@
             // 
             this.SFlbNombreCara.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SFlbNombreCara.AutoSize = true;
-            this.SFlbNombreCara.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
+            this.SFlbNombreCara.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.SFlbNombreCara.ForeColor = System.Drawing.Color.White;
             this.SFlbNombreCara.Location = new System.Drawing.Point(3, 7);
             this.SFlbNombreCara.Name = "SFlbNombreCara";
-            this.SFlbNombreCara.Size = new System.Drawing.Size(38, 17);
+            this.SFlbNombreCara.Size = new System.Drawing.Size(29, 13);
             this.SFlbNombreCara.TabIndex = 2;
             this.SFlbNombreCara.Text = "Cara";
             this.SFlbNombreCara.Click += new System.EventHandler(this.SFlbNombreCara_Click_1);
+            // 
+            // SFlbNombreNodo
+            // 
+            this.SFlbNombreNodo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SFlbNombreNodo.AutoSize = true;
+            this.SFlbNombreNodo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
+            this.SFlbNombreNodo.ForeColor = System.Drawing.Color.White;
+            this.SFlbNombreNodo.Location = new System.Drawing.Point(3, 17);
+            this.SFlbNombreNodo.Name = "SFlbNombreNodo";
+            this.SFlbNombreNodo.Size = new System.Drawing.Size(94, 13);
+            this.SFlbNombreNodo.TabIndex = 2;
+            this.SFlbNombreNodo.Text = "DISPENSADOR 1";
             // 
             // ctrCara
             // 

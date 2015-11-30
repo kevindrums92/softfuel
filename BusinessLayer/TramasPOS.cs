@@ -105,16 +105,7 @@ namespace BusinessLayer
                 else
                 {
                     //Devuelvo trama que el usuario no es islero
-                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("Alerta",
-                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '*'));
-                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("Usuario no existe o incorrecto",
-                                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
-                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                       Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
-                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
-                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                    return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto"}), "Usuario no existe o incorrecto para consignación en efectivo");
                 }
                 return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(mensajeTrama),"");
             }
@@ -232,24 +223,7 @@ namespace BusinessLayer
                                 }
                                 else
                                 {
-                                    //Devuelvo trama que el usuario no es islero
-                                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("Alerta",
-                                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '*'));
-
-                                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("Ya se abrio turno",
-                                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
-
-                                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("en la cara: " + cara,
-                                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
-                                    
-                                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
-
-                                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
-
-                                    mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                                        Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                                    return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Ya se abrio turno","en la cara: " + cara}), "Usuario no existe o incorrecto para consignación en efectivo");
                                 }
                             }
                             else
@@ -261,16 +235,7 @@ namespace BusinessLayer
                     else
                     {
                         //Devuelvo trama que el usuario no es islero
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("Alerta",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '*'));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("Usuario no existe o incorrecto",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                        return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto para apertura de turno");
                     }
                 }
                 return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(mensajeTrama), "",idXbee);
@@ -297,13 +262,13 @@ namespace BusinessLayer
                     //Validamos que el producto exista, ademas que tenga existencias, y validar tambien que haya turno abierto
                     DataTable producto = modPOS.ObtenerProductoPorId(idProducto);
                     DataTable turno = modPOS.ObtenerTurnoPorCara(cara);
-                    if (producto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontró producto con id " + idProducto);
+                    if (producto.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontro producto ",  idProducto.ToString() }), "Usuario no existe o incorrecto para consignación en efectivo");
                     if (Convert.ToInt32(producto.Rows[0]["existenciaProducto"]) < cantidad)
                     {
                         List<Byte[]> tramaAlerta = AsistenteMensajes.GenerarMensajeAlerta(new string[] {"La cantidad a vender","es mayor a la existente"});
                         return new ResultadoTrama(true, tramaAlerta, "El producto con id " + idProducto + " no cuenta con las cantidades solicitadas: " + cantidad);
                     }
-                    if (turno.Rows.Count == 0) return new ResultadoTrama(false, null, "No hay turno abierto en la cara: " + cara);
+                    if (turno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno abierto ", "en cara " + cara }), "No hay turno abierto en cara " + cara + "para venta de canasta");
 
                     int valorVenta = Convert.ToInt32(producto.Rows[0]["precioventaProducto"]) * cantidad;
                     var result = modPOS.GuardaVentaCanasta(idProducto, cara, valorVenta.ToString(), _FechaActual, turno.Rows[0]["idUSuario"].ToString(), turno.Rows[0]["idXbee"].ToString(), cantidad);

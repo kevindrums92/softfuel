@@ -1,4 +1,5 @@
-﻿using Singleton;
+﻿using BusinessLayer;
+using Singleton;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,21 +18,27 @@ namespace XbeeAdminConsole
     {
         #region Variables Globales
         XbeeSingleton instancia = XbeeSingleton.Instance;
+        private Main claseMain = new Main();
+        DataTable dtLog;
+        BindingSource bindingSource;
         #endregion
 
         #region Constructor
         public frmAdmin()
         {
             InitializeComponent();
+            CargarConfiguracionMysql();
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             ColocarFecha();
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
-            NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 1);
-            NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 2);
-            instancia.ListNodes = new List<NodosXbee>();
-            instancia.AgregarNodo(_nodoPrueba);
-            instancia.AgregarNodo(_nodoPrueba2);
+            claseMain.MonitoreoEvent += MonitoreoProceso_Main;
+
+            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 1);
+            ////NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 2);
+            //instancia.ListNodes = new List<NodosXbee>();
+            //instancia.AgregarNodo(_nodoPrueba);
+            ////instancia.AgregarNodo(_nodoPrueba2);
         }
         #endregion
 
@@ -136,6 +143,7 @@ namespace XbeeAdminConsole
             DialogResult result = MessageBox.Show("Esta seguro que desea salir?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
+                claseMain.Desconectar();
                 Application.Exit();
             }
             
@@ -155,22 +163,116 @@ namespace XbeeAdminConsole
         {
             this.WindowState = FormWindowState.Minimized;            
         }
-
-        
-
         private void TimerFecha_Tick(object sender, EventArgs e)
         {
             ColocarFecha();
         }
-
-        void CargarConfiguracionMysql()
+        private void SFbtnConectar_Click(object sender, EventArgs e)
         {
-            instancia.SqlServidor = ConfigurationManager.AppSettings["servidor"];
-            instancia.SqlUsuario = ConfigurationManager.AppSettings["usuario"];
-            instancia.SqlPassword = ConfigurationManager.AppSettings["password"];
-            instancia.SqlBaseDatos = ConfigurationManager.AppSettings["bd"];
+            SFbtnConectar.Enabled = false;
+            SFbtnEscanearRed.Enabled = true;
+            SFbtnDesconectar.Enabled = true;
+            claseMain.ConectaryDescubrirRed();
         }
+        private void SFbtnEscanearRed_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Esta seguro que desea escanear de nuevo la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                claseMain.Desconectar();
+                claseMain.ConectaryDescubrirRed();
+            }
+        }
+
+        private void SFbtnDesconectar_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Esta seguro que desea desconectar la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                SFbtnConectar.Enabled = true;
+                SFbtnEscanearRed.Enabled = false;
+                SFbtnDesconectar.Enabled = false;
+                claseMain.Desconectar();
+            }
+        }
+        private void SFbtnMaximizarMinimizar_Click(object sender, EventArgs e)
+        {
+            if (SFbtnMaximizarMinimizar.Text == "Maximizar")
+            {
+                ExpandirPanelLogs(true);
+            }
+            else
+            {
+                ExpandirPanelLogs(false);
+            }
+        }
+        private void SFbtnBuscar_Click(object sender, EventArgs e)
+        {
+            AplicarFiltroRejilla();
+        }
+         private void SFtxtBuscar_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter) AplicarFiltroRejilla();
+        }
+         private void SFtxtBuscar_KeyPress(object sender, KeyPressEventArgs e)
+         {
+             if(e.KeyChar == 13)
+             {
+                 e.Handled = true;
+             }
+         }
         #endregion
+
+        #region "Eventos Log Tramas"
+        public delegate void AsignarRegistrosRejilla(LogPantalla _log);
+        public AsignarRegistrosRejilla delegadoRegistrosRejilla;
+
+        void RefrescarRejilla(LogPantalla _log)
+        {
+            if (dtLog == null)
+            {
+                dtLog = new DataTable();
+                dtLog.Columns.Add("Fecha", typeof(DateTime));
+                dtLog.Columns.Add("Mensaje", typeof(string));
+            }
+            DataRow NewRow = dtLog.NewRow();
+            NewRow["Fecha"] = _log.Fecha;
+            NewRow["Mensaje"] = _log.Mensaje;
+            dtLog.Rows.Add(NewRow);
+            if(bindingSource == null)
+            {
+                bindingSource = new BindingSource();
+                bindingSource.DataSource = dtLog;
+                bindingSource.Sort = "Fecha Desc";
+                this.SFGridLog.DataSource = bindingSource;
+            }
+            else
+	        {
+                bindingSource.ResetBindings(false);
+                if (this.SFGridLog.Rows.Count > 0)
+                {
+                    this.SFGridLog.Rows[0].Selected = true;
+                    this.SFGridLog.CurrentCell = this.SFGridLog.Rows[0].Cells[0];
+                }
+	        }
+        }
+
+        void MonitoreoProceso_Main(object sender, MonitoreoEventArgs e)
+        {
+            LogPantalla newLog = new LogPantalla();
+            newLog.Mensaje = e.Texto;
+            newLog.Fecha = DateTime.Now;
+            if (this.SFGridLog.InvokeRequired == true)
+            {
+                AsignarRegistrosRejilla d = new AsignarRegistrosRejilla(RefrescarRejilla);
+                this.Invoke(d, newLog);
+            }
+            else
+            {
+                RefrescarRejilla(newLog);
+            }
+        }
+        #endregion 
 
         #region Metodos
 
@@ -209,7 +311,7 @@ namespace XbeeAdminConsole
                 Panel PanelCara2 = FindPanel(SFLayoutContainer, cara2);
 
                 ctrCara newCara1 = new ctrCara();
-                newCara1.Cara = 1;
+                newCara1.NumCara = 1;
                 newCara1.EstadoCara = EnumEstadoCara.Normal;
                 newCara1.NombreCara = "Cara 1";
                 newCara1.idXbee = e.IdXbee;
@@ -218,7 +320,7 @@ namespace XbeeAdminConsole
                 newCara1.Dock = DockStyle.Fill;
 
                 ctrCara newCara2 = new ctrCara();
-                newCara1.Cara = 2;
+                newCara2.NumCara = 2;
                 newCara2.EstadoCara = EnumEstadoCara.Normal;
                 newCara2.NombreCara = "Cara 2";
                 newCara2.idXbee = e.IdXbee;
@@ -248,7 +350,47 @@ namespace XbeeAdminConsole
             SFlbHora.Text = DateTime.Now.ToLongTimeString();
             SFlbFechaHora.Text = DateTime.Now.ToLongDateString();
         }
+
+        void CargarConfiguracionMysql()
+        {
+            instancia.SqlServidor = ConfigurationManager.AppSettings["servidor"];
+            instancia.SqlUsuario = ConfigurationManager.AppSettings["usuario"];
+            instancia.SqlPassword = ConfigurationManager.AppSettings["password"];
+            instancia.SqlBaseDatos = ConfigurationManager.AppSettings["bd"];
+        }
+
+        void ExpandirPanelLogs(bool expandir)
+        {
+            if (expandir == true)
+            {
+                this.SFLyContainer.RowStyles[0].Height = 0F;
+                this.SFLyContainer.RowStyles[1].Height = 100F;
+                SFbtnMaximizarMinimizar.Text = "Minimizar";
+            }
+            else
+            {
+                this.SFLyContainer.RowStyles[0].Height = 60.98039F;
+                this.SFLyContainer.RowStyles[1].Height = 39.01961F;
+                SFbtnMaximizarMinimizar.Text = "Maximizar";
+            }
+        }
+
+        void AplicarFiltroRejilla()
+        {
+            if (dtLog != null)
+            {
+                string searchValue = SFtxtBuscar.Text;
+                dtLog.DefaultView.RowFilter = "Mensaje like '%" + searchValue + "%'";
+                SFGridLog.Refresh();
+            }
+        }
         #endregion
+
+      
+
+        
+
+       
 
     }
 }
