@@ -24,10 +24,6 @@ namespace DataAccess
         public bool GuardaVentasTotales(string[] datos,string fecha, string idXbee)
         {
             string cara = datos[1];
-            if (cara == "4H")
-            {
-                cara = "4";
-            }
             decimal galon_m1 = (Convert.ToDecimal(datos[2]) / 1000);
 
             decimal galon_m2 = (Convert.ToDecimal(datos[5]) / 1000);

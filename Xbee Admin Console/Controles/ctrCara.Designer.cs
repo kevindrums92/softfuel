@@ -87,7 +87,6 @@
             this.SFlbNombreCara.Size = new System.Drawing.Size(29, 13);
             this.SFlbNombreCara.TabIndex = 2;
             this.SFlbNombreCara.Text = "Cara";
-            this.SFlbNombreCara.Click += new System.EventHandler(this.SFlbNombreCara_Click_1);
             // 
             // SFlbNombreNodo
             // 

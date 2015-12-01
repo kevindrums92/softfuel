@@ -51,17 +51,17 @@ namespace XbeeAdminConsole
             ////string tramaRecibida = "ET:2:0004602921:0034969731:007560:0001471717:0011889213:007950:0:0:0:";
             ////string tramaRecibida = "I:2:JEX30B:58000";
             ////string tramaRecibida = "E:12345:2";
-            string tramaRecibida = "M:15";
+            //string tramaRecibida = "M:15";
             
-            NodosXbee _nodoPrueba = new NodosXbee(null,"MOD POS 1","MACPRUEBA","MACIMPRESION",0,Enumeraciones.TipoDispositivo.moduloPOS,1);
-            ////string tramaRecibida = "P:4:1:2";
-            ////string tramaRecibida = "T:12345:2";
-            ////string tramaRecibida = "E:12345:2";
-            ////string tramaRecibida = "M:29";
+            //NodosXbee _nodoPrueba = new NodosXbee(null,"MOD POS 1","MACPRUEBA","MACIMPRESION",0,Enumeraciones.TipoDispositivo.moduloPOS,1);
+            //////string tramaRecibida = "P:4:1:2";
+            //////string tramaRecibida = "T:12345:2";
+            //////string tramaRecibida = "E:12345:2";
+            //////string tramaRecibida = "M:29";
 
 
-            string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida);
-            claseMain.ProcesarTrama(arrayTramaRecibida, _nodoPrueba);
+            //string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida);
+            //claseMain.ProcesarTrama(arrayTramaRecibida, _nodoPrueba);
 
         }
         

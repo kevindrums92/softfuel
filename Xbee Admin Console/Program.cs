@@ -34,12 +34,13 @@ namespace XbeeAdminConsole
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            MessageBox.Show("Ha ocurrido un error UnhandledException: " + e.ExceptionObject);
+            XbeeUtils.LocalLogManager.EscribeLog("Ha ocurrido un error UnhandledException: " + e.ExceptionObject.GetType().ToString(), XbeeUtils.LocalLogManager.TipoImagen.TipoError);
+            
         }
 
         private static void UIThreadException(object sender, ThreadExceptionEventArgs t)
         {
-            MessageBox.Show("Ha ocurrido un error UIThreadException: " + t.Exception.Message);
+            XbeeUtils.LocalLogManager.EscribeLog("Ha ocurrido un error UIThreadException: " + t.Exception.Message, XbeeUtils.LocalLogManager.TipoImagen.TipoError);
             //Application.Exit();
         }
        

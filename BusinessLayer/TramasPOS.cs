@@ -124,7 +124,6 @@ namespace BusinessLayer
                 string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
                 string Identificacion = data[1];
                 string cara = data[2];
-                if (cara == "4H") cara = "4"; //QUITAR ESTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
                 string NomApeUsuario = "";
                 bool encontroUsuario = false;
                 DataTable dtUsuario;
@@ -256,7 +255,6 @@ namespace BusinessLayer
                 string idProducto = data[1];
                 int cantidad = Convert.ToInt32(data[2]);
                 string cara = data[3];
-                if (cara == "4H") cara = "4"; //QUITAR ESTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
                 using (ModeloPOS modPOS = new ModeloPOS())
                 {
                     //Validamos que el producto exista, ademas que tenga existencias, y validar tambien que haya turno abierto
@@ -312,7 +310,6 @@ namespace BusinessLayer
                 string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
                 string identificacion = data[1];
                 string cara = data[2];
-                if (cara == "4H") cara = "4"; //QUITAR ESTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
                 int idXbee = 0;
                 using (ModeloPOS modPOS = new ModeloPOS())
                 {
@@ -377,7 +374,6 @@ namespace BusinessLayer
                 List<string> mensajeTrama = new List<string>();
                 string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
                 string cara = data[1];
-                if (cara == "4H") cara = "4"; //QUITAR ESTOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
                 string placa = data[2];
                 string km = data[3];
 

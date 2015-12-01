@@ -80,8 +80,8 @@ namespace BusinessLayer
             if (instancia.Controller != null)
             {
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se va a escanear Red!",ETipoEvento.Exitoso,0,""));
-                //instancia.Controller.DiscoverNetwork();
-                EscanearRed();
+                instancia.Controller.DiscoverNetwork();
+                //EscanearRed();
             }
             
         }
@@ -116,7 +116,7 @@ namespace BusinessLayer
                         _idXbee = (int)XbeeConsultado.Rows[0]["idXbee"];
                         _tipDisp = (Enumeraciones.TipoDispositivo)XbeeConsultado.Rows[0]["tipoXbee"];
                         NodosXbee newDispositivo = new NodosXbee(args.Node, args.Name, _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
-                        instancia.ListNodes.Add(newDispositivo);
+                        instancia.AgregarNodo(newDispositivo);
                         if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + args.Name + " MAC:" + _macNodoEncontrado + "", ETipoEvento.Exitoso, 0, ""));
                         if (_tipDisp == Enumeraciones.TipoDispositivo.Dispensador)
                         {
@@ -242,7 +242,7 @@ namespace BusinessLayer
                     ulong _ulong = Convert.ToUInt64(_row["macXbee"].ToString(), 16);
                     NodeAddress Address = new NodeAddress(new LongAddress(_ulong));
                     XBeeNode nodoXbee = null;
-                    //nodoXbee = await instancia.Controller.GetRemoteAsync(new NodeAddress());
+                    nodoXbee = await instancia.Controller.GetRemoteAsync(Address);
                     if (nodoXbee != null)
                     {
                         newDispositivo.Nodo = nodoXbee;
@@ -438,6 +438,12 @@ namespace BusinessLayer
                 {//recibo tramas de dispesadores
                     switch (arrayTramaRecibida[0])
                     { 
+                            //Abrir Venta
+                        case "E":
+                            string cara = arrayTramaRecibida[1].ToString();
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("LEVANTAMANGUERA",ETipoEvento.Exitoso,nodo.IdXbee,cara));
+                            break;
+                            //Totales de venta
                         case "ET":
                             var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
                             if (resultEnvioTotales.Resultado == true)
@@ -448,6 +454,7 @@ namespace BusinessLayer
                             {
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
                             }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("BAJAMANGUERA", ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
                             _tramaDIS.Dispose();
                             break;
 

@@ -85,13 +85,17 @@ namespace XbeeAdminConsole
                     break;
             }
         }
-        #endregion
 
-
-        private void SFlbNombreCara_Click_1(object sender, EventArgs e)
+        void MangueraArriba()
         {
             EstadoCara = EnumEstadoCara.Atendiendo;
         }
+
+        void MangueraAbajo()
+        {
+            EstadoCara = EnumEstadoCara.Normal;
+        }
+        #endregion
     }
     #region Enumeraciones
     public enum EnumEstadoCara

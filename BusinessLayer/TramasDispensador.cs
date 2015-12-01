@@ -20,7 +20,6 @@ namespace BusinessLayer
                 //desglosar mensaje
                 string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
                 string cara = data[1];
-                if (cara == "4H") cara = "4"; //QUITAR ESTOOOOOOOOO
                 decimal galon_m1 = (Convert.ToDecimal(data[2])/1000);
                 int dinero_m1 = Convert.ToInt32(data[3]);
                 int ppu_m1 = Convert.ToInt32(data[4]);

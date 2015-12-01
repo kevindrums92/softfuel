@@ -1,4 +1,5 @@
 ﻿using BusinessLayer;
+using DataAccess;
 using Singleton;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,7 @@ namespace XbeeAdminConsole
         private Main claseMain = new Main();
         DataTable dtLog;
         BindingSource bindingSource;
+        List<ctrCara> ListadoObjetosCaras;
         #endregion
 
         #region Constructor
@@ -35,10 +37,10 @@ namespace XbeeAdminConsole
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
 
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 1);
-            ////NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 2);
+            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 2);
             //instancia.ListNodes = new List<NodosXbee>();
             //instancia.AgregarNodo(_nodoPrueba);
-            ////instancia.AgregarNodo(_nodoPrueba2);
+            //instancia.AgregarNodo(_nodoPrueba2);
         }
         #endregion
 
@@ -224,8 +226,11 @@ namespace XbeeAdminConsole
         #endregion
 
         #region "Eventos Log Tramas"
-        public delegate void AsignarRegistrosRejilla(LogPantalla _log);
-        public AsignarRegistrosRejilla delegadoRegistrosRejilla;
+         public delegate void AsignarRegistrosRejilla(LogPantalla _log);
+         public AsignarRegistrosRejilla delegadoRegistrosRejilla;
+
+         public delegate void LevantaBajaMangueraEvent(string cara, int idXbee, bool levanta);
+         public LevantaBajaMangueraEvent LevantaoBajaMangueraEvent;
 
         void RefrescarRejilla(LogPantalla _log)
         {
@@ -259,6 +264,34 @@ namespace XbeeAdminConsole
 
         void MonitoreoProceso_Main(object sender, MonitoreoEventArgs e)
         {
+            bool TramaVentaManguera = false;
+            bool Levanta = false;
+
+            if (e.Texto == "LEVANTAMANGUERA")
+            {
+                TramaVentaManguera = true;
+                Levanta = true;
+            }
+            if (e.Texto == "BAJAMANGUERA")
+            {
+                TramaVentaManguera = true;
+                Levanta = false;
+            }
+            if (TramaVentaManguera == true)
+            {
+                if (this.InvokeRequired == true)
+                {
+                    LevantaBajaMangueraEvent d = new LevantaBajaMangueraEvent(LevantaoBajaManguera);
+                    this.Invoke(d, e.Cara, e.IdXbee, Levanta);
+                }
+                else
+                {
+                    LevantaoBajaManguera(e.Cara, e.IdXbee, Levanta);
+                }
+                return;
+            }
+            
+
             LogPantalla newLog = new LogPantalla();
             newLog.Mensaje = e.Texto;
             newLog.Fecha = DateTime.Now;
@@ -277,7 +310,7 @@ namespace XbeeAdminConsole
         #region Metodos
 
         void NodoAgregadoEventHandler(NodosXbee e)
-        { 
+        {
             if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador)
             {
                 string cara1 = "";
@@ -310,23 +343,35 @@ namespace XbeeAdminConsole
                 Panel PanelCara1 = FindPanel(SFLayoutContainer, cara1);
                 Panel PanelCara2 = FindPanel(SFLayoutContainer, cara2);
 
-                ctrCara newCara1 = new ctrCara();
-                newCara1.NumCara = 1;
-                newCara1.EstadoCara = EnumEstadoCara.Normal;
-                newCara1.NombreCara = "Cara 1";
-                newCara1.idXbee = e.IdXbee;
-                newCara1.NombreNodo = e.Nombre;
-                PanelCara1.Controls.Add(newCara1);
-                newCara1.Dock = DockStyle.Fill;
+                DataTable dtCaras;
+                using (Generales modGEN = new Generales())
+                {
+                    dtCaras = modGEN.GetTable("select DISTINCT numPosicion FROM posicion WHERE idXbee = " + e.IdXbee);
+                }
+                if (dtCaras != null && dtCaras.Rows.Count > 1)
+                {
+                    if (ListadoObjetosCaras == null) ListadoObjetosCaras = new List<ctrCara>();
+                    ctrCara newCara1 = new ctrCara();
+                    newCara1.NumCara = Convert.ToInt32(dtCaras.Rows[0][0]);
+                    newCara1.EstadoCara = EnumEstadoCara.Normal;
+                    newCara1.NombreCara = "Cara " + newCara1.NumCara.ToString();
+                    newCara1.idXbee = e.IdXbee;
+                    newCara1.NombreNodo = e.Nombre;
+                    PanelCara1.Controls.Add(newCara1);
+                    newCara1.Dock = DockStyle.Fill;
 
-                ctrCara newCara2 = new ctrCara();
-                newCara2.NumCara = 2;
-                newCara2.EstadoCara = EnumEstadoCara.Normal;
-                newCara2.NombreCara = "Cara 2";
-                newCara2.idXbee = e.IdXbee;
-                newCara2.NombreNodo = e.Nombre;
-                PanelCara2.Controls.Add(newCara2);
-                newCara2.Dock = DockStyle.Fill;
+                    ctrCara newCara2 = new ctrCara();
+                    newCara2.NumCara = Convert.ToInt32(dtCaras.Rows[1][0]);
+                    newCara2.EstadoCara = EnumEstadoCara.Normal;
+                    newCara2.NombreCara = "Cara " + newCara2.NumCara.ToString();
+                    newCara2.idXbee = e.IdXbee;
+                    newCara2.NombreNodo = e.Nombre;
+                    PanelCara2.Controls.Add(newCara2);
+                    newCara2.Dock = DockStyle.Fill;
+
+                    ListadoObjetosCaras.Add(newCara1);
+                    ListadoObjetosCaras.Add(newCara2);
+                }
             }
 
         }
@@ -384,13 +429,33 @@ namespace XbeeAdminConsole
                 SFGridLog.Refresh();
             }
         }
+
+        void LevantaoBajaManguera(string cara, int idXbee,bool levanta)
+        {
+            ctrCara Ctrcara = ListadoObjetosCaras.Find(x => x.NumCara == Convert.ToInt32(cara) && x.idXbee == idXbee);
+            if (Ctrcara != null)
+            {
+                if (levanta == true)
+                {
+                    Ctrcara.EstadoCara = EnumEstadoCara.Atendiendo;
+                }
+                else
+                {
+                    Ctrcara.EstadoCara = EnumEstadoCara.Normal;
+                }
+            }
+        }
         #endregion
 
-      
+        private void button1_Click(object sender, EventArgs e)
+        {
+            LevantaoBajaManguera("1", 1, true);
+        }
 
-        
-
-       
-
+        private void button2_Click(object sender, EventArgs e)
+        {
+            LevantaoBajaManguera("1", 1, false);
+        }
     }
+ 
 }
