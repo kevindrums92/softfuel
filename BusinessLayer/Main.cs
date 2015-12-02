@@ -286,9 +286,24 @@ namespace BusinessLayer
                 LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
             }
-            
         }
 
+        public void CambioPrecioDispensador(int IdXbee)
+        {
+            NodosXbee nodo = instancia.ListNodes.Find(item => item.IdXbee == IdXbee);
+            if (nodo != null)
+            {
+                var result = _tramaDIS.CambiodePrecio(nodo.IdXbee.ToString());
+                if (result != null)
+                {
+                    foreach (Byte[] data in result)
+                    {
+                        nodo.EnviarTrama(data);
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Cambio de precio a " + nodo.Nombre, ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                    }
+                }
+            }
+        }
         
         #endregion
 

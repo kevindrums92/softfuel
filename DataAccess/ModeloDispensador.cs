@@ -40,6 +40,12 @@ namespace DataAccess
         }
         #endregion
 
+        #region CambioPrecio
+        public DataTable ObtenerPreciosActualizados()
+        {
+            return GetTable("select precioventaProducto from producto where idProducto IN(1,2,3,4)");
+        }
+        #endregion
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
         // Dispose() calls Dispose(true)

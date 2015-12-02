@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -36,8 +37,8 @@ namespace XbeeAdminConsole
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
 
-            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 1);
-            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 2);
+            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
             //instancia.ListNodes = new List<NodosXbee>();
             //instancia.AgregarNodo(_nodoPrueba);
             //instancia.AgregarNodo(_nodoPrueba2);
@@ -168,6 +169,14 @@ namespace XbeeAdminConsole
         private void TimerFecha_Tick(object sender, EventArgs e)
         {
             ColocarFecha();
+          
+        }
+        private void SFTimerCambioPrecios_Tick(object sender, EventArgs e)
+        {
+            if (SFbwCambioPrecio.IsBusy == false)
+            {
+                SFbwCambioPrecio.RunWorkerAsync();
+            }
         }
         private void SFbtnConectar_Click(object sender, EventArgs e)
         {
@@ -175,6 +184,8 @@ namespace XbeeAdminConsole
             SFbtnEscanearRed.Enabled = true;
             SFbtnDesconectar.Enabled = true;
             claseMain.ConectaryDescubrirRed();
+            SFTimerCambioPrecios.Enabled = true;
+            SFTimerCambioPrecios.Start();
         }
         private void SFbtnEscanearRed_Click(object sender, EventArgs e)
         {
@@ -195,6 +206,9 @@ namespace XbeeAdminConsole
                 SFbtnEscanearRed.Enabled = false;
                 SFbtnDesconectar.Enabled = false;
                 claseMain.Desconectar();
+                SFTimerCambioPrecios.Enabled = false;
+                SFTimerCambioPrecios.Stop();
+                LimpiarDispositivos();
             }
         }
         private void SFbtnMaximizarMinimizar_Click(object sender, EventArgs e)
@@ -212,11 +226,11 @@ namespace XbeeAdminConsole
         {
             AplicarFiltroRejilla();
         }
-         private void SFtxtBuscar_KeyDown(object sender, KeyEventArgs e)
+        private void SFtxtBuscar_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter) AplicarFiltroRejilla();
         }
-         private void SFtxtBuscar_KeyPress(object sender, KeyPressEventArgs e)
+        private void SFtxtBuscar_KeyPress(object sender, KeyPressEventArgs e)
          {
              if(e.KeyChar == 13)
              {
@@ -308,6 +322,23 @@ namespace XbeeAdminConsole
         #endregion 
 
         #region Metodos
+
+        void LimpiarDispositivos()
+        {
+            ListadoObjetosCaras.Clear();
+            SFPanelCara1.Controls.Clear();
+            SFPanelCara2.Controls.Clear();
+            SFPanelCara3.Controls.Clear();
+            SFPanelCara4.Controls.Clear();
+            SFPanelCara5.Controls.Clear();
+            SFPanelCara6.Controls.Clear();
+            SFPanelCara7.Controls.Clear();
+            SFPanelCara8.Controls.Clear();
+            SFPanelPOS1.Controls.Clear();
+            SFPanelPOS2.Controls.Clear();
+            SFPanelPOS3.Controls.Clear();
+            SFPanelPOS4.Controls.Clear();
+        }
 
         void NodoAgregadoEventHandler(NodosXbee e)
         {
@@ -447,15 +478,59 @@ namespace XbeeAdminConsole
         }
         #endregion
 
-        private void button1_Click(object sender, EventArgs e)
+        #region BackgroundWorkerCambioPrecio
+        private void INDbwCambioPrecio_DoWork(object sender, DoWorkEventArgs e)
         {
-            LevantaoBajaManguera("1", 1, true);
+            try
+            {
+                string cambioPrecio = System.IO.File.ReadAllText(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
+                if (cambioPrecio == "1")
+                {
+                    if (ListadoObjetosCaras != null)
+                    {
+                        List<int> ListaXbess = new List<int>();
+                        foreach (ctrCara _cara in ListadoObjetosCaras)
+                        {
+                            if (ListaXbess.Find(item => item == _cara.idXbee) == 0)
+                            {
+                                ListaXbess.Add(_cara.idXbee);
+                                claseMain.CambioPrecioDispensador(_cara.idXbee);
+                            }
+                        }
+                        e.Result = true;
+                    }
+                    else
+                    {
+                        e.Result = false;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                LocalLogManager.EscribeLog("Ocurrio Un Error Con Cambio de Precio" + ex.Message, LocalLogManager.TipoImagen.TipoError);
+                e.Result = false;
+            }
         }
 
-        private void button2_Click(object sender, EventArgs e)
+        private void INDbwCambioPrecio_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
-            LevantaoBajaManguera("1", 1, false);
+            if (e.Result == null) return;
+            if (Convert.ToBoolean(e.Result) == true)
+            {
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
+                sw.WriteLine("0");
+                sw.Close();
+            }
+            else
+            {
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
+                sw.WriteLine("1");
+                sw.Close();
+            }
         }
+        #endregion
+
+       
     }
  
 }

@@ -141,6 +141,11 @@ namespace XbeeUtils
             }
             return mensaje;
         }
+
+        public static string ConcatenarCerosIzquiera(string _txt)
+        {
+            return _txt.PadLeft(5, '0');
+        }
         #endregion
     }
 }

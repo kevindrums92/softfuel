@@ -127,6 +127,34 @@ namespace BusinessLayer
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
+
+        public List<Byte[]> CambiodePrecio(string idXbee)
+        {
+            try
+            {
+                List<byte[]> TramasDevolver = new List<byte[]> { };
+                DataTable dtPrecios;
+                using (ModeloDispensador modDIS = new ModeloDispensador())
+                {
+                    dtPrecios = modDIS.ObtenerPreciosActualizados();
+                }
+                int precioAcpm = Convert.ToInt32(dtPrecios.Rows[0][0]);
+                int precioGasolina = Convert.ToInt32(dtPrecios.Rows[1][0]);
+                int precioExtra = Convert.ToInt32(dtPrecios.Rows[2][0]);
+                int precioGas = Convert.ToInt32(0);
+                string TramaDevolver = "MM:" + UtilidadesTramas.ConcatenarCerosIzquiera(precioAcpm.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGasolina.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioExtra.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGas.ToString()) + "";
+                //string TramaDevolver = "XP:" + UtilidadesTramas.ConcatenarCerosIzquiera(precioAcpm.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGasolina.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioExtra.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGas.ToString()) + "";
+                //string TramaDevolver = "XXX";
+                TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString(TramaDevolver));
+
+                return TramasDevolver;
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                return null;
+            }
+        }
         #endregion 
         
         #region "IDisposable"
