@@ -15,10 +15,25 @@ namespace DataAccess
 
         #region Enviar Totales
         
-        public bool GuardaVenta(string idProducto, string cara, string manguera, string dinero, string galones, string ppu, string fecha, string islero, string xbee)
+        public bool GuardaVenta(string idProducto, string cara, string manguera, string dinero, string galones, string ppu, string fecha, string islero, string xbee,string serialFidelizado)
         {
-            string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee) values";
-            return ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',','.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + ")");
+            string puntos = "NULL";
+            string idVehiculo = "NULL";
+            if (serialFidelizado != "")
+            {
+                DataTable dtFidelizado = ObtenerFidelizadoPorSerial(serialFidelizado);
+                if (dtFidelizado.Rows.Count > 0)
+                {
+                    idVehiculo = "'" + dtFidelizado.Rows[0]["idVehiculo"].ToString() + "'";
+                    int valorDinero = Convert.ToInt32(dtFidelizado.Rows[0]["valorDinero"]);
+                    int valorPuntos = Convert.ToInt32(dtFidelizado.Rows[0]["valorPuntos"]);
+
+                    puntos = ((Convert.ToInt32(dinero) / valorDinero) * valorPuntos).ToString();
+                    ExecuteQuery("update puntos set puntos = " + puntos + " where idPuntos = " + dtFidelizado.Rows[0]["idPuntos"] + "");
+                }
+            }
+            string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee,puntos,idVehiculo,tipoCuenta) values";
+            return ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',','.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + ",2)");
         }
 
         public bool GuardaVentasTotales(string[] datos,string fecha, string idXbee)
@@ -40,6 +55,12 @@ namespace DataAccess
         }
         #endregion
 
+        #region Fidelizado
+        public DataTable ObtenerFidelizadoPorSerial(string serial)
+        {
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero, V.propietario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.placa LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan WHERE `serial` = '" + serial + "' AND V.tipoCliente = 1");
+        }
+        #endregion
         #region CambioPrecio
         public DataTable ObtenerPreciosActualizados()
         {

@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle13 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle14 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle15 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle25 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle26 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle27 = new System.Windows.Forms.DataGridViewCellStyle();
             this.SFbtnBarraTitulo = new System.Windows.Forms.Panel();
             this.SFbtnMinimizar = new System.Windows.Forms.Button();
             this.SFbtnMaximizar = new System.Windows.Forms.Button();
@@ -372,38 +372,38 @@
             this.SFGridLog.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SFGridLog.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
             this.SFGridLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle13.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle13.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle13.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
-            dataGridViewCellStyle13.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle13.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(148)))), ((int)(((byte)(175)))));
-            dataGridViewCellStyle13.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle13.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SFGridLog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle13;
+            dataGridViewCellStyle25.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle25.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle25.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
+            dataGridViewCellStyle25.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle25.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(148)))), ((int)(((byte)(175)))));
+            dataGridViewCellStyle25.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle25.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SFGridLog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle25;
             this.SFGridLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.SFGridLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Fecha,
             this.Mensaje});
-            dataGridViewCellStyle14.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle14.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle14.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle14.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle14.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle14.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SFGridLog.DefaultCellStyle = dataGridViewCellStyle14;
+            dataGridViewCellStyle26.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle26.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle26.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle26.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle26.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle26.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle26.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.SFGridLog.DefaultCellStyle = dataGridViewCellStyle26;
             this.SFGridLog.EnableHeadersVisualStyles = false;
             this.SFGridLog.Location = new System.Drawing.Point(3, 56);
             this.SFGridLog.Name = "SFGridLog";
             this.SFGridLog.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle15.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle15.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle15.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle15.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle15.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle15.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle15.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SFGridLog.RowHeadersDefaultCellStyle = dataGridViewCellStyle15;
+            dataGridViewCellStyle27.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle27.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle27.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle27.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle27.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle27.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle27.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SFGridLog.RowHeadersDefaultCellStyle = dataGridViewCellStyle27;
             this.SFGridLog.RowHeadersVisible = false;
             this.SFGridLog.Size = new System.Drawing.Size(742, 154);
             this.SFGridLog.TabIndex = 1;
@@ -485,6 +485,7 @@
             this.SFbtnConectar.Size = new System.Drawing.Size(122, 100);
             this.SFbtnConectar.TabIndex = 0;
             this.SFbtnConectar.Text = "Conectar";
+            this.SFbtnConectar.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.SFbtnConectar.UseVisualStyleBackColor = true;
             this.SFbtnConectar.Click += new System.EventHandler(this.SFbtnConectar_Click);
             // 
@@ -501,6 +502,7 @@
             this.SFbtnEscanearRed.Size = new System.Drawing.Size(122, 100);
             this.SFbtnEscanearRed.TabIndex = 1;
             this.SFbtnEscanearRed.Text = "Buscar Red";
+            this.SFbtnEscanearRed.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.SFbtnEscanearRed.UseVisualStyleBackColor = true;
             this.SFbtnEscanearRed.Click += new System.EventHandler(this.SFbtnEscanearRed_Click);
             // 

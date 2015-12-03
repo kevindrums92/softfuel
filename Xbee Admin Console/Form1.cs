@@ -42,8 +42,9 @@ namespace XbeeAdminConsole
         private void Form1_Load(object sender, EventArgs e)
         {
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
+            
             //string tramaRecibida = "T:7705904:3";
-            //string tramaRecibida = "ET:3:0008525210:0064801000:007560:7663104:61736538:7950:0:0:0:";
+            //string tramaRecibida = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
             //string tramaRecibida = "I:3:VXF168:1234567890";
             ////string tramaRecibida = "N:7";
             //string tramaRecibida = "P:45:3:3";
@@ -53,16 +54,26 @@ namespace XbeeAdminConsole
             ////string tramaRecibida = "E:12345:2";
             //string tramaRecibida = "M:15";
             
-            //NodosXbee _nodoPrueba = new NodosXbee(null,"MOD POS 1","MACPRUEBA","MACIMPRESION",0,Enumeraciones.TipoDispositivo.moduloPOS,1);
+            
             //////string tramaRecibida = "P:4:1:2";
             //////string tramaRecibida = "T:12345:2";
             //////string tramaRecibida = "E:12345:2";
             //////string tramaRecibida = "M:29";
 
-
+            //string tramaRecibida = "F:2:30f98b0d";
+            //NodosXbee _nodoPrueba = new NodosXbee(null, "MOD POS 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 1);
             //string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida);
             //claseMain.ProcesarTrama(arrayTramaRecibida, _nodoPrueba);
 
+            //string tramaRecibida1 = "ET:2:5129970:38977204:007560:1642918:13253948:7950:0:0:0:";
+            //NodosXbee _nodoPrueba1 = new NodosXbee(null, "MOD POS 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 1);
+            //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
+            //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba1);
+
+            string tramaRecibida2 = "I:2:VXF168:5555";
+            NodosXbee _nodoPrueba2 = new NodosXbee(null, "MOD POS 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 1);
+            string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
+            claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba2);
         }
         
         public delegate void AsignarRegistrosRejilla();

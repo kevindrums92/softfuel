@@ -44,6 +44,58 @@ namespace BusinessLayer
         #endregion
 
         #region "Procesos Tramas"
+
+        public ResultadoTrama Fidelizado(string[] data)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string cara = data[1];
+                string serial = data[2];
+                string NomApeUsuario = "";
+                DataTable dtFidelizado;
+                using (ModeloPOS modPOS = new ModeloPOS())
+                {
+                    dtFidelizado = modPOS.ObtenerFidelizadoPorSerial(serial);
+                }
+
+                if (dtFidelizado.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontró fidelizado", "con codigo: " + serial }), "No se encontro fidelizado con serial " + serial);
+                if (object.Equals(dtFidelizado.Rows[0]["nomPlan"], DBNull.Value) == true)
+                {
+                    return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no tiene", "parametrizado puntos" }), "Usuario No Tiene Parametrizado Puntos");
+                }
+
+
+                DataTable dtUsuario;
+                int idXbee = 0;
+                using (Generales modGenerales = new Generales())
+                {
+                    //Buscar el usuario y validar que sea islero.
+                    dtUsuario = modGenerales.ObtenerUsuario(dtFidelizado.Rows[0]["propietario"].ToString());
+                    if (dtUsuario.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto para apertura de turno");
+                    NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
+                    using (ModeloPOS modPOS = new ModeloPOS())
+                    {
+                        DataTable dtPosicion = modPOS.ObtenerPosicionesPorCara(cara);
+                        idXbee = (int)dtPosicion.Rows[0]["idXbee"];
+                        if (dtPosicion.Rows.Count == 0) return new ResultadoTrama(false, null, "No se pudo obtener la posición.");
+                        var DatosTurno = modPOS.ObtenerTurnoPorPosicionyEstado(dtPosicion.Rows[0]["idPosicion"].ToString());
+                        if (DatosTurno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno en la cara " + cara }), "No hay turno en la cara " + cara);
+
+                        ResultadoTrama _resultado = new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Venta al usuario:", NomApeUsuario }), "Venta fidelizado al usuario: " + NomApeUsuario, idXbee, true);
+
+                        return _resultado;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
         /// <summary>
         /// Resuelve la peticion de consignacion en efectivo, H:1075227951:1075227951
         /// </summary>
@@ -537,20 +589,39 @@ namespace BusinessLayer
             mensajeTrama.Add("CProd: " + dtInfo.Rows[0]["nomProducto"].ToString());
             mensajeTrama.Add("CCant: " + dtInfo.Rows[0]["galones"].ToString() + " PPG: $" + dtInfo.Rows[0]["ppu"].ToString() + "");
             mensajeTrama.Add("CTotal: $" + dtInfo.Rows[0]["precio"].ToString());
-            mensajeTrama.Add("CForma de Pago: Contado");
-            mensajeTrama.Add("CCliente: ");
+            if (dtInfo.Rows[0]["tipoCuenta"].ToString() == "1")
+            {
+                mensajeTrama.Add("CForma de Pago: Credito");
+            }
+            else
+            {
+                mensajeTrama.Add("CForma de Pago: Contado");
+            }
+            mensajeTrama.Add("CCliente: " + dtInfo.Rows[0]["cliente"].ToString());
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
                                                            Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
             mensajeTrama.Add("CAtendido: " + dtInfo.Rows[0]["nomUsuario"].ToString() + " " + dtInfo.Rows[0]["apeUsuario"].ToString());
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
                                                                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            mensajeTrama.Add("CPts C:  Pts T: ");
+            string puntosVenta = "";
+            string puntosTotal = "";
+            if (object.Equals(dtInfo.Rows[0]["puntosEnVenta"], DBNull.Value) == false)
+            {
+                puntosVenta = dtInfo.Rows[0]["puntosEnVenta"].ToString();
+            }
+            if (object.Equals(dtInfo.Rows[0]["puntosTotal"], DBNull.Value) == false)
+            {
+                puntosTotal = dtInfo.Rows[0]["puntosTotal"].ToString();
+            }
+            mensajeTrama.Add("CPts C: " + puntosVenta + " Pts T: " + puntosTotal + "");
             
             return mensajeTrama;
         }
 
 
         #endregion 
+
+        
 
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);

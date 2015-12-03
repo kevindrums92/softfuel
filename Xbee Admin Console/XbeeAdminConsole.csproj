@@ -48,6 +48,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="BinarySerializer">
       <HintPath>..\packages\BinarySerializer.4.2\lib\portable-net45+sl50+win+wpa81+wp80\BinarySerializer.dll</HintPath>
@@ -168,6 +172,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cambioPrecio.txt" />
+    <None Include="Resources\pos_pay.png" />
+    <None Include="Resources\network.png" />
+    <None Include="Resources\dispensador.png" />
+    <None Include="Resources\conexion.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

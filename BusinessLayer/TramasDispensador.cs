@@ -1,4 +1,5 @@
 ﻿using DataAccess;
+using Singleton;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,6 +13,7 @@ namespace BusinessLayer
 {
     class TramasDispensador : IDisposable
     {
+        XbeeSingleton instancia = XbeeSingleton.Instance;
         #region "Procesos Tramas"
         public ResultadoTrama EnvioTotales(string[] data)
         {
@@ -35,6 +37,19 @@ namespace BusinessLayer
                 DataTable dtPosicion;
                 DataTable dtVentasTotales;
                 bool RealizoVentaTotal = false;
+
+                string serialFidelizado = "";
+                //Capturo si es venta fidelizado 
+                if (instancia.ListaFidelizadosPendientes.Count > 0)
+                {
+                    FidelizadoPendiente objFidelizado = instancia.ListaFidelizadosPendientes.Find(item => item.cara == cara);
+                    if (objFidelizado != null)
+                    {
+                        serialFidelizado = objFidelizado.serial;
+                        instancia.ListaFidelizadosPendientes.Remove(objFidelizado);
+
+                    }
+                }
 
                 //obtengo el id de la posición por la cara, y traigo el idProducto tambien
                 //Obtengo el ultimo registro de ventas en la cara
@@ -75,7 +90,7 @@ namespace BusinessLayer
                                 DataTable dtPosicionProductoCorrecto;
                                 dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara,"1");
                                 if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 1");
-                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador);
+                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado);
                             }
                         }
                         if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]) != galon_m2)
@@ -88,7 +103,7 @@ namespace BusinessLayer
                             int difDinero = (dinero_m2 - Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]));
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
-                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador);
+                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado);
                             }
                         }
                         if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]) != galon_m3)
@@ -101,7 +116,7 @@ namespace BusinessLayer
                             int difDinero = (dinero_m3 - Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]));
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
-                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador);
+                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado);
                             }
                         }
                     }

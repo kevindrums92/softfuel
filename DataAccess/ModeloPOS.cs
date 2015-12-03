@@ -219,7 +219,14 @@ namespace DataAccess
 
         public DataTable ObtenerUltimaVentaPorId(string id)
         {
-            return GetTable("select idVenta, V.idProducto, cara, manguera, precio, galones,ppu, fecha, islero, P.nomProducto,U.nomUsuario,U.apeUsuario,IF(V.placa IS NULL,'',V.placa) AS placa, IF(V.kilometraje IS NULL,'',V.kilometraje) AS kilometraje from ventas AS V INNER JOIN producto AS P ON P.idProducto = V.idProducto INNER JOIN usuario AS U ON V.islero = U.idUsuario where V.idVenta = " + id + "");
+            DataTable dtVenta = GetTable("select idVenta, V.idProducto, cara, manguera, precio, galones,ppu, fecha, islero, P.nomProducto,U.nomUsuario,U.apeUsuario,IF(V.placa IS NULL,'',V.placa) AS placa, IF(V.kilometraje IS NULL,'',V.kilometraje) AS kilometraje, V.puntos as puntosEnVenta, '' as puntosTotal, V.idVehiculo,V.tipoCuenta,'' as cliente from ventas AS V INNER JOIN producto AS P ON P.idProducto = V.idProducto INNER JOIN usuario AS U ON V.islero = U.idUsuario where V.idVenta = " + id + "");
+            if (object.Equals(dtVenta.Rows[0]["puntosEnVenta"], DBNull.Value) == false && dtVenta.Rows[0]["puntosEnVenta"].ToString().Trim() != string.Empty)
+            {
+                DataTable dtfidelizado = ObtenerFidelizadoPorVehiculo(dtVenta.Rows[0]["idVehiculo"].ToString());
+                dtVenta.Rows[0]["puntosTotal"] = dtfidelizado.Rows[0]["puntos"].ToString();
+                dtVenta.Rows[0]["cliente"] = dtfidelizado.Rows[0]["nomUsuario"].ToString() + " " + dtfidelizado.Rows[0]["apeUsuario"].ToString(); ;
+            }
+            return dtVenta;
         }
 
         /// <summary>
@@ -299,6 +306,19 @@ namespace DataAccess
 
             return tiquete;
         }
+        #endregion
+
+        #region Fidelizado
+        public DataTable ObtenerFidelizadoPorSerial(string serial)
+        {
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero,V.propietario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.placa LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan WHERE `serial` = '" + serial + "' AND V.tipoCliente = 1");
+        }
+
+        public DataTable ObtenerFidelizadoPorVehiculo(string idVehiculo)
+        {
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero,V.propietario,U.nomUsuario,U.apeUsuario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.placa LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan INNER JOIN usuario as U ON U.idUsuario = V.propietario WHERE placa = '" + idVehiculo + "' AND V.tipoCliente = 1");
+        }
+        
         #endregion
 
         #region "IDisposable"

@@ -23,6 +23,7 @@ namespace BusinessLayer
         public event MonitoreoEventHandler MonitoreoEvent;
         private string puerto { get; set; }
         private int velocidadTrasmision { get; set; }
+        private List<FidelizadoPendiente> ListaFidelizadosPendientes= new List<FidelizadoPendiente>();
         #endregion
                 
         #region "Conexión y procesos Xbee"
@@ -317,6 +318,29 @@ namespace BusinessLayer
                 {//Recibo petición de MOD POS
                     switch (arrayTramaRecibida[0])
                     {
+                        case "F":
+                            var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
+                            if (resultFid.Resultado == true)
+                            {
+                                foreach (Byte[] data in resultFid.TramaResultado)
+                                {
+                                    nodo.EnviarTrama(data);
+                                }
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (resultFid.Fidelizado == true)
+                                {
+                                    FidelizadoPendiente _newFid = new FidelizadoPendiente();
+                                    _newFid.cara = arrayTramaRecibida[1];
+                                    _newFid.serial = arrayTramaRecibida[2];
+                                    instancia.ListaFidelizadosPendientes.Add(_newFid);
+                                }
+                            }
+                            else
+                            {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nombre + "\n" + resultFid.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                            }
+                            _tramasPOS.Dispose();
+                            break;
                         ///Petición Consignación en efectivo
                         case "H":
                             var result = _tramasPOS.ConsignacionEfectivo(arrayTramaRecibida);
@@ -434,8 +458,8 @@ namespace BusinessLayer
                                 foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado))
                                 {
                                     nodo.EnviarTrama(data);
-                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
                                 }
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
                             }
                             else
                             {

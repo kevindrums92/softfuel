@@ -36,6 +36,19 @@ namespace Singleton
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
+        public List<FidelizadoPendiente> _listaFidelizadosPendientes;
+        public List<FidelizadoPendiente> ListaFidelizadosPendientes 
+        {
+            get
+            { 
+                if (_listaFidelizadosPendientes == null) _listaFidelizadosPendientes = new List<FidelizadoPendiente>();
+                return _listaFidelizadosPendientes;
+            }
+            set
+            { 
+                _listaFidelizadosPendientes = value;
+            }
+        }
 
         public delegate void NodoAgregadoEventHandler(NodosXbee e);
         public event NodoAgregadoEventHandler NodoAgregadoEvent;
@@ -97,5 +110,9 @@ namespace Singleton
         }
         #endregion
     }
-
+    public class FidelizadoPendiente
+    {
+        public string serial { get; set; }
+        public string cara { get; set; }
+    }
 }

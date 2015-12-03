@@ -37,6 +37,16 @@ namespace XbeeAdminConsole
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
 
+            System.Drawing.Bitmap imagenConexion = Properties.Resources.conexion;
+            Bitmap objBitmapConexion = new Bitmap(imagenConexion, new Size(32, 32));
+            SFbtnConectar.Image = objBitmapConexion;
+
+            System.Drawing.Bitmap imagenRed = Properties.Resources.network;
+            Bitmap objimagenRed = new Bitmap(imagenRed, new Size(32, 32));
+            SFbtnEscanearRed.Image = objimagenRed;
+
+
+
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
             //instancia.ListNodes = new List<NodosXbee>();

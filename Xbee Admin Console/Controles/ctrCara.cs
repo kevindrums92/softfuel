@@ -15,6 +15,10 @@ namespace XbeeAdminConsole
         public ctrCara()
         {
             InitializeComponent();
+            System.Drawing.Bitmap imagenDis = Properties.Resources.dispensador1;
+            Bitmap objimagenDis = new Bitmap(imagenDis, new Size(50, 50));
+            SFPictureBox.Image = objimagenDis;
+            
         }
 
         #region Propiedades

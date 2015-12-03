@@ -43,9 +43,9 @@
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Controls.Add(this.SFPictureBox, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.SBPanelFooter, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.SFlbNombreNodo, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.SFPictureBox, 0, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -60,11 +60,10 @@
             // SFPictureBox
             // 
             this.SFPictureBox.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.SFPictureBox.Image = global::XbeeAdminConsole.Properties.Resources.dispensador;
             this.SFPictureBox.InitialImage = null;
-            this.SFPictureBox.Location = new System.Drawing.Point(48, 49);
+            this.SFPictureBox.Location = new System.Drawing.Point(50, 50);
             this.SFPictureBox.Name = "SFPictureBox";
-            this.SFPictureBox.Size = new System.Drawing.Size(53, 51);
+            this.SFPictureBox.Size = new System.Drawing.Size(50, 50);
             this.SFPictureBox.TabIndex = 0;
             this.SFPictureBox.TabStop = false;
             // 

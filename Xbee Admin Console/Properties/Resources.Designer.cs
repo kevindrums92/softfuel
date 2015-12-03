@@ -63,9 +63,49 @@ namespace XbeeAdminConsole.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap conexion {
+            get {
+                object obj = ResourceManager.GetObject("conexion", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap dispensador {
             get {
                 object obj = ResourceManager.GetObject("dispensador", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap dispensador1 {
+            get {
+                object obj = ResourceManager.GetObject("dispensador1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap network {
+            get {
+                object obj = ResourceManager.GetObject("network", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap pos_pay {
+            get {
+                object obj = ResourceManager.GetObject("pos_pay", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
