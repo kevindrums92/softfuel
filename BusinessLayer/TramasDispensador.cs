@@ -37,6 +37,8 @@ namespace BusinessLayer
                 DataTable dtPosicion;
                 DataTable dtVentasTotales;
                 bool RealizoVentaTotal = false;
+                string ventaGalones = "";
+                string ventaDinero = "";
 
                 string serialFidelizado = "";
                 //Capturo si es venta fidelizado 
@@ -76,6 +78,7 @@ namespace BusinessLayer
                         return new ResultadoTrama(false, null, "No se pudo obtener el id del producto de la posición");
                     }
                     dtVentasTotales = modPOS.ObtenerTotalesVentaPorCara(cara);
+                    
                     if (dtVentasTotales == null) return new ResultadoTrama(false, null, "Hubo error obteniendo los valores de las ventas totales");
                     if (dtVentasTotales.Rows.Count > 0)
                     { 
@@ -85,6 +88,8 @@ namespace BusinessLayer
                             RealizoVentaTotal = true;
                             decimal difGalon = (galon_m1 - Convert.ToDecimal(dtVentasTotales.Rows[0]["g1"]));
                             int difDinero = (dinero_m1 - Convert.ToInt32(dtVentasTotales.Rows[0]["p1"]));
+                            ventaGalones = difGalon.ToString();
+                            ventaDinero = difDinero.ToString();
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
                                 DataTable dtPosicionProductoCorrecto;
@@ -101,6 +106,8 @@ namespace BusinessLayer
                             RealizoVentaTotal = true;
                             decimal difGalon = (galon_m2 - Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]));
                             int difDinero = (dinero_m2 - Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]));
+                            ventaGalones = difGalon.ToString();
+                            ventaDinero = difDinero.ToString();
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
                                 var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado);
@@ -114,6 +121,8 @@ namespace BusinessLayer
                             RealizoVentaTotal = true;
                             decimal difGalon = (galon_m3 - Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]));
                             int difDinero = (dinero_m3 - Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]));
+                            ventaGalones = difGalon.ToString();
+                            ventaDinero = difDinero.ToString();
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
                                 var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado);
@@ -134,7 +143,7 @@ namespace BusinessLayer
                     }
                 }
 
-                return new ResultadoTrama(true, null,"");
+                return new ResultadoTrama(true, null,"",_ventaGalones:ventaGalones,_ventaDinero:ventaDinero);
             }
             catch (Exception e)
             {

@@ -36,22 +36,17 @@ namespace XbeeAdminConsole
             ColocarFecha();
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
+            cargarImagenes();
 
-            System.Drawing.Bitmap imagenConexion = Properties.Resources.conexion;
-            Bitmap objBitmapConexion = new Bitmap(imagenConexion, new Size(32, 32));
-            SFbtnConectar.Image = objBitmapConexion;
+            NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
+            instancia.ListNodes = new List<NodosXbee>();
+            instancia.AgregarNodo(_nodoPrueba);
+            instancia.AgregarNodo(_nodoPrueba2);
 
-            System.Drawing.Bitmap imagenRed = Properties.Resources.network;
-            Bitmap objimagenRed = new Bitmap(imagenRed, new Size(32, 32));
-            SFbtnEscanearRed.Image = objimagenRed;
-
-
-
-            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
-            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
-            //instancia.ListNodes = new List<NodosXbee>();
-            //instancia.AgregarNodo(_nodoPrueba);
-            //instancia.AgregarNodo(_nodoPrueba2);
+            string tramaRecibida2 = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
+            string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
+            claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba2);
         }
         #endregion
 
@@ -296,7 +291,7 @@ namespace XbeeAdminConsole
                 TramaVentaManguera = true;
                 Levanta = true;
             }
-            if (e.Texto == "BAJAMANGUERA")
+            if (e.Texto.StartsWith("BAJAMANGUERA"))
             {
                 TramaVentaManguera = true;
                 Levanta = false;
@@ -485,6 +480,17 @@ namespace XbeeAdminConsole
                     Ctrcara.EstadoCara = EnumEstadoCara.Normal;
                 }
             }
+        }
+
+        void cargarImagenes()
+        {
+            System.Drawing.Bitmap imagenConexion = Properties.Resources.conexion;
+            Bitmap objBitmapConexion = new Bitmap(imagenConexion, new Size(32, 32));
+            SFbtnConectar.Image = objBitmapConexion;
+
+            System.Drawing.Bitmap imagenRed = Properties.Resources.network;
+            Bitmap objimagenRed = new Bitmap(imagenRed, new Size(32, 32));
+            SFbtnEscanearRed.Image = objimagenRed;
         }
         #endregion
 

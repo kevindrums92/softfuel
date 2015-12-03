@@ -493,7 +493,7 @@ namespace BusinessLayer
                             {
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("BAJAMANGUERA", ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("BAJAMANGUERA:" + resultEnvioTotales.VentaGalones + ":" + resultEnvioTotales.VentaDinero, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
                             _tramaDIS.Dispose();
                             break;
 

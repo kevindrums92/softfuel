@@ -15,10 +15,15 @@ namespace XbeeAdminConsole
         public ctrCara()
         {
             InitializeComponent();
-            System.Drawing.Bitmap imagenDis = Properties.Resources.dispensador1;
-            Bitmap objimagenDis = new Bitmap(imagenDis, new Size(50, 50));
-            SFPictureBox.Image = objimagenDis;
             
+            
+        }
+
+        public void ColocarImagen()
+        {
+            System.Drawing.Bitmap imagenDis = Properties.Resources.dispensador1;
+            Bitmap objimagenDis = new Bitmap(imagenDis, new Size(40,40));
+            SFPictureBox.Image = objimagenDis;
         }
 
         #region Propiedades
@@ -47,17 +52,7 @@ namespace XbeeAdminConsole
             }
         }
 
-        public string NombreNodo
-        {
-            get
-            {
-                return SFlbNombreNodo.Text;
-            }
-            set
-            {
-                SFlbNombreNodo.Text = value;
-            }
-        }
+        public string NombreNodo { get; set; }
         int _numCara;
         public int NumCara {
             get
@@ -100,6 +95,11 @@ namespace XbeeAdminConsole
             EstadoCara = EnumEstadoCara.Normal;
         }
         #endregion
+
+        private void SFPictureBox_Resize(object sender, EventArgs e)
+        {
+            ColocarImagen();
+        }
     }
     #region Enumeraciones
     public enum EnumEstadoCara
