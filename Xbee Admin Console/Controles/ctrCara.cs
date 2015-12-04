@@ -52,6 +52,22 @@ namespace XbeeAdminConsole
             }
         }
 
+        public string Galones
+        {
+            set
+            {
+                SFlbGalonesValor.Text = value;
+            }
+        }
+
+        public string Dinero
+        {
+            set
+            {
+                SFlbDineroValor.Text = value;
+            }
+        }
+
         public string NombreNodo { get; set; }
         int _numCara;
         public int NumCara {

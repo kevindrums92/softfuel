@@ -39,14 +39,23 @@ namespace XbeeAdminConsole
             cargarImagenes();
 
             NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
-            NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
+            NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
             instancia.ListNodes = new List<NodosXbee>();
             instancia.AgregarNodo(_nodoPrueba);
             instancia.AgregarNodo(_nodoPrueba2);
 
-            string tramaRecibida2 = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
-            string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
-            claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba2);
+
+            //string tramaRecibida1 = "C:2:30f98b0d";
+            //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
+            //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
+
+            //string tramaRecibida2 = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
+            //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
+            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
+
+            string tramaRecibida1 = "I:2:asd654:654";
+            string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
+            claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
         }
         #endregion
 
@@ -248,7 +257,7 @@ namespace XbeeAdminConsole
          public delegate void AsignarRegistrosRejilla(LogPantalla _log);
          public AsignarRegistrosRejilla delegadoRegistrosRejilla;
 
-         public delegate void LevantaBajaMangueraEvent(string cara, int idXbee, bool levanta);
+         public delegate void LevantaBajaMangueraEvent(string cara, int idXbee, bool levanta,string galones, string dinero);
          public LevantaBajaMangueraEvent LevantaoBajaMangueraEvent;
 
         void RefrescarRejilla(LogPantalla _log)
@@ -285,6 +294,8 @@ namespace XbeeAdminConsole
         {
             bool TramaVentaManguera = false;
             bool Levanta = false;
+            string galones = "";
+            string dinero = "";
 
             if (e.Texto == "LEVANTAMANGUERA")
             {
@@ -293,6 +304,12 @@ namespace XbeeAdminConsole
             }
             if (e.Texto.StartsWith("BAJAMANGUERA"))
             {
+                string[] arrayMensaje = UtilidadesTramas.ObtieneArrayTrama(e.Texto);
+                if (arrayMensaje.Count() == 3)
+                {
+                    galones = arrayMensaje[1];
+                    dinero = arrayMensaje[2];
+                }
                 TramaVentaManguera = true;
                 Levanta = false;
             }
@@ -301,11 +318,11 @@ namespace XbeeAdminConsole
                 if (this.InvokeRequired == true)
                 {
                     LevantaBajaMangueraEvent d = new LevantaBajaMangueraEvent(LevantaoBajaManguera);
-                    this.Invoke(d, e.Cara, e.IdXbee, Levanta);
+                    this.Invoke(d, e.Cara, e.IdXbee, Levanta, galones, dinero);
                 }
                 else
                 {
-                    LevantaoBajaManguera(e.Cara, e.IdXbee, Levanta);
+                    LevantaoBajaManguera(e.Cara, e.IdXbee, Levanta,galones,dinero);
                 }
                 return;
             }
@@ -466,7 +483,7 @@ namespace XbeeAdminConsole
             }
         }
 
-        void LevantaoBajaManguera(string cara, int idXbee,bool levanta)
+        void LevantaoBajaManguera(string cara, int idXbee,bool levanta,string galones,string dinero)
         {
             ctrCara Ctrcara = ListadoObjetosCaras.Find(x => x.NumCara == Convert.ToInt32(cara) && x.idXbee == idXbee);
             if (Ctrcara != null)
@@ -474,10 +491,14 @@ namespace XbeeAdminConsole
                 if (levanta == true)
                 {
                     Ctrcara.EstadoCara = EnumEstadoCara.Atendiendo;
+                    Ctrcara.Galones = "0";
+                    Ctrcara.Dinero = "$0";
                 }
                 else
                 {
                     Ctrcara.EstadoCara = EnumEstadoCara.Normal;
+                    Ctrcara.Galones = galones;
+                    Ctrcara.Dinero = "$" + dinero;
                 }
             }
         }

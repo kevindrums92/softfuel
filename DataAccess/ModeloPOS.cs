@@ -321,6 +321,13 @@ namespace DataAccess
         
         #endregion
 
+        #region Credito
+        public DataTable ObtenerCreditoPorSerial(string serial)
+        {
+            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from softfuel.vehiculo V LEFT OUTER JOIN softfuel.credito C ON C.idVehiculo = V.placa WHERE C.estadoCredito = 'activo' and serial  = '" + serial + "'");
+        }
+        #endregion
+
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
         // Dispose() calls Dispose(true)

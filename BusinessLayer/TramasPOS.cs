@@ -45,6 +45,82 @@ namespace BusinessLayer
 
         #region "Procesos Tramas"
 
+        public ResultadoTrama Credito(string[] data)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string cara = data[1];
+                string serial = data[2];
+                string NomApeUsuario = "";
+                DataTable dtCredito;
+                using (ModeloPOS modPOS = new ModeloPOS())
+                {
+                    dtCredito = modPOS.ObtenerCreditoPorSerial(serial);
+                }
+
+                if (dtCredito.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontro credito", "con codigo: " + serial }), "No se encontro credito con serial " + serial);
+                
+                DataTable dtUsuario;
+                int idXbee = 0;
+                using (Generales modGenerales = new Generales())
+                {
+                    dtUsuario = modGenerales.ObtenerUsuario(dtCredito.Rows[0]["propietario"].ToString());
+                    if (dtUsuario.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto");
+                    NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
+                    using (ModeloPOS modPOS = new ModeloPOS())
+                    {
+                        DataTable dtPosicion = modPOS.ObtenerPosicionesPorCara(cara);
+                        idXbee = (int)dtPosicion.Rows[0]["idXbee"];
+                        if (dtPosicion.Rows.Count == 0) return new ResultadoTrama(false, null, "No se pudo obtener la posición.");
+                        var DatosTurno = modPOS.ObtenerTurnoPorPosicionyEstado(dtPosicion.Rows[0]["idPosicion"].ToString());
+                        if (DatosTurno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno en la cara " + cara }), "No hay turno en la cara " + cara);
+
+                        string cupo = "";
+                        string saldo = "";
+                        int descuento = 0;
+
+                        if (object.Equals(dtCredito.Rows[0]["cupo"], DBNull.Value) == false && dtCredito.Rows[0]["cupo"].ToString().Trim() != "")
+                        {
+                            cupo = dtCredito.Rows[0]["cupo"].ToString();
+                        }
+                        else
+                        {
+                            cupo = "0";
+                        }
+
+                        if (object.Equals(dtCredito.Rows[0]["saldo"], DBNull.Value) == false && dtCredito.Rows[0]["saldo"].ToString().Trim() != "")
+                        {
+                            saldo = dtCredito.Rows[0]["saldo"].ToString();
+                        }
+                        else
+                        {
+                            saldo = "0";
+                        }
+
+                        if (object.Equals(dtCredito.Rows[0]["descuento"], DBNull.Value) == false && dtCredito.Rows[0]["descuento"].ToString().Trim() != "")
+                        {
+                            descuento = Convert.ToInt32(dtCredito.Rows[0]["descuento"]);
+                        }
+                        else
+                        {
+                            descuento = 0;
+                        }
+
+                        ResultadoTrama _resultado = new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito al usuario:", NomApeUsuario,"Cupo: $" + cupo,"Saldo: $" + saldo }), "Crédito al usuario: " + NomApeUsuario + ", cupo: $" + cupo + ", salgo: $" + saldo + "", idXbee, true,_descuentoCredito:descuento);
+
+                        return _resultado;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
         public ResultadoTrama Fidelizado(string[] data)
         {
             try
@@ -71,9 +147,8 @@ namespace BusinessLayer
                 int idXbee = 0;
                 using (Generales modGenerales = new Generales())
                 {
-                    //Buscar el usuario y validar que sea islero.
                     dtUsuario = modGenerales.ObtenerUsuario(dtFidelizado.Rows[0]["propietario"].ToString());
-                    if (dtUsuario.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto para apertura de turno");
+                    if (dtUsuario.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto");
                     NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
                     using (ModeloPOS modPOS = new ModeloPOS())
                     {
@@ -589,7 +664,8 @@ namespace BusinessLayer
             mensajeTrama.Add("CProd: " + dtInfo.Rows[0]["nomProducto"].ToString());
             mensajeTrama.Add("CCant: " + dtInfo.Rows[0]["galones"].ToString() + " PPG: $" + dtInfo.Rows[0]["ppu"].ToString() + "");
             mensajeTrama.Add("CTotal: $" + dtInfo.Rows[0]["precio"].ToString());
-            if (dtInfo.Rows[0]["tipoCuenta"].ToString() == "1")
+
+            if (object.Equals(dtInfo.Rows[0]["tipoCuenta"],DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "1")
             {
                 mensajeTrama.Add("CForma de Pago: Credito");
             }
@@ -603,8 +679,8 @@ namespace BusinessLayer
             mensajeTrama.Add("CAtendido: " + dtInfo.Rows[0]["nomUsuario"].ToString() + " " + dtInfo.Rows[0]["apeUsuario"].ToString());
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
                                                                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            string puntosVenta = "";
-            string puntosTotal = "";
+            string puntosVenta = "0";
+            string puntosTotal = "0";
             if (object.Equals(dtInfo.Rows[0]["puntosEnVenta"], DBNull.Value) == false)
             {
                 puntosVenta = dtInfo.Rows[0]["puntosEnVenta"].ToString();

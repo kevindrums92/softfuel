@@ -23,7 +23,7 @@ namespace BusinessLayer
         public event MonitoreoEventHandler MonitoreoEvent;
         private string puerto { get; set; }
         private int velocidadTrasmision { get; set; }
-        private List<FidelizadoPendiente> ListaFidelizadosPendientes= new List<FidelizadoPendiente>();
+        private List<FidelizadoCreditoPendiente> ListaFidelizadosPendientes= new List<FidelizadoCreditoPendiente>();
         #endregion
                 
         #region "Conexión y procesos Xbee"
@@ -318,6 +318,31 @@ namespace BusinessLayer
                 {//Recibo petición de MOD POS
                     switch (arrayTramaRecibida[0])
                     {
+                        case "C":
+                            var resultCre = _tramasPOS.Credito(arrayTramaRecibida);
+                            if (resultCre.Resultado == true)
+                            {
+                                foreach (Byte[] data in resultCre.TramaResultado)
+                                {
+                                    nodo.EnviarTrama(data);
+                                }
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(resultCre.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (resultCre.Fidelizado_o_Credito == true)
+                                {
+                                    FidelizadoCreditoPendiente _newCre = new FidelizadoCreditoPendiente();
+                                    _newCre.cara = arrayTramaRecibida[1];
+                                    _newCre.serial = arrayTramaRecibida[2];
+                                    _newCre.descuento = resultCre.DescuentoCredito;
+                                    _newCre.tipoSolicitud = ETipoSolicitudSerial.Credito;
+                                    instancia.ListaFidelizadosCreditosPendientes.Add(_newCre);
+                                }
+                            }
+                            else
+                            {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nombre + "\n" + resultCre.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                            }
+                            _tramasPOS.Dispose();
+                            break;
                         case "F":
                             var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
                             if (resultFid.Resultado == true)
@@ -327,12 +352,13 @@ namespace BusinessLayer
                                     nodo.EnviarTrama(data);
                                 }
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
-                                if (resultFid.Fidelizado == true)
+                                if (resultFid.Fidelizado_o_Credito == true)
                                 {
-                                    FidelizadoPendiente _newFid = new FidelizadoPendiente();
+                                    FidelizadoCreditoPendiente _newFid = new FidelizadoCreditoPendiente();
                                     _newFid.cara = arrayTramaRecibida[1];
                                     _newFid.serial = arrayTramaRecibida[2];
-                                    instancia.ListaFidelizadosPendientes.Add(_newFid);
+                                    _newFid.tipoSolicitud = ETipoSolicitudSerial.Fidelizado;
+                                    instancia.ListaFidelizadosCreditosPendientes.Add(_newFid);
                                 }
                             }
                             else

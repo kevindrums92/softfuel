@@ -36,17 +36,17 @@ namespace Singleton
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
-        public List<FidelizadoPendiente> _listaFidelizadosPendientes;
-        public List<FidelizadoPendiente> ListaFidelizadosPendientes 
+        public List<FidelizadoCreditoPendiente> _listaFidelizadosCreditosPendientes;
+        public List<FidelizadoCreditoPendiente> ListaFidelizadosCreditosPendientes 
         {
             get
             { 
-                if (_listaFidelizadosPendientes == null) _listaFidelizadosPendientes = new List<FidelizadoPendiente>();
-                return _listaFidelizadosPendientes;
+                if (_listaFidelizadosCreditosPendientes == null) _listaFidelizadosCreditosPendientes = new List<FidelizadoCreditoPendiente>();
+                return _listaFidelizadosCreditosPendientes;
             }
             set
             { 
-                _listaFidelizadosPendientes = value;
+                _listaFidelizadosCreditosPendientes = value;
             }
         }
 
@@ -110,9 +110,16 @@ namespace Singleton
         }
         #endregion
     }
-    public class FidelizadoPendiente
+    public class FidelizadoCreditoPendiente
     {
         public string serial { get; set; }
         public string cara { get; set; }
+        public int descuento { get; set; }
+        public ETipoSolicitudSerial tipoSolicitud { get; set; }
+    }
+    public enum ETipoSolicitudSerial
+    { 
+        Fidelizado,
+        Credito
     }
 }

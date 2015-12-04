@@ -31,18 +31,18 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.SFPictureBox = new System.Windows.Forms.PictureBox();
+            this.SFpanelResultadosVenta = new System.Windows.Forms.Panel();
+            this.SFlbGalonesDesc = new System.Windows.Forms.Label();
+            this.SFlbGalonesValor = new System.Windows.Forms.Label();
+            this.SFlabelDineroDesc = new System.Windows.Forms.Label();
+            this.SFlbDineroValor = new System.Windows.Forms.Label();
             this.SBPanelFooter = new System.Windows.Forms.Panel();
             this.SFlbNombreCara = new System.Windows.Forms.Label();
-            this.SFpanelResultadosVenta = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.SFlabelDineroDesc = new System.Windows.Forms.Label();
-            this.SFlbGalonesValor = new System.Windows.Forms.Label();
-            this.SFlbGalonesDesc = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFPictureBox)).BeginInit();
-            this.SBPanelFooter.SuspendLayout();
             this.SFpanelResultadosVenta.SuspendLayout();
+            this.SBPanelFooter.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -73,7 +73,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 83F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(119, 83);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
@@ -87,6 +87,64 @@
             this.SFPictureBox.TabIndex = 0;
             this.SFPictureBox.TabStop = false;
             this.SFPictureBox.Resize += new System.EventHandler(this.SFPictureBox_Resize);
+            // 
+            // SFpanelResultadosVenta
+            // 
+            this.SFpanelResultadosVenta.Controls.Add(this.SFlbGalonesDesc);
+            this.SFpanelResultadosVenta.Controls.Add(this.SFlbGalonesValor);
+            this.SFpanelResultadosVenta.Controls.Add(this.SFlabelDineroDesc);
+            this.SFpanelResultadosVenta.Controls.Add(this.SFlbDineroValor);
+            this.SFpanelResultadosVenta.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SFpanelResultadosVenta.Location = new System.Drawing.Point(62, 3);
+            this.SFpanelResultadosVenta.Name = "SFpanelResultadosVenta";
+            this.SFpanelResultadosVenta.Size = new System.Drawing.Size(54, 77);
+            this.SFpanelResultadosVenta.TabIndex = 1;
+            // 
+            // SFlbGalonesDesc
+            // 
+            this.SFlbGalonesDesc.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SFlbGalonesDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SFlbGalonesDesc.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.SFlbGalonesDesc.Location = new System.Drawing.Point(0, 25);
+            this.SFlbGalonesDesc.Name = "SFlbGalonesDesc";
+            this.SFlbGalonesDesc.Size = new System.Drawing.Size(54, 13);
+            this.SFlbGalonesDesc.TabIndex = 3;
+            this.SFlbGalonesDesc.Text = "Gal:";
+            this.SFlbGalonesDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // SFlbGalonesValor
+            // 
+            this.SFlbGalonesValor.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SFlbGalonesValor.ForeColor = System.Drawing.Color.White;
+            this.SFlbGalonesValor.Location = new System.Drawing.Point(0, 38);
+            this.SFlbGalonesValor.Name = "SFlbGalonesValor";
+            this.SFlbGalonesValor.Size = new System.Drawing.Size(54, 13);
+            this.SFlbGalonesValor.TabIndex = 2;
+            this.SFlbGalonesValor.Text = "0";
+            this.SFlbGalonesValor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // SFlabelDineroDesc
+            // 
+            this.SFlabelDineroDesc.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SFlabelDineroDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SFlabelDineroDesc.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.SFlabelDineroDesc.Location = new System.Drawing.Point(0, 51);
+            this.SFlabelDineroDesc.Name = "SFlabelDineroDesc";
+            this.SFlabelDineroDesc.Size = new System.Drawing.Size(54, 13);
+            this.SFlabelDineroDesc.TabIndex = 1;
+            this.SFlabelDineroDesc.Text = "Precio:";
+            this.SFlabelDineroDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // SFlbDineroValor
+            // 
+            this.SFlbDineroValor.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.SFlbDineroValor.ForeColor = System.Drawing.Color.White;
+            this.SFlbDineroValor.Location = new System.Drawing.Point(0, 64);
+            this.SFlbDineroValor.Name = "SFlbDineroValor";
+            this.SFlbDineroValor.Size = new System.Drawing.Size(54, 13);
+            this.SFlbDineroValor.TabIndex = 0;
+            this.SFlbDineroValor.Text = "$0";
+            this.SFlbDineroValor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // SBPanelFooter
             // 
@@ -108,64 +166,6 @@
             this.SFlbNombreCara.Text = "Cara";
             this.SFlbNombreCara.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // SFpanelResultadosVenta
-            // 
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlbGalonesDesc);
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlbGalonesValor);
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlabelDineroDesc);
-            this.SFpanelResultadosVenta.Controls.Add(this.label1);
-            this.SFpanelResultadosVenta.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFpanelResultadosVenta.Location = new System.Drawing.Point(62, 3);
-            this.SFpanelResultadosVenta.Name = "SFpanelResultadosVenta";
-            this.SFpanelResultadosVenta.Size = new System.Drawing.Size(54, 77);
-            this.SFpanelResultadosVenta.TabIndex = 1;
-            // 
-            // label1
-            // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.label1.ForeColor = System.Drawing.Color.White;
-            this.label1.Location = new System.Drawing.Point(0, 64);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(54, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "$0";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // SFlabelDineroDesc
-            // 
-            this.SFlabelDineroDesc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlabelDineroDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SFlabelDineroDesc.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.SFlabelDineroDesc.Location = new System.Drawing.Point(0, 51);
-            this.SFlabelDineroDesc.Name = "SFlabelDineroDesc";
-            this.SFlabelDineroDesc.Size = new System.Drawing.Size(54, 13);
-            this.SFlabelDineroDesc.TabIndex = 1;
-            this.SFlabelDineroDesc.Text = "Precio:";
-            this.SFlabelDineroDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // SFlbGalonesValor
-            // 
-            this.SFlbGalonesValor.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlbGalonesValor.ForeColor = System.Drawing.Color.White;
-            this.SFlbGalonesValor.Location = new System.Drawing.Point(0, 38);
-            this.SFlbGalonesValor.Name = "SFlbGalonesValor";
-            this.SFlbGalonesValor.Size = new System.Drawing.Size(54, 13);
-            this.SFlbGalonesValor.TabIndex = 2;
-            this.SFlbGalonesValor.Text = "0";
-            this.SFlbGalonesValor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // SFlbGalonesDesc
-            // 
-            this.SFlbGalonesDesc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlbGalonesDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SFlbGalonesDesc.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.SFlbGalonesDesc.Location = new System.Drawing.Point(0, 25);
-            this.SFlbGalonesDesc.Name = "SFlbGalonesDesc";
-            this.SFlbGalonesDesc.Size = new System.Drawing.Size(54, 13);
-            this.SFlbGalonesDesc.TabIndex = 3;
-            this.SFlbGalonesDesc.Text = "Gal:";
-            this.SFlbGalonesDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
             // ctrCara
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -177,8 +177,8 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.SFPictureBox)).EndInit();
-            this.SBPanelFooter.ResumeLayout(false);
             this.SFpanelResultadosVenta.ResumeLayout(false);
+            this.SBPanelFooter.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -194,7 +194,7 @@
         private System.Windows.Forms.Label SFlbGalonesDesc;
         private System.Windows.Forms.Label SFlbGalonesValor;
         private System.Windows.Forms.Label SFlabelDineroDesc;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label SFlbDineroValor;
 
     }
 }
