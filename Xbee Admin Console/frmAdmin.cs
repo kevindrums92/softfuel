@@ -38,14 +38,14 @@ namespace XbeeAdminConsole
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
             cargarImagenes();
 
-            NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
-            NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
-            instancia.ListNodes = new List<NodosXbee>();
-            instancia.AgregarNodo(_nodoPrueba);
-            instancia.AgregarNodo(_nodoPrueba2);
+            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
+            //instancia.ListNodes = new List<NodosXbee>();
+            //instancia.AgregarNodo(_nodoPrueba);
+            //instancia.AgregarNodo(_nodoPrueba2);
 
 
-            //string tramaRecibida1 = "C:2:30f98b0d";
+            //string tramaRecibida1 = "F:2:403b820d";
             //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
             //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
 
@@ -53,9 +53,17 @@ namespace XbeeAdminConsole
             //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
             //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
 
-            string tramaRecibida1 = "I:2:asd654:654";
-            string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
-            claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
+            //string tramaRecibida1 = "C:2:04578cfa162280";
+            //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
+            //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
+
+            //string tramaRecibida2 = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
+            //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
+            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
+
+            //string tramaRecibida3 = "I:2:asd654:654";
+            //string[] arrayTramaRecibida3 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida3);
+            //claseMain.ProcesarTrama(arrayTramaRecibida3, _nodoPrueba2);
         }
         #endregion
 
@@ -268,6 +276,15 @@ namespace XbeeAdminConsole
                 dtLog.Columns.Add("Fecha", typeof(DateTime));
                 dtLog.Columns.Add("Mensaje", typeof(string));
             }
+            else
+            {
+                if (dtLog.Rows.Count > 600)
+                {
+                    dtLog.Rows.Clear();
+                }
+            }
+                    
+
             DataRow NewRow = dtLog.NewRow();
             NewRow["Fecha"] = _log.Fecha;
             NewRow["Mensaje"] = _log.Mensaje;
@@ -347,7 +364,7 @@ namespace XbeeAdminConsole
 
         void LimpiarDispositivos()
         {
-            ListadoObjetosCaras.Clear();
+            if (ListadoObjetosCaras != null) ListadoObjetosCaras.Clear();
             SFPanelCara1.Controls.Clear();
             SFPanelCara2.Controls.Clear();
             SFPanelCara3.Controls.Clear();
@@ -497,21 +514,32 @@ namespace XbeeAdminConsole
                 else
                 {
                     Ctrcara.EstadoCara = EnumEstadoCara.Normal;
-                    Ctrcara.Galones = galones;
-                    Ctrcara.Dinero = "$" + dinero;
+                    if (galones != "" && galones != "0")
+                    {
+                        Ctrcara.Galones = galones;
+                        Ctrcara.Dinero = "$" + dinero;
+                    }
                 }
             }
         }
 
         void cargarImagenes()
         {
-            System.Drawing.Bitmap imagenConexion = Properties.Resources.conexion;
+            System.Drawing.Bitmap imagenConexion = Properties.Resources.conectar;
             Bitmap objBitmapConexion = new Bitmap(imagenConexion, new Size(32, 32));
             SFbtnConectar.Image = objBitmapConexion;
+
+            System.Drawing.Bitmap imagenDesc = Properties.Resources.conexion;
+            Bitmap objBitmapDesc = new Bitmap(imagenDesc, new Size(32, 32));
+            SFbtnDesconectar.Image = objBitmapDesc;
 
             System.Drawing.Bitmap imagenRed = Properties.Resources.network;
             Bitmap objimagenRed = new Bitmap(imagenRed, new Size(32, 32));
             SFbtnEscanearRed.Image = objimagenRed;
+
+            System.Drawing.Bitmap imagenIcono = Properties.Resources.logoSoftfuel;
+            Bitmap objimagenIcono = new Bitmap(imagenIcono, SFLogo.Size);
+            SFLogo.Image = objimagenIcono;
         }
         #endregion
 

@@ -32,7 +32,9 @@
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAdmin));
             this.SFbtnBarraTitulo = new System.Windows.Forms.Panel();
+            this.SFLogo = new System.Windows.Forms.PictureBox();
             this.SFbtnMinimizar = new System.Windows.Forms.Button();
             this.SFbtnMaximizar = new System.Windows.Forms.Button();
             this.SFLabelNombreSofstware = new System.Windows.Forms.Label();
@@ -72,6 +74,7 @@
             this.SFbwCambioPrecio = new System.ComponentModel.BackgroundWorker();
             this.SFTimerCambioPrecios = new System.Windows.Forms.Timer(this.components);
             this.SFbtnBarraTitulo.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SFLogo)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.SFLyContainer.SuspendLayout();
             this.SFlyContainerDispensadores.SuspendLayout();
@@ -85,6 +88,7 @@
             // SFbtnBarraTitulo
             // 
             this.SFbtnBarraTitulo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.SFbtnBarraTitulo.Controls.Add(this.SFLogo);
             this.SFbtnBarraTitulo.Controls.Add(this.SFbtnMinimizar);
             this.SFbtnBarraTitulo.Controls.Add(this.SFbtnMaximizar);
             this.SFbtnBarraTitulo.Controls.Add(this.SFLabelNombreSofstware);
@@ -97,6 +101,14 @@
             this.SFbtnBarraTitulo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.SFbtnBarraTitulo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.SFbtnBarraTitulo.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
+            // 
+            // SFLogo
+            // 
+            this.SFLogo.Location = new System.Drawing.Point(23, 9);
+            this.SFLogo.Name = "SFLogo";
+            this.SFLogo.Size = new System.Drawing.Size(24, 23);
+            this.SFLogo.TabIndex = 6;
+            this.SFLogo.TabStop = false;
             // 
             // SFbtnMinimizar
             // 
@@ -131,11 +143,11 @@
             this.SFLabelNombreSofstware.AutoSize = true;
             this.SFLabelNombreSofstware.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFLabelNombreSofstware.ForeColor = System.Drawing.Color.White;
-            this.SFLabelNombreSofstware.Location = new System.Drawing.Point(34, 9);
+            this.SFLabelNombreSofstware.Location = new System.Drawing.Point(61, 9);
             this.SFLabelNombreSofstware.Name = "SFLabelNombreSofstware";
-            this.SFLabelNombreSofstware.Size = new System.Drawing.Size(195, 20);
+            this.SFLabelNombreSofstware.Size = new System.Drawing.Size(219, 20);
             this.SFLabelNombreSofstware.TabIndex = 3;
-            this.SFLabelNombreSofstware.Text = "Softfuel .NET Application";
+            this.SFLabelNombreSofstware.Text = "Softfuel Console Application";
             this.SFLabelNombreSofstware.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.SFLabelNombreSofstware.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.SFLabelNombreSofstware.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
@@ -469,6 +481,7 @@
             this.SFbtnDesconectar.Size = new System.Drawing.Size(122, 100);
             this.SFbtnDesconectar.TabIndex = 2;
             this.SFbtnDesconectar.Text = "Desconectar";
+            this.SFbtnDesconectar.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.SFbtnDesconectar.UseVisualStyleBackColor = true;
             this.SFbtnDesconectar.Click += new System.EventHandler(this.SFbtnDesconectar_Click);
             // 
@@ -527,7 +540,7 @@
             this.SFVersion.Name = "SFVersion";
             this.SFVersion.Size = new System.Drawing.Size(160, 20);
             this.SFVersion.TabIndex = 5;
-            this.SFVersion.Text = "Versión: 15.11.01.01";
+            this.SFVersion.Text = "Versión: 15.12.02.01";
             // 
             // SFlbHora
             // 
@@ -579,13 +592,14 @@
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.SFbtnBarraTitulo);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "frmAdmin";
             this.Padding = new System.Windows.Forms.Padding(3);
-            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Softfuel .NET Application";
             this.SFbtnBarraTitulo.ResumeLayout(false);
             this.SFbtnBarraTitulo.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.SFLogo)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.SFLyContainer.ResumeLayout(false);
             this.SFlyContainerDispensadores.ResumeLayout(false);
@@ -641,5 +655,6 @@
         private System.Windows.Forms.TextBox SFtxtBuscar;
         private System.ComponentModel.BackgroundWorker SFbwCambioPrecio;
         private System.Windows.Forms.Timer SFTimerCambioPrecios;
+        private System.Windows.Forms.PictureBox SFLogo;
     }
 }

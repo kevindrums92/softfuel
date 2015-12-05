@@ -26,7 +26,7 @@ namespace DataAccess
                 DataTable dtFidelizado = ObtenerFidelizadoPorSerial(serialFidelizado);
                 if (dtFidelizado.Rows.Count > 0)
                 {
-                    idVehiculo = "'" + dtFidelizado.Rows[0]["idVehiculo"].ToString() + "'";
+                    idVehiculo = dtFidelizado.Rows[0]["idVehiculo"].ToString();
                     int valorDinero = Convert.ToInt32(dtFidelizado.Rows[0]["valorDinero"]);
                     int valorPuntos = Convert.ToInt32(dtFidelizado.Rows[0]["valorPuntos"]);
 
@@ -36,6 +36,7 @@ namespace DataAccess
             }
 
             int tipoVenta = 2; //tipo de cuenta 1-> credito, 2-> Contado
+            
             //Parte para crédito
             if (serialCredito != "")
             {
@@ -43,6 +44,7 @@ namespace DataAccess
                 DataTable dtCredito = ObtenerCreditoPorSerial(serialCredito);
                 if (dtCredito.Rows.Count > 0)
                 {
+                    idVehiculo = dtCredito.Rows[0]["id"].ToString();
                     decimal DineroDescontar = Convert.ToDecimal(dinero) - (Convert.ToDecimal(dinero) * Convert.ToDecimal(descuento) / 100);
                     decimal saldoAntiguo = 0;
                     if (object.Equals(dtCredito.Rows[0]["saldo"], DBNull.Value) == false && dtCredito.Rows[0]["saldo"].ToString().Trim() != "")
@@ -55,8 +57,8 @@ namespace DataAccess
             }
 
 
-            string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee,puntos,idVehiculo,tipoCuenta) values";
-            return ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',', '.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + "," + tipoVenta + ")");
+            string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee,puntos,idVehiculo,tipoCuenta,descuento) values";
+            return ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',', '.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + "," + tipoVenta + "," + descuento + ")");
         }
 
         public bool GuardaVentasTotales(string[] datos,string fecha, string idXbee)
@@ -81,13 +83,13 @@ namespace DataAccess
         #region Fidelizado
         public DataTable ObtenerFidelizadoPorSerial(string serial)
         {
-            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero, V.propietario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.placa LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan WHERE `serial` = '" + serial + "' AND V.tipoCliente = 1");
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero, V.propietario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan WHERE `serial` = '" + serial + "' AND V.tipoCliente = 1");
         }
         #endregion
         #region Credito
         public DataTable ObtenerCreditoPorSerial(string serial)
         {
-            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from softfuel.vehiculo V LEFT OUTER JOIN softfuel.credito C ON C.idVehiculo = V.placa WHERE C.estadoCredito = 'activo' and serial  = '" + serial + "'");
+            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from softfuel.vehiculo V LEFT OUTER JOIN softfuel.credito C ON C.idVehiculo = V.id WHERE C.estadoCredito = 'activo' and serial  = '" + serial + "'");
         }
         #endregion
         #region CambioPrecio

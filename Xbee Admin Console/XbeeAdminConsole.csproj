@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>XbeeAdminConsole</RootNamespace>
-    <AssemblyName>XbeeAdminConsole</AssemblyName>
+    <AssemblyName>SCA</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -51,6 +51,9 @@
   <PropertyGroup>
     <StartupObject>
     </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\sca.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BinarySerializer">
@@ -172,6 +175,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cambioPrecio.txt" />
+    <Content Include="sca.ico" />
+    <None Include="Resources\sca.ico" />
+    <None Include="Resources\textlogo.png" />
+    <None Include="Resources\logoSoftfuel.png" />
+    <None Include="Resources\conectar.png" />
     <None Include="Resources\pos_pay.png" />
     <None Include="Resources\network.png" />
     <None Include="Resources\dispensador.png" />

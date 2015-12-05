@@ -76,7 +76,10 @@ namespace BusinessLayer
                         if (dtPosicion.Rows.Count == 0) return new ResultadoTrama(false, null, "No se pudo obtener la posición.");
                         var DatosTurno = modPOS.ObtenerTurnoPorPosicionyEstado(dtPosicion.Rows[0]["idPosicion"].ToString());
                         if (DatosTurno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno en la cara " + cara }), "No hay turno en la cara " + cara);
-
+                        if (modPOS.AumentoNumeroVentaCredito(Convert.ToInt32(dtCredito.Rows[0]["id"])) == false)
+                        {
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "el usuario excedió el máximo","de tanqueos por día"}), "El usuario excedió el máximo de tanqueos por día");
+                        }
                         string cupo = "";
                         string saldo = "";
                         int descuento = 0;
@@ -97,6 +100,7 @@ namespace BusinessLayer
                         else
                         {
                             saldo = "0";
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "El usuario tiene saldo", "saldo en 0" }), "El usuario tiene saldo en 0");
                         }
 
                         if (object.Equals(dtCredito.Rows[0]["descuento"], DBNull.Value) == false && dtCredito.Rows[0]["descuento"].ToString().Trim() != "")

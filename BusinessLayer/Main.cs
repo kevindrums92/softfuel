@@ -335,6 +335,7 @@ namespace BusinessLayer
                                     _newCre.descuento = resultCre.DescuentoCredito;
                                     _newCre.tipoSolicitud = ETipoSolicitudSerial.Credito;
                                     instancia.ListaFidelizadosCreditosPendientes.Add(_newCre);
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Credito a " + _newCre.serial + " en cara " + _newCre.cara, ETipoEvento.Exitoso, nodo.IdXbee, ""));
                                 }
                             }
                             else
@@ -359,6 +360,7 @@ namespace BusinessLayer
                                     _newFid.serial = arrayTramaRecibida[2];
                                     _newFid.tipoSolicitud = ETipoSolicitudSerial.Fidelizado;
                                     instancia.ListaFidelizadosCreditosPendientes.Add(_newFid);
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Fidelizado " + _newFid.serial + " en cara " + _newFid.cara, ETipoEvento.Exitoso, nodo.IdXbee, ""));
                                 }
                             }
                             else
