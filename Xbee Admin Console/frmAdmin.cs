@@ -40,18 +40,22 @@ namespace XbeeAdminConsole
 
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
+            //NodosXbee _nodoPrueba3 = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            //NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
+           
             //instancia.ListNodes = new List<NodosXbee>();
             //instancia.AgregarNodo(_nodoPrueba);
             //instancia.AgregarNodo(_nodoPrueba2);
+            //instancia.AgregarNodo(_nodoPrueba3);
+            //instancia.AgregarNodo(_nodoPrueba4);
 
 
             //string tramaRecibida1 = "F:2:403b820d";
             //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
             //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
 
-            //string tramaRecibida2 = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
-            //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
-            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
+            
+            
 
             //string tramaRecibida1 = "C:2:04578cfa162280";
             //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
@@ -64,6 +68,7 @@ namespace XbeeAdminConsole
             //string tramaRecibida3 = "I:2:asd654:654";
             //string[] arrayTramaRecibida3 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida3);
             //claseMain.ProcesarTrama(arrayTramaRecibida3, _nodoPrueba2);
+
         }
         #endregion
 
@@ -548,6 +553,7 @@ namespace XbeeAdminConsole
         {
             try
             {
+               
                 string cambioPrecio = System.IO.File.ReadAllText(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
                 if (cambioPrecio == "1")
                 {

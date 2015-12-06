@@ -105,8 +105,16 @@ namespace Singleton
         /// <param name="data"></param>
         public void EnviarTrama(byte[] data)
         {
-            Nodo.TransmitDataAsync(data);
-            Thread.Sleep(TiempoEspera);
+            try
+            {
+                Nodo.TransmitDataAsync(data);
+                Thread.Sleep(TiempoEspera);
+            }
+            catch (Exception ex)
+            {
+                LocalLogManager.EscribeLog("Falló envió de trama a nodo con mac: " + Mac + "\n" + ex.Message,LocalLogManager.TipoImagen.TipoError);
+            }
+            
         }
         #endregion
     }

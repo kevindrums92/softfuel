@@ -73,6 +73,7 @@
             this.TimerFecha = new System.Windows.Forms.Timer(this.components);
             this.SFbwCambioPrecio = new System.ComponentModel.BackgroundWorker();
             this.SFTimerCambioPrecios = new System.Windows.Forms.Timer(this.components);
+            this.label1 = new System.Windows.Forms.Label();
             this.SFbtnBarraTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFLogo)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -96,7 +97,7 @@
             this.SFbtnBarraTitulo.Dock = System.Windows.Forms.DockStyle.Top;
             this.SFbtnBarraTitulo.Location = new System.Drawing.Point(3, 3);
             this.SFbtnBarraTitulo.Name = "SFbtnBarraTitulo";
-            this.SFbtnBarraTitulo.Size = new System.Drawing.Size(894, 39);
+            this.SFbtnBarraTitulo.Size = new System.Drawing.Size(994, 39);
             this.SFbtnBarraTitulo.TabIndex = 2;
             this.SFbtnBarraTitulo.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.SFbtnBarraTitulo.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
@@ -104,9 +105,9 @@
             // 
             // SFLogo
             // 
-            this.SFLogo.Location = new System.Drawing.Point(23, 9);
+            this.SFLogo.Location = new System.Drawing.Point(13, 9);
             this.SFLogo.Name = "SFLogo";
-            this.SFLogo.Size = new System.Drawing.Size(24, 23);
+            this.SFLogo.Size = new System.Drawing.Size(18, 20);
             this.SFLogo.TabIndex = 6;
             this.SFLogo.TabStop = false;
             // 
@@ -116,7 +117,7 @@
             this.SFbtnMinimizar.FlatAppearance.BorderSize = 0;
             this.SFbtnMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnMinimizar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnMinimizar.Location = new System.Drawing.Point(776, 1);
+            this.SFbtnMinimizar.Location = new System.Drawing.Point(876, 1);
             this.SFbtnMinimizar.Name = "SFbtnMinimizar";
             this.SFbtnMinimizar.Size = new System.Drawing.Size(40, 39);
             this.SFbtnMinimizar.TabIndex = 5;
@@ -130,7 +131,7 @@
             this.SFbtnMaximizar.FlatAppearance.BorderSize = 0;
             this.SFbtnMaximizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnMaximizar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnMaximizar.Location = new System.Drawing.Point(815, 1);
+            this.SFbtnMaximizar.Location = new System.Drawing.Point(915, 1);
             this.SFbtnMaximizar.Name = "SFbtnMaximizar";
             this.SFbtnMaximizar.Size = new System.Drawing.Size(40, 39);
             this.SFbtnMaximizar.TabIndex = 4;
@@ -143,7 +144,7 @@
             this.SFLabelNombreSofstware.AutoSize = true;
             this.SFLabelNombreSofstware.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFLabelNombreSofstware.ForeColor = System.Drawing.Color.White;
-            this.SFLabelNombreSofstware.Location = new System.Drawing.Point(61, 9);
+            this.SFLabelNombreSofstware.Location = new System.Drawing.Point(37, 9);
             this.SFLabelNombreSofstware.Name = "SFLabelNombreSofstware";
             this.SFLabelNombreSofstware.Size = new System.Drawing.Size(219, 20);
             this.SFLabelNombreSofstware.TabIndex = 3;
@@ -158,7 +159,7 @@
             this.SFbtnCerrar.FlatAppearance.BorderSize = 0;
             this.SFbtnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnCerrar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnCerrar.Location = new System.Drawing.Point(854, 1);
+            this.SFbtnCerrar.Location = new System.Drawing.Point(954, 1);
             this.SFbtnCerrar.Name = "SFbtnCerrar";
             this.SFbtnCerrar.Size = new System.Drawing.Size(40, 39);
             this.SFbtnCerrar.TabIndex = 0;
@@ -180,7 +181,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(894, 566);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(994, 616);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // SFLyContainer
@@ -191,12 +192,12 @@
             this.SFLyContainer.Controls.Add(this.SFlyContainerDispensadores, 0, 0);
             this.SFLyContainer.Controls.Add(this.SFPanelLog, 0, 1);
             this.SFLyContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFLyContainer.Location = new System.Drawing.Point(137, 3);
+            this.SFLyContainer.Location = new System.Drawing.Point(152, 3);
             this.SFLyContainer.Name = "SFLyContainer";
             this.SFLyContainer.RowCount = 2;
             this.SFLyContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 60.98039F));
             this.SFLyContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 39.01961F));
-            this.SFLyContainer.Size = new System.Drawing.Size(754, 560);
+            this.SFLyContainer.Size = new System.Drawing.Size(839, 610);
             this.SFLyContainer.TabIndex = 0;
             // 
             // SFlyContainerDispensadores
@@ -210,7 +211,7 @@
             this.SFlyContainerDispensadores.Name = "SFlyContainerDispensadores";
             this.SFlyContainerDispensadores.RowCount = 1;
             this.SFlyContainerDispensadores.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.SFlyContainerDispensadores.Size = new System.Drawing.Size(748, 335);
+            this.SFlyContainerDispensadores.Size = new System.Drawing.Size(833, 365);
             this.SFlyContainerDispensadores.TabIndex = 0;
             // 
             // SFLayoutContainer
@@ -232,13 +233,14 @@
             this.SFLayoutContainer.Controls.Add(this.SFPanelPOS2, 1, 2);
             this.SFLayoutContainer.Controls.Add(this.SFPanelPOS3, 2, 2);
             this.SFLayoutContainer.Controls.Add(this.SFPanelPOS4, 3, 2);
+            this.SFLayoutContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SFLayoutContainer.Location = new System.Drawing.Point(3, 3);
             this.SFLayoutContainer.Name = "SFLayoutContainer";
             this.SFLayoutContainer.RowCount = 3;
             this.SFLayoutContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.SFLayoutContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.SFLayoutContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.SFLayoutContainer.Size = new System.Drawing.Size(442, 329);
+            this.SFLayoutContainer.Size = new System.Drawing.Size(602, 459);
             this.SFLayoutContainer.TabIndex = 0;
             // 
             // SFPanelCara1
@@ -246,108 +248,109 @@
             this.SFPanelCara1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SFPanelCara1.Location = new System.Drawing.Point(3, 3);
             this.SFPanelCara1.Name = "SFPanelCara1";
-            this.SFPanelCara1.Size = new System.Drawing.Size(104, 103);
+            this.SFPanelCara1.Size = new System.Drawing.Size(144, 147);
             this.SFPanelCara1.TabIndex = 0;
             // 
             // SFPanelCara3
             // 
             this.SFPanelCara3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara3.Location = new System.Drawing.Point(113, 3);
+            this.SFPanelCara3.Location = new System.Drawing.Point(153, 3);
             this.SFPanelCara3.Name = "SFPanelCara3";
-            this.SFPanelCara3.Size = new System.Drawing.Size(104, 103);
+            this.SFPanelCara3.Size = new System.Drawing.Size(144, 147);
             this.SFPanelCara3.TabIndex = 1;
             // 
             // SFPanelCara5
             // 
             this.SFPanelCara5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara5.Location = new System.Drawing.Point(223, 3);
+            this.SFPanelCara5.Location = new System.Drawing.Point(303, 3);
             this.SFPanelCara5.Name = "SFPanelCara5";
-            this.SFPanelCara5.Size = new System.Drawing.Size(104, 103);
+            this.SFPanelCara5.Size = new System.Drawing.Size(144, 147);
             this.SFPanelCara5.TabIndex = 2;
             // 
             // SFPanelCara7
             // 
             this.SFPanelCara7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara7.Location = new System.Drawing.Point(333, 3);
+            this.SFPanelCara7.Location = new System.Drawing.Point(453, 3);
             this.SFPanelCara7.Name = "SFPanelCara7";
-            this.SFPanelCara7.Size = new System.Drawing.Size(106, 103);
+            this.SFPanelCara7.Size = new System.Drawing.Size(146, 147);
             this.SFPanelCara7.TabIndex = 3;
             // 
             // SFPanelCara2
             // 
             this.SFPanelCara2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara2.Location = new System.Drawing.Point(3, 112);
+            this.SFPanelCara2.Location = new System.Drawing.Point(3, 156);
             this.SFPanelCara2.Name = "SFPanelCara2";
-            this.SFPanelCara2.Size = new System.Drawing.Size(104, 103);
+            this.SFPanelCara2.Size = new System.Drawing.Size(144, 147);
             this.SFPanelCara2.TabIndex = 4;
             // 
             // SFPanelCara4
             // 
             this.SFPanelCara4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara4.Location = new System.Drawing.Point(113, 112);
+            this.SFPanelCara4.Location = new System.Drawing.Point(153, 156);
             this.SFPanelCara4.Name = "SFPanelCara4";
-            this.SFPanelCara4.Size = new System.Drawing.Size(104, 103);
+            this.SFPanelCara4.Size = new System.Drawing.Size(144, 147);
             this.SFPanelCara4.TabIndex = 5;
             // 
             // SFPanelCara6
             // 
             this.SFPanelCara6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara6.Location = new System.Drawing.Point(223, 112);
+            this.SFPanelCara6.Location = new System.Drawing.Point(303, 156);
             this.SFPanelCara6.Name = "SFPanelCara6";
-            this.SFPanelCara6.Size = new System.Drawing.Size(104, 103);
+            this.SFPanelCara6.Size = new System.Drawing.Size(144, 147);
             this.SFPanelCara6.TabIndex = 6;
             // 
             // SFPanelCara8
             // 
             this.SFPanelCara8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara8.Location = new System.Drawing.Point(333, 112);
+            this.SFPanelCara8.Location = new System.Drawing.Point(453, 156);
             this.SFPanelCara8.Name = "SFPanelCara8";
-            this.SFPanelCara8.Size = new System.Drawing.Size(106, 103);
+            this.SFPanelCara8.Size = new System.Drawing.Size(146, 147);
             this.SFPanelCara8.TabIndex = 7;
             // 
             // SFPanelPOS1
             // 
             this.SFPanelPOS1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS1.Location = new System.Drawing.Point(3, 221);
+            this.SFPanelPOS1.Location = new System.Drawing.Point(3, 309);
             this.SFPanelPOS1.Name = "SFPanelPOS1";
-            this.SFPanelPOS1.Size = new System.Drawing.Size(104, 105);
+            this.SFPanelPOS1.Size = new System.Drawing.Size(144, 147);
             this.SFPanelPOS1.TabIndex = 8;
             // 
             // SFPanelPOS2
             // 
             this.SFPanelPOS2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS2.Location = new System.Drawing.Point(113, 221);
+            this.SFPanelPOS2.Location = new System.Drawing.Point(153, 309);
             this.SFPanelPOS2.Name = "SFPanelPOS2";
-            this.SFPanelPOS2.Size = new System.Drawing.Size(104, 105);
+            this.SFPanelPOS2.Size = new System.Drawing.Size(144, 147);
             this.SFPanelPOS2.TabIndex = 9;
             // 
             // SFPanelPOS3
             // 
             this.SFPanelPOS3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS3.Location = new System.Drawing.Point(223, 221);
+            this.SFPanelPOS3.Location = new System.Drawing.Point(303, 309);
             this.SFPanelPOS3.Name = "SFPanelPOS3";
-            this.SFPanelPOS3.Size = new System.Drawing.Size(104, 105);
+            this.SFPanelPOS3.Size = new System.Drawing.Size(144, 147);
             this.SFPanelPOS3.TabIndex = 10;
             // 
             // SFPanelPOS4
             // 
             this.SFPanelPOS4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS4.Location = new System.Drawing.Point(333, 221);
+            this.SFPanelPOS4.Location = new System.Drawing.Point(453, 309);
             this.SFPanelPOS4.Name = "SFPanelPOS4";
-            this.SFPanelPOS4.Size = new System.Drawing.Size(106, 105);
+            this.SFPanelPOS4.Size = new System.Drawing.Size(146, 147);
             this.SFPanelPOS4.TabIndex = 11;
             // 
             // SFPanelLog
             // 
             this.SFPanelLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.SFPanelLog.Controls.Add(this.label1);
             this.SFPanelLog.Controls.Add(this.SFbtnBuscar);
             this.SFPanelLog.Controls.Add(this.SFtxtBuscar);
             this.SFPanelLog.Controls.Add(this.SFGridLog);
             this.SFPanelLog.Controls.Add(this.SFbtnMaximizarMinimizar);
             this.SFPanelLog.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelLog.Location = new System.Drawing.Point(3, 344);
+            this.SFPanelLog.Location = new System.Drawing.Point(3, 374);
             this.SFPanelLog.Name = "SFPanelLog";
-            this.SFPanelLog.Size = new System.Drawing.Size(748, 213);
+            this.SFPanelLog.Size = new System.Drawing.Size(833, 233);
             this.SFPanelLog.TabIndex = 1;
             // 
             // SFbtnBuscar
@@ -416,7 +419,7 @@
             dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.SFGridLog.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
             this.SFGridLog.RowHeadersVisible = false;
-            this.SFGridLog.Size = new System.Drawing.Size(742, 154);
+            this.SFGridLog.Size = new System.Drawing.Size(827, 174);
             this.SFGridLog.TabIndex = 1;
             // 
             // Fecha
@@ -443,7 +446,7 @@
             this.SFbtnMaximizarMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnMaximizarMinimizar.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
             this.SFbtnMaximizarMinimizar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnMaximizarMinimizar.Location = new System.Drawing.Point(650, 3);
+            this.SFbtnMaximizarMinimizar.Location = new System.Drawing.Point(735, 3);
             this.SFbtnMaximizarMinimizar.Name = "SFbtnMaximizarMinimizar";
             this.SFbtnMaximizarMinimizar.Size = new System.Drawing.Size(95, 30);
             this.SFbtnMaximizarMinimizar.TabIndex = 0;
@@ -465,7 +468,7 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel3.Size = new System.Drawing.Size(128, 560);
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(143, 610);
             this.tableLayoutPanel3.TabIndex = 1;
             // 
             // SFbtnDesconectar
@@ -476,7 +479,7 @@
             this.SFbtnDesconectar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnDesconectar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFbtnDesconectar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnDesconectar.Location = new System.Drawing.Point(3, 375);
+            this.SFbtnDesconectar.Location = new System.Drawing.Point(10, 409);
             this.SFbtnDesconectar.Name = "SFbtnDesconectar";
             this.SFbtnDesconectar.Size = new System.Drawing.Size(122, 100);
             this.SFbtnDesconectar.TabIndex = 2;
@@ -492,7 +495,7 @@
             this.SFbtnConectar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnConectar.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFbtnConectar.ForeColor = System.Drawing.Color.White;
-            this.SFbtnConectar.Location = new System.Drawing.Point(3, 83);
+            this.SFbtnConectar.Location = new System.Drawing.Point(10, 100);
             this.SFbtnConectar.Name = "SFbtnConectar";
             this.SFbtnConectar.Size = new System.Drawing.Size(122, 100);
             this.SFbtnConectar.TabIndex = 0;
@@ -509,7 +512,7 @@
             this.SFbtnEscanearRed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnEscanearRed.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFbtnEscanearRed.ForeColor = System.Drawing.Color.White;
-            this.SFbtnEscanearRed.Location = new System.Drawing.Point(3, 229);
+            this.SFbtnEscanearRed.Location = new System.Drawing.Point(10, 254);
             this.SFbtnEscanearRed.Name = "SFbtnEscanearRed";
             this.SFbtnEscanearRed.Size = new System.Drawing.Size(122, 100);
             this.SFbtnEscanearRed.TabIndex = 1;
@@ -525,9 +528,9 @@
             this.panel2.Controls.Add(this.SFlbHora);
             this.panel2.Controls.Add(this.SFlbFechaHora);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(3, 608);
+            this.panel2.Location = new System.Drawing.Point(3, 658);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(894, 39);
+            this.panel2.Size = new System.Drawing.Size(994, 39);
             this.panel2.TabIndex = 4;
             // 
             // SFVersion
@@ -548,7 +551,7 @@
             this.SFlbHora.AutoSize = true;
             this.SFlbHora.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFlbHora.ForeColor = System.Drawing.Color.White;
-            this.SFlbHora.Location = new System.Drawing.Point(486, 9);
+            this.SFlbHora.Location = new System.Drawing.Point(586, 9);
             this.SFlbHora.Name = "SFlbHora";
             this.SFlbHora.Size = new System.Drawing.Size(73, 20);
             this.SFlbHora.TabIndex = 4;
@@ -560,7 +563,7 @@
             this.SFlbFechaHora.AutoSize = true;
             this.SFlbFechaHora.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
             this.SFlbFechaHora.ForeColor = System.Drawing.Color.White;
-            this.SFlbFechaHora.Location = new System.Drawing.Point(601, 9);
+            this.SFlbFechaHora.Location = new System.Drawing.Point(701, 9);
             this.SFlbFechaHora.Name = "SFlbFechaHora";
             this.SFlbFechaHora.Size = new System.Drawing.Size(267, 20);
             this.SFlbFechaHora.TabIndex = 3;
@@ -582,12 +585,21 @@
             this.SFTimerCambioPrecios.Interval = 5000;
             this.SFTimerCambioPrecios.Tick += new System.EventHandler(this.SFTimerCambioPrecios_Tick);
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(656, 19);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "label1";
+            // 
             // frmAdmin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.ClientSize = new System.Drawing.Size(900, 650);
+            this.ClientSize = new System.Drawing.Size(1000, 700);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.SFbtnBarraTitulo);
@@ -656,5 +668,6 @@
         private System.ComponentModel.BackgroundWorker SFbwCambioPrecio;
         private System.Windows.Forms.Timer SFTimerCambioPrecios;
         private System.Windows.Forms.PictureBox SFLogo;
+        private System.Windows.Forms.Label label1;
     }
 }
