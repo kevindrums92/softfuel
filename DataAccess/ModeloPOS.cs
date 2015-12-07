@@ -324,7 +324,7 @@ namespace DataAccess
         #region Credito
         public DataTable ObtenerCreditoPorSerial(string serial)
         {
-            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from softfuel.vehiculo V LEFT OUTER JOIN softfuel.credito C ON C.idVehiculo = V.id WHERE C.estadoCredito = 'activo' and `serial`  = '" + serial + "' and V.estado = 'activo'");
+            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from  vehiculo V LEFT OUTER JOIN  credito C ON C.idVehiculo = V.id WHERE C.estadoCredito = 'activo' and `serial`  = '" + serial + "' and V.estado = 'activo'");
         }
 
         public bool AumentoNumeroVentaCredito(int idVehiculo)
