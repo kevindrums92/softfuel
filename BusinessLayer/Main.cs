@@ -445,7 +445,7 @@ namespace BusinessLayer
                             break;
                             //Consecutivo de cerrar Turno
                         case "M":
-                            var resultConsecutivoTurno = _tramasPOS.ConsecutivoCerrarTurno(arrayTramaRecibida);
+                            var resultConsecutivoTurno = _tramasPOS.ConsecutivoCierre_AperturaTurno(arrayTramaRecibida);
                             if (resultConsecutivoTurno.Resultado == true)
                             {
                                 foreach (Byte[] data in resultConsecutivoTurno.TramaResultado)

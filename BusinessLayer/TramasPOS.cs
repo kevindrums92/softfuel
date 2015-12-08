@@ -1,5 +1,6 @@
 ﻿using BusinessLayer;
 using DataAccess;
+using Singleton;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -13,6 +14,7 @@ namespace BusinessLayer
 {
     class TramasPOS : IDisposable
     {
+        XbeeSingleton instancia = XbeeSingleton.Instance;
         #region "Actualizar Dispensador"
         public List<byte[]> TramaAutorizarVentaDispensador(string idXbee)
         {
@@ -54,6 +56,25 @@ namespace BusinessLayer
                 string cara = data[1];
                 string serial = data[2];
                 string NomApeUsuario = "";
+
+                if (instancia.ListaFidelizadosCreditosPendientes.Count > 0)
+                {
+                    FidelizadoCreditoPendiente objCredito = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.serial == serial && item.tipoSolicitud == ETipoSolicitudSerial.Credito);
+                    if (objCredito != null)
+                    {
+                        if (objCredito.cara != cara)
+                        {
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "hay credito pendiente", "en la cara: " + objCredito.cara}), "Hay un credito pendiente en cara " + objCredito.cara);
+                        }
+                        else
+                        {
+                            instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito Cancelado!!!"}), "Crédito cancelado");
+                        }
+                    }
+                }
+
+
                 DataTable dtCredito;
                 using (ModeloPOS modPOS = new ModeloPOS())
                 {
@@ -140,7 +161,7 @@ namespace BusinessLayer
                     dtFidelizado = modPOS.ObtenerFidelizadoPorSerial(serial);
                 }
 
-                if (dtFidelizado.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontró fidelizado", "con codigo: " + serial }), "No se encontro fidelizado con serial " + serial);
+                if (dtFidelizado.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontro fidelizado", "con codigo: " + serial }), "No se encontro fidelizado con serial " + serial);
                 if (object.Equals(dtFidelizado.Rows[0]["nomPlan"], DBNull.Value) == true)
                 {
                     return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no tiene", "parametrizado puntos" }), "Usuario No Tiene Parametrizado Puntos");
@@ -434,7 +455,7 @@ namespace BusinessLayer
         /// </summary>
         /// <param name="data"></param>
         /// <returns></returns>
-        public ResultadoTrama ConsecutivoCerrarTurno(string[] data)
+        public ResultadoTrama ConsecutivoCierre_AperturaTurno(string[] data)
         {
             try
             {
