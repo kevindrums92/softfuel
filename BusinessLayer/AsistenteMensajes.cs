@@ -80,13 +80,13 @@ namespace BusinessLayer
                                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' ')));
             }
             newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-')));
+                                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-')));
 
             newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' ')));
+                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' ')));
 
             newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' ')));
+                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' ')));
             return newListado;
         }
     }

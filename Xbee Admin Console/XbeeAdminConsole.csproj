@@ -175,14 +175,14 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cambioPrecio.txt" />
+    <None Include="Resources\dispensador.png" />
+    <None Include="Resources\pos_pay.png" />
     <Content Include="sca.ico" />
     <None Include="Resources\sca.ico" />
     <None Include="Resources\textlogo.png" />
     <None Include="Resources\logoSoftfuel.png" />
     <None Include="Resources\conectar.png" />
-    <None Include="Resources\pos_pay.png" />
     <None Include="Resources\network.png" />
-    <None Include="Resources\dispensador.png" />
     <None Include="Resources\conexion.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Configuration;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -31,18 +32,20 @@ namespace XbeeAdminConsole
         {
             InitializeComponent();
             CargarConfiguracionMysql();
+            EstablecerVersion();
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.ResizeRedraw, true);
             ColocarFecha();
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
             cargarImagenes();
+            Conectar();
 
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
-            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
+            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
             //NodosXbee _nodoPrueba3 = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
-           
+
             //instancia.ListNodes = new List<NodosXbee>();
             //instancia.AgregarNodo(_nodoPrueba);
             //instancia.AgregarNodo(_nodoPrueba2);
@@ -50,24 +53,29 @@ namespace XbeeAdminConsole
             //instancia.AgregarNodo(_nodoPrueba4);
 
 
+            //string tramaRecibida1 = "M:1:87";
+            //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
+            //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
+
             //string tramaRecibida1 = "F:2:403b820d";
             //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
             //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
-
             
-            
+            //string tramaRecibida3 = "C:2:04578cfa162280";
+            //string[] arrayTramaRecibida3 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida3);
+            //claseMain.ProcesarTrama(arrayTramaRecibida3, _nodoPrueba2);
 
-            //string tramaRecibida1 = "C:2:04578cfa162280";
-            //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
-            //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba2);
-
-            //string tramaRecibida2 = "ET:2:5129970:38974204:007560:1642918:13253948:7950:0:0:0:";
+            //string tramaRecibida2 = "ET:2:5139970:38994204:007560:1642918:13253948:7950:0:0:0:";
             //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
             //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
 
-            //string tramaRecibida3 = "I:2:asd654:654";
-            //string[] arrayTramaRecibida3 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida3);
-            //claseMain.ProcesarTrama(arrayTramaRecibida3, _nodoPrueba2);
+            //string tramaRecibida2 = "E:2";
+            //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
+            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
+
+            //string tramaRecibida4 = "I:2:asd654:654";
+            //string[] arrayTramaRecibida4 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida4);
+            //claseMain.ProcesarTrama(arrayTramaRecibida4, _nodoPrueba2);
 
         }
         #endregion
@@ -207,36 +215,15 @@ namespace XbeeAdminConsole
         }
         private void SFbtnConectar_Click(object sender, EventArgs e)
         {
-            SFbtnConectar.Enabled = false;
-            SFbtnEscanearRed.Enabled = true;
-            SFbtnDesconectar.Enabled = true;
-            claseMain.ConectaryDescubrirRed();
-            SFTimerCambioPrecios.Enabled = true;
-            SFTimerCambioPrecios.Start();
+            Conectar();
         }
         private void SFbtnEscanearRed_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Esta seguro que desea escanear de nuevo la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
-            if (result == System.Windows.Forms.DialogResult.Yes)
-            {
-                claseMain.Desconectar();
-                claseMain.ConectaryDescubrirRed();
-            }
+            Reconectar();
         }
-
         private void SFbtnDesconectar_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Esta seguro que desea desconectar la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
-            if (result == System.Windows.Forms.DialogResult.Yes)
-            {
-                SFbtnConectar.Enabled = true;
-                SFbtnEscanearRed.Enabled = false;
-                SFbtnDesconectar.Enabled = false;
-                claseMain.Desconectar();
-                SFTimerCambioPrecios.Enabled = false;
-                SFTimerCambioPrecios.Stop();
-                LimpiarDispositivos();
-            }
+            Desconectar();
         }
         private void SFbtnMaximizarMinimizar_Click(object sender, EventArgs e)
         {
@@ -366,6 +353,41 @@ namespace XbeeAdminConsole
         #endregion 
 
         #region Metodos
+
+        void Conectar()
+        {
+            SFbtnConectar.Enabled = false;
+            SFbtnEscanearRed.Enabled = true;
+            SFbtnDesconectar.Enabled = true;
+            claseMain.ConectaryDescubrirRed();
+            SFTimerCambioPrecios.Enabled = true;
+            SFTimerCambioPrecios.Start();
+        }
+
+        void Desconectar()
+        {
+            DialogResult result = MessageBox.Show("Esta seguro que desea desconectar la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                SFbtnConectar.Enabled = true;
+                SFbtnEscanearRed.Enabled = false;
+                SFbtnDesconectar.Enabled = false;
+                claseMain.Desconectar();
+                SFTimerCambioPrecios.Enabled = false;
+                SFTimerCambioPrecios.Stop();
+                LimpiarDispositivos();
+            }
+        }
+
+        void Reconectar()
+        {
+            DialogResult result = MessageBox.Show("Esta seguro que desea escanear de nuevo la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
+            if (result == System.Windows.Forms.DialogResult.Yes)
+            {
+                claseMain.Desconectar();
+                claseMain.ConectaryDescubrirRed();
+            }
+        }
 
         void LimpiarDispositivos()
         {
@@ -546,6 +568,14 @@ namespace XbeeAdminConsole
             Bitmap objimagenIcono = new Bitmap(imagenIcono, SFLogo.Size);
             SFLogo.Image = objimagenIcono;
         }
+
+        void EstablecerVersion()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string version = "Versión: "+  fvi.FileVersion;
+            SFVersion.Text = version;
+        }
         #endregion
 
         #region BackgroundWorkerCambioPrecio
@@ -553,7 +583,29 @@ namespace XbeeAdminConsole
         {
             try
             {
-               
+                string line;
+                System.IO.StreamReader file = new System.IO.StreamReader(Path.GetDirectoryName(Application.ExecutablePath) + "/tramaspos.txt");
+                while ((line = file.ReadLine()) != null)
+                {
+                    if (line.ToString().Trim() != "")
+                    {
+                        NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.TipoDispositivo == Enumeraciones.TipoDispositivo.moduloPOS).FirstOrDefault();
+                        if (nodeXbee != null)
+                        {
+                            string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(line);
+                            NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.Mac == nodeXbee.MacImpresion);
+                            if (nodoImpresion != null)
+                            {
+                                claseMain.ProcesarTrama(arrayTramaRecibida, nodoImpresion);
+                            }
+                        }
+                    }
+                }
+                file.Close();
+                System.IO.StreamWriter sw = new System.IO.StreamWriter(Path.GetDirectoryName(Application.ExecutablePath) + "/tramaspos.txt");
+                sw.WriteLine("");
+                sw.Close();
+
                 string cambioPrecio = System.IO.File.ReadAllText(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
                 if (cambioPrecio == "1")
                 {
@@ -578,7 +630,7 @@ namespace XbeeAdminConsole
             }
             catch (Exception ex)
             {
-                LocalLogManager.EscribeLog("Ocurrio Un Error Con Cambio de Precio" + ex.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog("Ocurrio Un Error Con Cambio de Precio o con tramas POS manuales" + ex.Message, LocalLogManager.TipoImagen.TipoError);
                 e.Result = false;
             }
         }

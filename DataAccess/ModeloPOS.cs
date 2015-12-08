@@ -126,6 +126,10 @@ namespace DataAccess
             
         }
 
+        public DataTable ObtenerAperturaTurnoPorId(string idTurno)
+        {
+            return GetTable("SELECT U.nomUsuario, U.apeUsuario,VTO.cara, T.abrirTurno, VTO.p1, VTO.p2, VTO.p3, VTO.g1, VTO.g2, VTO.g3 FROM ventaturno VTU INNER JOIN ventatotal VTO ON VTO.id = VTU.idVentaAbrir INNER JOIN turno T ON T.idTurno = VTU.idTurno INNER JOIN usuario U ON U.idUsuario = T.idUsuario WHERE VTU.idTurno = " + idTurno + "");
+        }
 
         #endregion
 
@@ -219,12 +223,19 @@ namespace DataAccess
 
         public DataTable ObtenerUltimaVentaPorId(string id)
         {
-            DataTable dtVenta = GetTable("select idVenta, V.idProducto, cara, manguera, precio, galones,ppu, fecha, islero, P.nomProducto,U.nomUsuario,U.apeUsuario,IF(V.placa IS NULL,'',V.placa) AS placa, IF(V.kilometraje IS NULL,'',V.kilometraje) AS kilometraje, V.puntos as puntosEnVenta, '' as puntosTotal, V.idVehiculo,V.tipoCuenta,'' as cliente from ventas AS V INNER JOIN producto AS P ON P.idProducto = V.idProducto INNER JOIN usuario AS U ON V.islero = U.idUsuario where V.idVenta = " + id + "");
+            DataTable dtVenta = GetTable("select idVenta, V.idProducto, cara, manguera, precio, galones,ppu, fecha, islero, P.nomProducto,U.nomUsuario,U.apeUsuario,IF(V.placa IS NULL,'',V.placa) AS placa, IF(V.kilometraje IS NULL,'',V.kilometraje) AS kilometraje, V.puntos as puntosEnVenta, '' as puntosTotal, V.idVehiculo,V.tipoCuenta,'' as cliente, V.descuento from ventas AS V INNER JOIN producto AS P ON P.idProducto = V.idProducto INNER JOIN usuario AS U ON V.islero = U.idUsuario where V.idVenta = " + id + "");
             if (object.Equals(dtVenta.Rows[0]["puntosEnVenta"], DBNull.Value) == false && dtVenta.Rows[0]["puntosEnVenta"].ToString().Trim() != string.Empty)
             {
                 DataTable dtfidelizado = ObtenerFidelizadoPorVehiculo(dtVenta.Rows[0]["idVehiculo"].ToString());
                 dtVenta.Rows[0]["puntosTotal"] = dtfidelizado.Rows[0]["puntos"].ToString();
-                dtVenta.Rows[0]["cliente"] = dtfidelizado.Rows[0]["nomUsuario"].ToString() + " " + dtfidelizado.Rows[0]["apeUsuario"].ToString(); ;
+                dtVenta.Rows[0]["cliente"] = dtfidelizado.Rows[0]["nomUsuario"].ToString() + " " + dtfidelizado.Rows[0]["apeUsuario"].ToString();
+            }
+            //si es Credito
+            if (object.Equals(dtVenta.Rows[0]["tipoCuenta"], DBNull.Value) == false && dtVenta.Rows[0]["tipoCuenta"].ToString().Trim() == "1")
+            {
+                DataTable dtCredio = ObtenerCreditoPorIdVehiculo(dtVenta.Rows[0]["idVehiculo"].ToString());
+                dtVenta.Rows[0]["cliente"] = dtCredio.Rows[0]["nomUsuario"].ToString() + " " + dtCredio.Rows[0]["apeUsuario"].ToString();
+                dtVenta.Rows[0]["placa"] = dtCredio.Rows[0]["placa"].ToString();
             }
             return dtVenta;
         }
@@ -327,6 +338,11 @@ namespace DataAccess
             return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from  vehiculo V LEFT OUTER JOIN  credito C ON C.idVehiculo = V.id WHERE C.estadoCredito = 'activo' and `serial`  = '" + serial + "' and V.estado = 'activo'");
         }
 
+        public DataTable ObtenerCreditoPorIdVehiculo(string id)
+        {
+            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario, U.nomUsuario, U.apeUsuario from  vehiculo V LEFT OUTER JOIN  credito C ON C.idVehiculo = V.id INNER JOIN usuario U ON V.propietario = U.idUsuario WHERE V.id = " + id + "");
+        }
+
         public bool AumentoNumeroVentaCredito(int idVehiculo)
         {
             DataTable maximoTanqueo = GetTable("select max_tanqueo from vehiculo where id = " + idVehiculo);
@@ -359,7 +375,7 @@ namespace DataAccess
             }
             else
             {
-                return false;
+                return true;
             }
         }
         #endregion

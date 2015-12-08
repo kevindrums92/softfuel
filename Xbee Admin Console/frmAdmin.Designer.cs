@@ -73,7 +73,6 @@
             this.TimerFecha = new System.Windows.Forms.Timer(this.components);
             this.SFbwCambioPrecio = new System.ComponentModel.BackgroundWorker();
             this.SFTimerCambioPrecios = new System.Windows.Forms.Timer(this.components);
-            this.label1 = new System.Windows.Forms.Label();
             this.SFbtnBarraTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFLogo)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -203,8 +202,8 @@
             // SFlyContainerDispensadores
             // 
             this.SFlyContainerDispensadores.ColumnCount = 2;
-            this.SFlyContainerDispensadores.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 60F));
-            this.SFlyContainerDispensadores.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 40F));
+            this.SFlyContainerDispensadores.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.SFlyContainerDispensadores.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
             this.SFlyContainerDispensadores.Controls.Add(this.SFLayoutContainer, 0, 0);
             this.SFlyContainerDispensadores.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SFlyContainerDispensadores.Location = new System.Drawing.Point(3, 3);
@@ -240,7 +239,7 @@
             this.SFLayoutContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.SFLayoutContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
             this.SFLayoutContainer.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.SFLayoutContainer.Size = new System.Drawing.Size(602, 459);
+            this.SFLayoutContainer.Size = new System.Drawing.Size(577, 359);
             this.SFLayoutContainer.TabIndex = 0;
             // 
             // SFPanelCara1
@@ -248,101 +247,100 @@
             this.SFPanelCara1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SFPanelCara1.Location = new System.Drawing.Point(3, 3);
             this.SFPanelCara1.Name = "SFPanelCara1";
-            this.SFPanelCara1.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelCara1.Size = new System.Drawing.Size(138, 113);
             this.SFPanelCara1.TabIndex = 0;
             // 
             // SFPanelCara3
             // 
             this.SFPanelCara3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara3.Location = new System.Drawing.Point(153, 3);
+            this.SFPanelCara3.Location = new System.Drawing.Point(147, 3);
             this.SFPanelCara3.Name = "SFPanelCara3";
-            this.SFPanelCara3.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelCara3.Size = new System.Drawing.Size(138, 113);
             this.SFPanelCara3.TabIndex = 1;
             // 
             // SFPanelCara5
             // 
             this.SFPanelCara5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara5.Location = new System.Drawing.Point(303, 3);
+            this.SFPanelCara5.Location = new System.Drawing.Point(291, 3);
             this.SFPanelCara5.Name = "SFPanelCara5";
-            this.SFPanelCara5.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelCara5.Size = new System.Drawing.Size(138, 113);
             this.SFPanelCara5.TabIndex = 2;
             // 
             // SFPanelCara7
             // 
             this.SFPanelCara7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara7.Location = new System.Drawing.Point(453, 3);
+            this.SFPanelCara7.Location = new System.Drawing.Point(435, 3);
             this.SFPanelCara7.Name = "SFPanelCara7";
-            this.SFPanelCara7.Size = new System.Drawing.Size(146, 147);
+            this.SFPanelCara7.Size = new System.Drawing.Size(139, 113);
             this.SFPanelCara7.TabIndex = 3;
             // 
             // SFPanelCara2
             // 
             this.SFPanelCara2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara2.Location = new System.Drawing.Point(3, 156);
+            this.SFPanelCara2.Location = new System.Drawing.Point(3, 122);
             this.SFPanelCara2.Name = "SFPanelCara2";
-            this.SFPanelCara2.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelCara2.Size = new System.Drawing.Size(138, 113);
             this.SFPanelCara2.TabIndex = 4;
             // 
             // SFPanelCara4
             // 
             this.SFPanelCara4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara4.Location = new System.Drawing.Point(153, 156);
+            this.SFPanelCara4.Location = new System.Drawing.Point(147, 122);
             this.SFPanelCara4.Name = "SFPanelCara4";
-            this.SFPanelCara4.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelCara4.Size = new System.Drawing.Size(138, 113);
             this.SFPanelCara4.TabIndex = 5;
             // 
             // SFPanelCara6
             // 
             this.SFPanelCara6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara6.Location = new System.Drawing.Point(303, 156);
+            this.SFPanelCara6.Location = new System.Drawing.Point(291, 122);
             this.SFPanelCara6.Name = "SFPanelCara6";
-            this.SFPanelCara6.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelCara6.Size = new System.Drawing.Size(138, 113);
             this.SFPanelCara6.TabIndex = 6;
             // 
             // SFPanelCara8
             // 
             this.SFPanelCara8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelCara8.Location = new System.Drawing.Point(453, 156);
+            this.SFPanelCara8.Location = new System.Drawing.Point(435, 122);
             this.SFPanelCara8.Name = "SFPanelCara8";
-            this.SFPanelCara8.Size = new System.Drawing.Size(146, 147);
+            this.SFPanelCara8.Size = new System.Drawing.Size(139, 113);
             this.SFPanelCara8.TabIndex = 7;
             // 
             // SFPanelPOS1
             // 
             this.SFPanelPOS1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS1.Location = new System.Drawing.Point(3, 309);
+            this.SFPanelPOS1.Location = new System.Drawing.Point(3, 241);
             this.SFPanelPOS1.Name = "SFPanelPOS1";
-            this.SFPanelPOS1.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelPOS1.Size = new System.Drawing.Size(138, 115);
             this.SFPanelPOS1.TabIndex = 8;
             // 
             // SFPanelPOS2
             // 
             this.SFPanelPOS2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS2.Location = new System.Drawing.Point(153, 309);
+            this.SFPanelPOS2.Location = new System.Drawing.Point(147, 241);
             this.SFPanelPOS2.Name = "SFPanelPOS2";
-            this.SFPanelPOS2.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelPOS2.Size = new System.Drawing.Size(138, 115);
             this.SFPanelPOS2.TabIndex = 9;
             // 
             // SFPanelPOS3
             // 
             this.SFPanelPOS3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS3.Location = new System.Drawing.Point(303, 309);
+            this.SFPanelPOS3.Location = new System.Drawing.Point(291, 241);
             this.SFPanelPOS3.Name = "SFPanelPOS3";
-            this.SFPanelPOS3.Size = new System.Drawing.Size(144, 147);
+            this.SFPanelPOS3.Size = new System.Drawing.Size(138, 115);
             this.SFPanelPOS3.TabIndex = 10;
             // 
             // SFPanelPOS4
             // 
             this.SFPanelPOS4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFPanelPOS4.Location = new System.Drawing.Point(453, 309);
+            this.SFPanelPOS4.Location = new System.Drawing.Point(435, 241);
             this.SFPanelPOS4.Name = "SFPanelPOS4";
-            this.SFPanelPOS4.Size = new System.Drawing.Size(146, 147);
+            this.SFPanelPOS4.Size = new System.Drawing.Size(139, 115);
             this.SFPanelPOS4.TabIndex = 11;
             // 
             // SFPanelLog
             // 
             this.SFPanelLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            this.SFPanelLog.Controls.Add(this.label1);
             this.SFPanelLog.Controls.Add(this.SFbtnBuscar);
             this.SFPanelLog.Controls.Add(this.SFtxtBuscar);
             this.SFPanelLog.Controls.Add(this.SFGridLog);
@@ -486,6 +484,7 @@
             this.SFbtnDesconectar.Text = "Desconectar";
             this.SFbtnDesconectar.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.SFbtnDesconectar.UseVisualStyleBackColor = true;
+            this.SFbtnDesconectar.Visible = false;
             this.SFbtnDesconectar.Click += new System.EventHandler(this.SFbtnDesconectar_Click);
             // 
             // SFbtnConectar
@@ -502,6 +501,7 @@
             this.SFbtnConectar.Text = "Conectar";
             this.SFbtnConectar.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.SFbtnConectar.UseVisualStyleBackColor = true;
+            this.SFbtnConectar.Visible = false;
             this.SFbtnConectar.Click += new System.EventHandler(this.SFbtnConectar_Click);
             // 
             // SFbtnEscanearRed
@@ -585,15 +585,6 @@
             this.SFTimerCambioPrecios.Interval = 5000;
             this.SFTimerCambioPrecios.Tick += new System.EventHandler(this.SFTimerCambioPrecios_Tick);
             // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(656, 19);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 4;
-            this.label1.Text = "label1";
-            // 
             // frmAdmin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -668,6 +659,5 @@
         private System.ComponentModel.BackgroundWorker SFbwCambioPrecio;
         private System.Windows.Forms.Timer SFTimerCambioPrecios;
         private System.Windows.Forms.PictureBox SFLogo;
-        private System.Windows.Forms.Label label1;
     }
 }

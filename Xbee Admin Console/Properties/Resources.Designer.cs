@@ -93,16 +93,6 @@ namespace XbeeAdminConsole.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap dispensador1 {
-            get {
-                object obj = ResourceManager.GetObject("dispensador1", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
         internal static System.Drawing.Bitmap logoSoftfuel {
             get {
                 object obj = ResourceManager.GetObject("logoSoftfuel", resourceCulture);

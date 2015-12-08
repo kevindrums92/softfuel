@@ -78,7 +78,7 @@ namespace BusinessLayer
                         if (DatosTurno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno en la cara " + cara }), "No hay turno en la cara " + cara);
                         if (modPOS.AumentoNumeroVentaCredito(Convert.ToInt32(dtCredito.Rows[0]["id"])) == false)
                         {
-                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "el usuario excedió el máximo","de tanqueos por día"}), "El usuario excedió el máximo de tanqueos por día");
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "el usuario excedio el maximo","de tanqueos por dia"}), "El usuario excedió el máximo de tanqueos por día");
                         }
                         string cupo = "";
                         string saldo = "";
@@ -112,7 +112,7 @@ namespace BusinessLayer
                             descuento = 0;
                         }
 
-                        ResultadoTrama _resultado = new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito al usuario:", NomApeUsuario,"Cupo: $" + cupo,"Saldo: $" + saldo }), "Crédito al usuario: " + NomApeUsuario + ", cupo: $" + cupo + ", salgo: $" + saldo + "", idXbee, true,_descuentoCredito:descuento);
+                        ResultadoTrama _resultado = new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito al usuario:", NomApeUsuario, "Cupo: $" + cupo, "Saldo: $" + saldo, "en cara " + cara }), "Crédito al usuario: " + NomApeUsuario + ", cupo: $" + cupo + ", salgo: $" + saldo + ", en la cara " + cara, idXbee, true, _descuentoCredito: descuento);
 
                         return _resultado;
                     }
@@ -294,52 +294,7 @@ namespace BusinessLayer
                                         var resultGuardar = modPOS.GuardarAperturaTurno(Identificacion, dtPosicion.Rows[0]["idPosicion"].ToString(), _FechaActual, (int)(dtVentas.Rows[0][0]));
                                         if (resultGuardar >0)
                                         {
-                                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("ABRIR TURNO",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-
-                                            mensajeTrama.Add("C Consecutivo: " + resultGuardar.ToString());
-
-                                            mensajeTrama.Add("C " + NomApeUsuario);
-
-                                            mensajeTrama.Add("C CARA: " + cara);
-
-                                            mensajeTrama.Add("C " + _FechaActual);
-
-                                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("INICIO DE TURNO",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-
-                                            //MANGERA 1
-                                            if ((int)dtVentas.Rows[0]["p1"] != 0)
-                                            {
-                                                int dinero = (int)dtVentas.Rows[0]["p1"];
-                                                mensajeTrama.Add("C MANGERA 1");
-                                                mensajeTrama.Add("C $: " + dinero.ToString()
-                                                    + " | G: " + dtVentas.Rows[0]["g1"].ToString());
-                                            }
-                                            //MANGERA 2
-                                            if ((int)dtVentas.Rows[0]["p2"] != 0)
-                                            {
-                                                int dinero = (int)dtVentas.Rows[0]["p2"];
-                                                mensajeTrama.Add("C MANGERA 2");
-                                                mensajeTrama.Add("C $: " + dinero.ToString()
-                                                    + " | G: " + dtVentas.Rows[0]["g2"].ToString());
-                                            }
-                                            //MANGERA 3
-                                            if ((int)dtVentas.Rows[0]["p3"] != 0)
-                                            {
-                                                int dinero = (int)dtVentas.Rows[0]["p3"];
-                                                mensajeTrama.Add("C MANGERA 3");
-                                                mensajeTrama.Add("C $: " + dinero.ToString()
-                                                    + " | G: " + dtVentas.Rows[0]["g3"].ToString());
-                                            }
-                                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-
-                                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' '));
-
-                                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' '));
+                                            mensajeTrama = ArmarMensajeAperturaTurno(resultGuardar.ToString());
                                         }
                                         else
                                         {
@@ -451,6 +406,8 @@ namespace BusinessLayer
                     DataTable dtTurno = modPOS.ObtenerTurnoPorCara(cara);
                     if (dtTurno.Rows.Count == 0) return new ResultadoTrama(false, null, "No hay turno en la cara " + cara);
 
+                    if (dtTurno.Rows[0]["idUsuario"].ToString().Trim() != identificacion) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "El usuario " + identificacion, "no tiene turno abierto"}), "El usuario " + identificacion + " no tiene turno abierto");
+
                     string idTurno = dtTurno.Rows[0][0].ToString();
                     string idPosicion = dtPosicion.Rows[0][0].ToString();
                     idXbee = Convert.ToInt32(dtPosicion.Rows[0]["idXbee"]);
@@ -483,12 +440,20 @@ namespace BusinessLayer
             {
                 List<string> mensajeTrama = new List<string>();
                 string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
-                string idTurno = data[1];
-                using (ModeloPOS modPOS = new ModeloPOS())
+                string tipoTurno = data[1]; //1-> apertura, 2->Cierre
+                string idTurno = data[2];
+                if (tipoTurno == "1")
                 {
-                    VentasPorTurno datosVenta = modPOS.ObtenerDatosVentaPorIdTurno(idTurno);
-                    if (object.Equals(datosVenta,null)) return new ResultadoTrama(false, null, "No se pudo obtener información de las ventas del turno!");
-                    return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeVentasTurno(datosVenta)), "");
+                    return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeAperturaTurno(idTurno)), "");
+                }
+                else
+                {
+                    using (ModeloPOS modPOS = new ModeloPOS())
+                    {
+                        VentasPorTurno datosVenta = modPOS.ObtenerDatosVentaPorIdTurno(idTurno);
+                        if (object.Equals(datosVenta, null)) return new ResultadoTrama(false, null, "No se pudo obtener información de las ventas del turno!");
+                        return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeVentasTurno(datosVenta)), "");
+                    }
                 }
             }
             catch (Exception e)
@@ -637,6 +602,64 @@ namespace BusinessLayer
             return mensajeTrama;
         }
 
+        public List<string> ArmarMensajeAperturaTurno(string idConsecutivo)
+        {
+            DataTable dtDatosApertura;
+            using (ModeloPOS modPOS = new ModeloPOS())
+            {
+                dtDatosApertura = modPOS.ObtenerAperturaTurnoPorId(idConsecutivo);
+            }
+            List<string> mensajeTrama = new List<string>();
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("ABRIR TURNO",
+                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+
+            mensajeTrama.Add("C Consecutivo: " + idConsecutivo);
+
+            mensajeTrama.Add("C " + dtDatosApertura.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtDatosApertura.Rows[0]["apeUsuario"].ToString().Trim());
+
+            mensajeTrama.Add("C CARA: " + dtDatosApertura.Rows[0]["cara"].ToString().Trim());
+
+            mensajeTrama.Add("C " + dtDatosApertura.Rows[0]["abrirTurno"].ToString());
+
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("INICIO DE TURNO",
+                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+
+            //MANGERA 1
+            if ((int)dtDatosApertura.Rows[0]["p1"] != 0)
+            {
+                int dinero = (int)dtDatosApertura.Rows[0]["p1"];
+                mensajeTrama.Add("C MANGERA 1");
+                mensajeTrama.Add("C $: " + dinero.ToString()
+                    + " | G: " + dtDatosApertura.Rows[0]["g1"].ToString());
+            }
+            //MANGERA 2
+            if ((int)dtDatosApertura.Rows[0]["p2"] != 0)
+            {
+                int dinero = (int)dtDatosApertura.Rows[0]["p2"];
+                mensajeTrama.Add("C MANGERA 2");
+                mensajeTrama.Add("C $: " + dinero.ToString()
+                    + " | G: " + dtDatosApertura.Rows[0]["g2"].ToString());
+            }
+            //MANGERA 3
+            if ((int)dtDatosApertura.Rows[0]["p3"] != 0)
+            {
+                int dinero = (int)dtDatosApertura.Rows[0]["p3"];
+                mensajeTrama.Add("C MANGERA 3");
+                mensajeTrama.Add("C $: " + dinero.ToString()
+                    + " | G: " + dtDatosApertura.Rows[0]["g3"].ToString());
+            }
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
+                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
+                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' '));
+
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
+                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' '));
+
+            return mensajeTrama;
+        }
+
         public List<string> ArmarMensajeVenta(bool esOriginal, string idVenta)
         {
             DataTable dtInfo;
@@ -672,6 +695,14 @@ namespace BusinessLayer
             if (object.Equals(dtInfo.Rows[0]["tipoCuenta"],DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "1")
             {
                 mensajeTrama.Add("CForma de Pago: Credito");
+                string descuento = "0";
+                if (object.Equals(dtInfo.Rows[0]["descuento"], DBNull.Value) == false && dtInfo.Rows[0]["descuento"].ToString().Trim() != "")
+                {
+                    descuento = dtInfo.Rows[0]["descuento"].ToString();
+                }
+                decimal DineroDescontar = Convert.ToDecimal(dtInfo.Rows[0]["precio"]) - (Convert.ToDecimal(dtInfo.Rows[0]["precio"]) * Convert.ToDecimal(descuento) / 100);
+                mensajeTrama.Add("CDescuento: %" + descuento + "");
+                mensajeTrama.Add("CTotal acreditado: $" + DineroDescontar + "");
             }
             else
             {
@@ -685,11 +716,11 @@ namespace BusinessLayer
                                                                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
             string puntosVenta = "0";
             string puntosTotal = "0";
-            if (object.Equals(dtInfo.Rows[0]["puntosEnVenta"], DBNull.Value) == false)
+            if (object.Equals(dtInfo.Rows[0]["puntosEnVenta"], DBNull.Value) == false && dtInfo.Rows[0]["puntosEnVenta"].ToString().Trim() != "")
             {
                 puntosVenta = dtInfo.Rows[0]["puntosEnVenta"].ToString();
             }
-            if (object.Equals(dtInfo.Rows[0]["puntosTotal"], DBNull.Value) == false)
+            if (object.Equals(dtInfo.Rows[0]["puntosTotal"], DBNull.Value) == false && dtInfo.Rows[0]["puntosTotal"].ToString().Trim() != "")
             {
                 puntosTotal = dtInfo.Rows[0]["puntosTotal"].ToString();
             }
@@ -700,8 +731,6 @@ namespace BusinessLayer
 
 
         #endregion 
-
-        
 
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
