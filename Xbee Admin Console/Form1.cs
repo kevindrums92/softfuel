@@ -185,9 +185,5 @@ namespace XbeeAdminConsole
        
     }
 
-    public struct LogPantalla
-    {
-        public string Mensaje { get; set; }
-        public DateTime Fecha { get; set; }
-    }
+    
 }

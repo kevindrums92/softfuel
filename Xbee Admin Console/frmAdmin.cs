@@ -76,7 +76,6 @@ namespace XbeeAdminConsole
             //string tramaRecibida4 = "I:2:asd654:654";
             //string[] arrayTramaRecibida4 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida4);
             //claseMain.ProcesarTrama(arrayTramaRecibida4, _nodoPrueba2);
-
         }
         #endregion
 
@@ -267,6 +266,7 @@ namespace XbeeAdminConsole
                 dtLog = new DataTable();
                 dtLog.Columns.Add("Fecha", typeof(DateTime));
                 dtLog.Columns.Add("Mensaje", typeof(string));
+                dtLog.Columns.Add("Dispositivo", typeof(string));
             }
             else
             {
@@ -280,6 +280,7 @@ namespace XbeeAdminConsole
             DataRow NewRow = dtLog.NewRow();
             NewRow["Fecha"] = _log.Fecha;
             NewRow["Mensaje"] = _log.Mensaje;
+            NewRow["Dispositivo"] = _log.Dispositivo;
             dtLog.Rows.Add(NewRow);
             if(bindingSource == null)
             {
@@ -340,6 +341,7 @@ namespace XbeeAdminConsole
             LogPantalla newLog = new LogPantalla();
             newLog.Mensaje = e.Texto;
             newLog.Fecha = DateTime.Now;
+            newLog.Dispositivo = e.Dispositivo;
             if (this.SFGridLog.InvokeRequired == true)
             {
                 AsignarRegistrosRejilla d = new AsignarRegistrosRejilla(RefrescarRejilla);
@@ -654,6 +656,13 @@ namespace XbeeAdminConsole
         #endregion
 
        
+    }
+
+    public struct LogPantalla
+    {
+        public string Mensaje { get; set; }
+        public string Dispositivo { get; set; }
+        public DateTime Fecha { get; set; }
     }
  
 }

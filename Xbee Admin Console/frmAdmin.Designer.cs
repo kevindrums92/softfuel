@@ -59,8 +59,6 @@
             this.SFbtnBuscar = new System.Windows.Forms.Button();
             this.SFtxtBuscar = new System.Windows.Forms.TextBox();
             this.SFGridLog = new System.Windows.Forms.DataGridView();
-            this.Fecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Mensaje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SFbtnMaximizarMinimizar = new System.Windows.Forms.Button();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
             this.SFbtnDesconectar = new System.Windows.Forms.Button();
@@ -73,6 +71,9 @@
             this.TimerFecha = new System.Windows.Forms.Timer(this.components);
             this.SFbwCambioPrecio = new System.ComponentModel.BackgroundWorker();
             this.SFTimerCambioPrecios = new System.Windows.Forms.Timer(this.components);
+            this.Fecha = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Mensaje = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Dispositivo = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.SFbtnBarraTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFLogo)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -395,7 +396,8 @@
             this.SFGridLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.SFGridLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Fecha,
-            this.Mensaje});
+            this.Mensaje,
+            this.Dispositivo});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -419,23 +421,6 @@
             this.SFGridLog.RowHeadersVisible = false;
             this.SFGridLog.Size = new System.Drawing.Size(827, 174);
             this.SFGridLog.TabIndex = 1;
-            // 
-            // Fecha
-            // 
-            this.Fecha.DataPropertyName = "Fecha";
-            this.Fecha.HeaderText = "Fecha";
-            this.Fecha.MinimumWidth = 50;
-            this.Fecha.Name = "Fecha";
-            this.Fecha.ReadOnly = true;
-            // 
-            // Mensaje
-            // 
-            this.Mensaje.DataPropertyName = "Mensaje";
-            this.Mensaje.FillWeight = 300F;
-            this.Mensaje.HeaderText = "Mensaje";
-            this.Mensaje.MinimumWidth = 50;
-            this.Mensaje.Name = "Mensaje";
-            this.Mensaje.ReadOnly = true;
             // 
             // SFbtnMaximizarMinimizar
             // 
@@ -585,6 +570,29 @@
             this.SFTimerCambioPrecios.Interval = 5000;
             this.SFTimerCambioPrecios.Tick += new System.EventHandler(this.SFTimerCambioPrecios_Tick);
             // 
+            // Fecha
+            // 
+            this.Fecha.DataPropertyName = "Fecha";
+            this.Fecha.HeaderText = "Fecha";
+            this.Fecha.MinimumWidth = 50;
+            this.Fecha.Name = "Fecha";
+            this.Fecha.ReadOnly = true;
+            // 
+            // Mensaje
+            // 
+            this.Mensaje.DataPropertyName = "Mensaje";
+            this.Mensaje.FillWeight = 300F;
+            this.Mensaje.HeaderText = "Mensaje";
+            this.Mensaje.MinimumWidth = 50;
+            this.Mensaje.Name = "Mensaje";
+            this.Mensaje.ReadOnly = true;
+            // 
+            // Dispositivo
+            // 
+            this.Dispositivo.DataPropertyName = "Dispositivo";
+            this.Dispositivo.HeaderText = "Dispositivo";
+            this.Dispositivo.Name = "Dispositivo";
+            // 
             // frmAdmin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -652,12 +660,13 @@
         private System.Windows.Forms.Button SFbtnMaximizarMinimizar;
         private System.Windows.Forms.Button SFbtnDesconectar;
         private System.Windows.Forms.DataGridView SFGridLog;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Fecha;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Mensaje;
         private System.Windows.Forms.Button SFbtnBuscar;
         private System.Windows.Forms.TextBox SFtxtBuscar;
         private System.ComponentModel.BackgroundWorker SFbwCambioPrecio;
         private System.Windows.Forms.Timer SFTimerCambioPrecios;
         private System.Windows.Forms.PictureBox SFLogo;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Fecha;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Mensaje;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Dispositivo;
     }
 }

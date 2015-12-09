@@ -269,23 +269,23 @@ namespace BusinessLayer
         /// <param name="IdXbee"></param>
         public void ActualizarDatosDispensador(int IdXbee)
         {
+            NodosXbee nodo = instancia.ListNodes.Find(item => item.IdXbee == IdXbee);
             try
             {
-                NodosXbee nodo = instancia.ListNodes.Find(item => item.IdXbee == IdXbee);
                 if (nodo != null)
                 {
                     var result = _tramasPOS.TramaAutorizarVentaDispensador(nodo.IdXbee.ToString());
                     foreach (Byte[] data in result)
                     {
                         nodo.EnviarTrama(data);
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se envió trama a " + nodo.Nombre + ": " + UtilidadesTramas.ObtenerStringDeBytes(data), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.ObtenerStringDeBytes(data), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                     }
                 }
             }
             catch (Exception e)
             {
                 LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, "",nodo.Nombre));
             }
         }
 
@@ -300,7 +300,7 @@ namespace BusinessLayer
                     foreach (Byte[] data in result)
                     {
                         nodo.EnviarTrama(data);
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Cambio de precio a " + nodo.Nombre, ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Cambio de precio", ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                     }
                 }
             }
@@ -313,11 +313,12 @@ namespace BusinessLayer
         {
             if (arrayTramaRecibida.Count() > 1)
             {
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Llegó un paquete de " + nodo.Nombre + "", ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                //if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Llegó un paquete de " + nodo.Nombre + "", ETipoEvento.Exitoso, nodo.IdXbee, ""));
                 if (nodo.TipoDispositivo == Enumeraciones.TipoDispositivo.moduloPOS)
                 {//Recibo petición de MOD POS
                     switch (arrayTramaRecibida[0])
                     {
+                            //Credito
                         case "C":
                             var resultCre = _tramasPOS.Credito(arrayTramaRecibida);
                             if (resultCre.Resultado == true)
@@ -326,7 +327,7 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(resultCre.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultCre.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                                 if (resultCre.Fidelizado_o_Credito == true)
                                 {
                                     FidelizadoCreditoPendiente _newCre = new FidelizadoCreditoPendiente();
@@ -335,12 +336,12 @@ namespace BusinessLayer
                                     _newCre.descuento = resultCre.DescuentoCredito;
                                     _newCre.tipoSolicitud = ETipoSolicitudSerial.Credito;
                                     instancia.ListaFidelizadosCreditosPendientes.Add(_newCre);
-                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Credito a " + _newCre.serial + " en cara " + _newCre.cara, ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Crédito en cara " + _newCre.cara, ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                                 }
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nombre + "\n" + resultCre.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCre.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -352,7 +353,7 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                                 if (resultFid.Fidelizado_o_Credito == true)
                                 {
                                     FidelizadoCreditoPendiente _newFid = new FidelizadoCreditoPendiente();
@@ -360,12 +361,12 @@ namespace BusinessLayer
                                     _newFid.serial = arrayTramaRecibida[2];
                                     _newFid.tipoSolicitud = ETipoSolicitudSerial.Fidelizado;
                                     instancia.ListaFidelizadosCreditosPendientes.Add(_newFid);
-                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Fidelizado " + _newFid.serial + " en cara " + _newFid.cara, ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Fidelizado en cara " + _newFid.cara, ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                                 }
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nombre + "\n" + resultFid.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultFid.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -378,11 +379,11 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama a " + nodo.Nombre + ", se envió: " + UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo" + nodo.Nombre + "\n" + result.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(result.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -397,11 +398,11 @@ namespace BusinessLayer
 
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + " se envió:\n " + UtilidadesTramas.MensajeQueEnvióTrama(resultAbrirTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultAbrirTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultAbrirTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultAbrirTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             if (resultAbrirTurno.IdXbee > 0) ActualizarDatosDispensador(resultAbrirTurno.IdXbee);
                             
@@ -417,11 +418,11 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + " se envio: \n" + UtilidadesTramas.MensajeQueEnvióTrama(resultVentaCanasta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultVentaCanasta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultVentaCanasta.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultVentaCanasta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -434,11 +435,11 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultCerrarTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultCerrarTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultCerrarTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCerrarTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             if (resultCerrarTurno.IdXbee > 0) ActualizarDatosDispensador(resultCerrarTurno.IdXbee);
                             _tramasPOS.Dispose();
@@ -452,11 +453,11 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultConsecutivoTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultConsecutivoTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultConsecutivoTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultConsecutivoTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -470,11 +471,11 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVenta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVenta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultUltimaVenta.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVenta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
@@ -487,17 +488,17 @@ namespace BusinessLayer
                                 {
                                     nodo.EnviarTrama(data);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Tramas a " + nodo.Nombre + ", se envió:\n" + UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultUltimaVentaConsecutivo.Mensaje, ETipoEvento.Error, nodo.IdXbee, ""));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVentaConsecutivo.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
                             }
                             _tramasPOS.Dispose();
                             break;
 
                         default:
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, ""));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, "",nodo.Nombre));
                             break;
                     }
                 }
@@ -515,18 +516,18 @@ namespace BusinessLayer
                             var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
                             if (resultEnvioTotales.Resultado == true)
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardaron unas ventas totales enviadas de: " + nodo.Nombre + ", en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
                             }
                             else
                             {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se pudo procesar la trama a el dispositivo " + nodo.Nombre + "\n" + resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
                             }
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("BAJAMANGUERA:" + resultEnvioTotales.VentaGalones + ":" + resultEnvioTotales.VentaDinero, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
                             _tramaDIS.Dispose();
                             break;
 
                         default:
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, ""));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, "",nodo.Nombre));
                             break;
                     }
                 }
@@ -567,7 +568,12 @@ namespace BusinessLayer
         public ETipoEvento TipoEvento { get; private set; }
         public int IdXbee { get; private set; }
         public string Cara { get; private set; }
-        public MonitoreoEventArgs(string s, ETipoEvento t, int idXbee, string cara) { Texto = s; TipoEvento = t; IdXbee = idXbee; Cara = cara; }
+        public string Dispositivo { get; set; }
+        public MonitoreoEventArgs(string s, ETipoEvento t, int idXbee, string cara,string dispositivo = "") 
+        {
+            Texto = s; TipoEvento = t; IdXbee = idXbee; Cara = cara;
+            this.Dispositivo = dispositivo;
+        }
     }
     /// <summary>
     /// Para identificar si un tipo de evento se realizó satisfactoriamente o erroneo

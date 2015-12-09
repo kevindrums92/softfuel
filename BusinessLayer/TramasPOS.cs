@@ -362,12 +362,35 @@ namespace BusinessLayer
                 string idProducto = data[1];
                 int cantidad = Convert.ToInt32(data[2]);
                 string cara = data[3];
+
+                string serialFidelizado = "";
+                string serialCredito = "";
+                int descuentoCredito = 0;
+                //Capturo si es venta fidelizado 
+                if (instancia.ListaFidelizadosCreditosPendientes.Count > 0)
+                {
+                    FidelizadoCreditoPendiente objFidelizado = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Fidelizado);
+                    if (objFidelizado != null)
+                    {
+                        serialFidelizado = objFidelizado.serial;
+                        instancia.ListaFidelizadosCreditosPendientes.Remove(objFidelizado);
+                    }
+                    FidelizadoCreditoPendiente objCredito = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Credito);
+                    if (objCredito != null)
+                    {
+                        serialCredito = objCredito.serial;
+                        descuentoCredito = objCredito.descuento;
+                        instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
+                    }
+                }
                 using (ModeloPOS modPOS = new ModeloPOS())
                 {
                     //Validamos que el producto exista, ademas que tenga existencias, y validar tambien que haya turno abierto
                     DataTable producto = modPOS.ObtenerProductoPorId(idProducto);
                     DataTable turno = modPOS.ObtenerTurnoPorCara(cara);
                     if (producto.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontro producto ",  idProducto.ToString() }), "Usuario no existe o incorrecto para consignación en efectivo");
+                    if (producto.Rows[0]["idTipoProducto"].ToString().Trim() == "1") return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se puede vender","productos tipo combustible"}), "No se puede vender productos tipo Combustible");
+
                     if (Convert.ToInt32(producto.Rows[0]["existenciaProducto"]) < cantidad)
                     {
                         List<Byte[]> tramaAlerta = AsistenteMensajes.GenerarMensajeAlerta(new string[] {"La cantidad a vender","es mayor a la existente"});
@@ -376,21 +399,23 @@ namespace BusinessLayer
                     if (turno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno abierto ", "en cara " + cara }), "No hay turno abierto en cara " + cara + "para venta de canasta");
 
                     int valorVenta = Convert.ToInt32(producto.Rows[0]["precioventaProducto"]) * cantidad;
-                    var result = modPOS.GuardaVentaCanasta(idProducto, cara, valorVenta.ToString(), _FechaActual, turno.Rows[0]["idUSuario"].ToString(), turno.Rows[0]["idXbee"].ToString(), cantidad);
-                    if (result == true)
+                    var result = modPOS.GuardaVentaCanasta(idProducto, cara, valorVenta.ToString(), _FechaActual, turno.Rows[0]["idUSuario"].ToString(), turno.Rows[0]["idXbee"].ToString(), cantidad, serialFidelizado, serialCredito, descuentoCredito);
+                    if (result > 0)
                     {
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CANASTA VENTA",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-                        mensajeTrama.Add("C SE VENDIO EL PRODUCTO:");
-                        mensajeTrama.Add("C " + producto.Rows[0]["nomProducto"].ToString().Trim());
-                        mensajeTrama.Add("C CANTIDAD: " + cantidad);
-                        mensajeTrama.Add("C TOTAL: $" + valorVenta.ToString());
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                           Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+
+                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CANASTA VENTA",
+                        //                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        //mensajeTrama.Add("C SE VENDIO EL PRODUCTO:");
+                        //mensajeTrama.Add("C " + producto.Rows[0]["nomProducto"].ToString().Trim());
+                        //mensajeTrama.Add("C CANTIDAD: " + cantidad);
+                        //mensajeTrama.Add("C TOTAL: $" + valorVenta.ToString());
+                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
+                        //   Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
+                        //    Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
+                        //    Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                        return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeVenta(true, result.ToString())), "");
                     }
                     else
                     {

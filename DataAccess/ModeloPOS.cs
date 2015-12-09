@@ -261,21 +261,64 @@ namespace DataAccess
             return GetTable("select " + campos + " from producto where idProducto = " + idProducto + "");
         }
 
-        public bool GuardaVentaCanasta(string idProducto, string cara, string dinero, string fecha, string islero, string xbee,int cantidadProducto)
+        public int GuardaVentaCanasta(string idProducto, string cara, string dinero, string fecha, string islero, string xbee, int cantidadProducto, string serialFidelizado, string serialCredito, int descuento)
         {
+            //Parte para fidelizado
+            string puntos = "NULL";
+            string idVehiculo = "NULL";
+            if (serialFidelizado != "")
+            {
+                DataTable dtFidelizado = ObtenerFidelizadoPorSerial(serialFidelizado);
+                if (dtFidelizado.Rows.Count > 0)
+                {
+                    idVehiculo = dtFidelizado.Rows[0]["idVehiculo"].ToString();
+                    int valorDinero = Convert.ToInt32(dtFidelizado.Rows[0]["valorDinero"]);
+                    int valorPuntos = Convert.ToInt32(dtFidelizado.Rows[0]["valorPuntos"]);
 
-            string sqlInsertIntoCanasta = "insert into ventas (idProducto, cara,  precio, fecha, islero, idXbee, galones) values (" + idProducto + "," + cara + "," + dinero + ",'" + fecha + "','" + islero + "'," + xbee + "," + cantidadProducto + ")";
+                    puntos = ((Convert.ToInt32(dinero) / valorDinero) * valorPuntos).ToString();
+                    ExecuteQuery("update puntos set puntos = " + puntos + " where idPuntos = " + dtFidelizado.Rows[0]["idPuntos"] + "");
+                }
+            }
+
+            int tipoVenta = 2; //tipo de cuenta 1-> credito, 2-> Contado
+
+            //Parte para crédito
+            if (serialCredito != "")
+            {
+                tipoVenta = 1;
+                DataTable dtCredito = ObtenerCreditoPorSerial(serialCredito);
+                if (dtCredito.Rows.Count > 0)
+                {
+                    idVehiculo = dtCredito.Rows[0]["id"].ToString();
+                    decimal DineroDescontar = Convert.ToDecimal(dinero) - (Convert.ToDecimal(dinero) * Convert.ToDecimal(descuento) / 100);
+                    decimal saldoAntiguo = 0;
+                    if (object.Equals(dtCredito.Rows[0]["saldo"], DBNull.Value) == false && dtCredito.Rows[0]["saldo"].ToString().Trim() != "")
+                    {
+                        saldoAntiguo = Convert.ToDecimal(dtCredito.Rows[0]["saldo"]);
+                    }
+                    decimal nuevoSaldo = saldoAntiguo - DineroDescontar;
+                    ExecuteQuery("update credito set saldo = " + nuevoSaldo.ToString().Replace(',', '.') + " where idCredito = " + dtCredito.Rows[0]["idCredito"].ToString());
+                }
+            }
+
+
+            string sqlInsertIntoCanasta = "insert into ventas (idProducto, cara,  precio, fecha, islero, idXbee, galones, puntos,idVehiculo,tipoCuenta,descuento) values (" + idProducto + "," + cara + "," + dinero + ",'" + fecha + "','" + islero + "'," + xbee + "," + cantidadProducto + "," + puntos + "," + idVehiculo + "," + tipoVenta + "," + descuento + ")";
             string sqlUpdate = "update producto set existenciaProducto = existenciaProducto - " + cantidadProducto + " where idProducto = " + idProducto;
             //string[] sqlInserts = new string[] { sqlInsertIntoCanasta, sqlUpdate };
             //return ExecuteQuery(sqlInserts);
-            if (ExecuteQuery(sqlInsertIntoCanasta) == true)
+            long idVenta = ExecuteQueryLastInsert(sqlInsertIntoCanasta);
+            if (idVenta > 0)
             {
-                return ExecuteQuery(sqlUpdate);
+                if (ExecuteQuery(sqlUpdate) == true)
+                {
+                    return Convert.ToInt32(idVenta);
+                }
             }
             else
             {
-                return false;
+                return 0;
             }
+            return 0;
         }
 
         
