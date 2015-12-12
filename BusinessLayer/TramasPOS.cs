@@ -68,6 +68,10 @@ namespace BusinessLayer
                         }
                         else
                         {
+                            using (ModeloPOS modPOS = new ModeloPOS())
+                            {
+                                modPOS.RestarMaximoVentaCreditoCancelado(serial);
+                            }
                             instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
                             return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito Cancelado!!!"}), "Crédito cancelado");
                         }
@@ -497,7 +501,7 @@ namespace BusinessLayer
                     using (ModeloPOS modPOS = new ModeloPOS())
                     {
                         VentasPorTurno datosVenta = modPOS.ObtenerDatosVentaPorIdTurno(idTurno);
-                        if (object.Equals(datosVenta, null)) return new ResultadoTrama(false, null, "No se pudo obtener información de las ventas del turno!");
+                        if (object.Equals(datosVenta, null)) return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se obtuvo informacion", "de las ventas del turno " + idTurno }), "No se pudo obtener información de las ventas del turno!");
                         return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeVentasTurno(datosVenta)), "");
                     }
                 }
@@ -522,12 +526,12 @@ namespace BusinessLayer
                 using (ModeloPOS modPOS = new ModeloPOS())
                 {
                     DataTable dtTurno = modPOS.ObtenerTurnoPorCara(cara);
-                    if (dtTurno.Rows.Count == 0) return new ResultadoTrama(false, null, "No hay turno abierto en la cara:" + cara);
+                    if (dtTurno.Rows.Count == 0) return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno abierto ", "en la cara: " + cara}), "No hay turno abierto en la cara:" + cara);
                     DataTable dtUltimaVenta = modPOS.ObtenerUltimaVentaPorCara(cara);
-                    if (dtUltimaVenta.Rows.Count == 0) return new ResultadoTrama(false, null, "No se pudo obtener ultima venta en cara:" + cara);
+                    if (dtUltimaVenta.Rows.Count == 0) return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se obtuvo ultima ", "venta en la cara: " + cara }), "No se pudo obtener ultima venta en cara:" + cara);
                     if (modPOS.ActualizarPlacaKmUltimaVenta(placa, km, dtUltimaVenta.Rows[0]["idVenta"].ToString()) == false)
                     {
-                        return new ResultadoTrama(false, null, "No se pudo actualizar los datos de última venta en la cara :" + cara);
+                        return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se pudo actualizar", "datos de ultima venta ","en la cara " + cara}), "No se pudo actualizar los datos de última venta en la cara :" + cara);
                     }
                     return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeVenta(true, dtUltimaVenta.Rows[0]["idVenta"].ToString())), "");
                 }

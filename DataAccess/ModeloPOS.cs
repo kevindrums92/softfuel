@@ -370,7 +370,7 @@ namespace DataAccess
 
         public DataTable ObtenerFidelizadoPorVehiculo(string idVehiculo)
         {
-            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero,V.propietario,U.nomUsuario,U.apeUsuario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan INNER JOIN usuario as U ON U.idUsuario = V.propietario WHERE placa = '" + idVehiculo + "' AND V.tipoCliente = 1 and V.estado = 'activo'");
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero,V.propietario,U.nomUsuario,U.apeUsuario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan INNER JOIN usuario as U ON U.idUsuario = V.propietario WHERE V.id = '" + idVehiculo + "' AND V.tipoCliente = 1 and V.estado = 'activo'");
         }
         
         #endregion
@@ -384,6 +384,18 @@ namespace DataAccess
         public DataTable ObtenerCreditoPorIdVehiculo(string id)
         {
             return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario, U.nomUsuario, U.apeUsuario from  vehiculo V LEFT OUTER JOIN  credito C ON C.idVehiculo = V.id INNER JOIN usuario U ON V.propietario = U.idUsuario WHERE V.id = " + id + "");
+        }
+
+
+        public bool RestarMaximoVentaCreditoCancelado(string serial)
+        {
+            DataTable maximoTanqueo = GetTable("select id from vehiculo where `serial` = '" + serial + "'");
+            if (maximoTanqueo != null && maximoTanqueo.Rows.Count>0)
+            {
+                string fecha = DateTime.Now.ToString("yyyy-MM-dd");
+                ExecuteQuery("update numeroTanqueo set numTanqueo = numTanqueo - 1 where idVehiculo = " + Convert.ToInt32(maximoTanqueo.Rows[0][0]) + " and fecha = '" + fecha + "'");
+            }
+            return true;
         }
 
         public bool AumentoNumeroVentaCredito(int idVehiculo)

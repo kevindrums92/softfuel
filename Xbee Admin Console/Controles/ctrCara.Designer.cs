@@ -35,14 +35,14 @@
             this.SFlbGalonesValor = new System.Windows.Forms.Label();
             this.SFlabelDineroDesc = new System.Windows.Forms.Label();
             this.SFlbDineroValor = new System.Windows.Forms.Label();
+            this.SFpcImageDispensador = new System.Windows.Forms.PictureBox();
             this.SBPanelFooter = new System.Windows.Forms.Panel();
             this.SFlbNombreCara = new System.Windows.Forms.Label();
-            this.SFpcImageDispensador = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SFpanelResultadosVenta.SuspendLayout();
-            this.SBPanelFooter.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFpcImageDispensador)).BeginInit();
+            this.SBPanelFooter.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel1
@@ -72,7 +72,7 @@
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 69F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
             this.tableLayoutPanel2.Size = new System.Drawing.Size(149, 60);
             this.tableLayoutPanel2.TabIndex = 3;
             // 
@@ -131,8 +131,17 @@
             this.SFlbDineroValor.Name = "SFlbDineroValor";
             this.SFlbDineroValor.Size = new System.Drawing.Size(69, 13);
             this.SFlbDineroValor.TabIndex = 0;
-            this.SFlbDineroValor.Text = "$1000000";
+            this.SFlbDineroValor.Text = "$0";
             this.SFlbDineroValor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // SFpcImageDispensador
+            // 
+            this.SFpcImageDispensador.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.SFpcImageDispensador.Location = new System.Drawing.Point(12, 5);
+            this.SFpcImageDispensador.Name = "SFpcImageDispensador";
+            this.SFpcImageDispensador.Size = new System.Drawing.Size(49, 52);
+            this.SFpcImageDispensador.TabIndex = 2;
+            this.SFpcImageDispensador.TabStop = false;
             // 
             // SBPanelFooter
             // 
@@ -156,15 +165,6 @@
             this.SFlbNombreCara.Text = "Cara";
             this.SFlbNombreCara.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
-            // SFpcImageDispensador
-            // 
-            this.SFpcImageDispensador.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.SFpcImageDispensador.Location = new System.Drawing.Point(12, 5);
-            this.SFpcImageDispensador.Name = "SFpcImageDispensador";
-            this.SFpcImageDispensador.Size = new System.Drawing.Size(49, 52);
-            this.SFpcImageDispensador.TabIndex = 2;
-            this.SFpcImageDispensador.TabStop = false;
-            // 
             // ctrCara
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -176,8 +176,8 @@
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.SFpanelResultadosVenta.ResumeLayout(false);
-            this.SBPanelFooter.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.SFpcImageDispensador)).EndInit();
+            this.SBPanelFooter.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
