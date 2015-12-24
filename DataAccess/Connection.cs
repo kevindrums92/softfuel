@@ -60,7 +60,7 @@ namespace DataAccess
             catch (MySqlException ex)
             {
                 //Capturo el error en caso de haberlo
-                LocalLogManager.EscribeLog(ex.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(ex.Message + " " + sql, LocalLogManager.TipoImagen.TipoError);
                 throw ex;
             }
             finally
@@ -90,7 +90,7 @@ namespace DataAccess
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + " " + sql, LocalLogManager.TipoImagen.TipoError);
                 throw e;
             }
             finally
@@ -151,7 +151,7 @@ namespace DataAccess
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + " " + sql, LocalLogManager.TipoImagen.TipoError);
                 throw e;
             }
             finally

@@ -42,8 +42,8 @@ namespace XbeeAdminConsole
             Conectar();
 
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
-            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "DISPENSADOR 2", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 5);
-            //NodosXbee _nodoPrueba3 = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "POS 1", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 2);
+            //NodosXbee _nodoPrueba3 = new NodosXbee(null, "POS 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 4);
             //NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
 
             //instancia.ListNodes = new List<NodosXbee>();
@@ -220,6 +220,10 @@ namespace XbeeAdminConsole
         {
             Reconectar();
         }
+        private void INDbtnEscanRed_Click(object sender, EventArgs e)
+        {
+            Reconectar();
+        }
         private void SFbtnDesconectar_Click(object sender, EventArgs e)
         {
             Desconectar();
@@ -250,6 +254,10 @@ namespace XbeeAdminConsole
                  e.Handled = true;
              }
          }
+        private void frmAdmin_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            XbeeUtils.LocalLogManager.EscribeLog("Se cerro la aplicación!", LocalLogManager.TipoImagen.Informacion);
+        }
         #endregion
 
         #region "Eventos Log Tramas"
@@ -472,7 +480,47 @@ namespace XbeeAdminConsole
                     ListadoObjetosCaras.Add(newCara2);
                 }
             }
+            else if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS)
+            {
+                string pos = "";
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 1)
+                {
+                    pos = "SFPanelPOS1";
+                }
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 2)
+                {
+                    pos = "SFPanelPOS2";
+                }
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 3)
+                {
+                    pos = "SFPanelPOS3";
+                }
+                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 4)
+                {
+                    pos = "SFPanelPOS4";
+                }
+                Panel PanelPOS = FindPanel(SFLayoutContainer, pos);
+                if (PanelPOS != null)
+                {
+                    using (Generales modGEN = new Generales())
+                    {
+                        DataTable dtPOS = modGEN.GetTable("select nomXbee FROM xbee WHERE idXbee = " + e.IdXbee);
+                        if (dtPOS != null && dtPOS.Rows.Count > 0)
+                        {
+                            ctrPOS newPOS = new ctrPOS();
+                            newPOS.NombrePOS = dtPOS.Rows[0][0].ToString();
+                            newPOS.idXbee = e.IdXbee;
+                            PanelPOS.Controls.Add(newPOS);
+                            newPOS.Dock = DockStyle.Fill;
 
+                        }
+                    }
+                }
+            }
         }
 
         private Panel FindPanel(Panel parent, string ctlName)
@@ -654,6 +702,10 @@ namespace XbeeAdminConsole
             }
         }
         #endregion
+
+        
+
+        
 
        
     }

@@ -37,7 +37,7 @@
             this.SFlbDineroValor = new System.Windows.Forms.Label();
             this.SFpcImageDispensador = new System.Windows.Forms.PictureBox();
             this.SBPanelFooter = new System.Windows.Forms.Panel();
-            this.SFlbNombreCara = new System.Windows.Forms.Label();
+            this.SFlbNombreCara= new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SFpanelResultadosVenta.SuspendLayout();

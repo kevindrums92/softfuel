@@ -36,7 +36,7 @@ namespace Singleton
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
-        public List<FidelizadoCreditoPendiente> _listaFidelizadosCreditosPendientes;
+        private List<FidelizadoCreditoPendiente> _listaFidelizadosCreditosPendientes;
         public List<FidelizadoCreditoPendiente> ListaFidelizadosCreditosPendientes 
         {
             get

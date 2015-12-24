@@ -58,7 +58,9 @@ namespace DataAccess
 
 
             string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee,puntos,idVehiculo,tipoCuenta,descuento) values";
-            return ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',', '.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + "," + tipoVenta + "," + descuento + ")");
+            ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',', '.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + "," + tipoVenta + "," + descuento + ")");
+            string sqlUpdate = "update producto set existenciaProducto = existenciaProducto - " + galones.ToString().Replace(',', '.') + " where idProducto = " + idProducto;
+            return ExecuteQuery(sqlUpdate);
         }
 
         public bool GuardaVentasTotales(string[] datos,string fecha, string idXbee)

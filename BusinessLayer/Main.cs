@@ -84,7 +84,6 @@ namespace BusinessLayer
                 instancia.Controller.DiscoverNetwork();
                 //EscanearRed();
             }
-            
         }
 
         /// <summary>
@@ -145,9 +144,10 @@ namespace BusinessLayer
         /// <param name="e">Parametros que envia en el mensaje</param>
         private void DataReceivedXbee(object sender, SourcedDataReceivedEventArgs e)
         {
+            string data = "";
             try
             {
-                string data = System.Text.Encoding.UTF8.GetString(e.Data);
+                data = System.Text.Encoding.UTF8.GetString(e.Data);
                 data = data.ToString().Replace('\0',' ');
 
                 if (instancia.ListNodes != null && instancia.ListNodes.Count > 0)
@@ -180,7 +180,7 @@ namespace BusinessLayer
             catch (Exception ex)
             {
                 LocalLogManager.EscribeLog(ex.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + ex.Message, ETipoEvento.Error, 0, ""));
+                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + ex.Message + "\n" + data, ETipoEvento.Error, 0, ""));
             }
             
         }
@@ -516,6 +516,10 @@ namespace BusinessLayer
                             var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
                             if (resultEnvioTotales.Resultado == true)
                             {
+                                if (resultEnvioTotales.Fidelizado_o_Credito == true)
+                                {
+                                    string caraProceso = arrayTramaRecibida[1];
+                                }
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
                             }
                             else

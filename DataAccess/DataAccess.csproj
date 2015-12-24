@@ -46,7 +46,6 @@
     <Compile Include="Generales.cs" />
     <Compile Include="ModeloDispensador.cs" />
     <Compile Include="ModeloPOS.cs" />
-    <Compile Include="ServiciosPrueba.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

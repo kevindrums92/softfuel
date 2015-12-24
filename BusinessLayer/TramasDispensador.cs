@@ -39,6 +39,7 @@ namespace BusinessLayer
                 bool RealizoVentaTotal = false;
                 string ventaGalones = "";
                 string ventaDinero = "";
+                bool esCredito = false;
 
                 string serialFidelizado = "";
                 string serialCredito = "";
@@ -55,6 +56,7 @@ namespace BusinessLayer
                     FidelizadoCreditoPendiente objCredito = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Credito);
                     if (objCredito != null)
                     {
+                        esCredito = true;
                         serialCredito = objCredito.serial;
                         descuentoCredito = objCredito.descuento;
                         instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
@@ -151,7 +153,7 @@ namespace BusinessLayer
                     }
                 }
 
-                return new ResultadoTrama(true, null,"",_ventaGalones:ventaGalones,_ventaDinero:ventaDinero);
+                return new ResultadoTrama(true, null,"",_ventaGalones:ventaGalones,_ventaDinero:ventaDinero,_esCredito: esCredito);
             }
             catch (Exception e)
             {

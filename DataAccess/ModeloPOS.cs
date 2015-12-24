@@ -321,7 +321,6 @@ namespace DataAccess
             return 0;
         }
 
-        
         #endregion
 
         #region "Cabecera y pie de pagina reportes"
