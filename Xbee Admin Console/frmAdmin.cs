@@ -40,6 +40,7 @@ namespace XbeeAdminConsole
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
             cargarImagenes();
             Conectar();
+            EstablecerPorcentajesProductosGasolina();
 
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba2 = new NodosXbee(null, "POS 1", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 2);
@@ -596,6 +597,7 @@ namespace XbeeAdminConsole
                         Ctrcara.Galones = galones;
                         Ctrcara.Dinero = "$" + dinero;
                     }
+                    EstablecerPorcentajesProductosGasolina();
                 }
             }
         }
@@ -626,6 +628,18 @@ namespace XbeeAdminConsole
             string version = "Versión: "+  fvi.FileVersion;
             SFVersion.Text = version;
         }
+
+        /// <summary>
+        /// Metodo que establece el porcentaje de existencia de gasolina segun capacidad y dibuja los valores en los controles de la vista
+        /// </summary>
+        void EstablecerPorcentajesProductosGasolina()
+        {
+            if (SFbwConsultaPorcentajesGasolina.IsBusy == false)
+            {
+                SFbwConsultaPorcentajesGasolina.RunWorkerAsync();
+            }
+        }
+
         #endregion
 
         #region BackgroundWorkerCambioPrecio
@@ -703,11 +717,52 @@ namespace XbeeAdminConsole
         }
         #endregion
 
-        
+        #region BackgroundWorker Porcentaje Gasolina
+        private void SFbwConsultaPorcentajesGasolina_DoWork(object sender, DoWorkEventArgs e)
+        {
+            DataTable dtProductos;
+            using (Generales modGen = new Generales())
+            {
+                dtProductos = modGen.ObtenerProductosGasolina();
+            }
+            e.Result = dtProductos;
+        }
 
-        
+        private void SFbwConsultaPorcentajesGasolina_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            if (e.Result != null)
+            {
+                DataTable dtProductos = (DataTable) e.Result;
+                if (dtProductos.Rows.Count > 0)
+                {
+                    //ACPM
+                    if (dtProductos.Select("tipoProducto = 1").Count() > 0)
+                    {
+                        DataRow _rowAcpm = dtProductos.Select("tipoProducto = 1")[0];
+                        SFpgACPM.Maximum = Convert.ToInt32(_rowAcpm["capacidad"]);
+                        SFpgACPM.Value = Convert.ToInt32(_rowAcpm["existenciaProducto"]);
+                    }
 
-       
+                    //Corriente
+                    if (dtProductos.Select("tipoProducto = 2").Count() > 0)
+                    {
+                        DataRow _rowCorriente = dtProductos.Select("tipoProducto = 2")[0];
+                        SFpgCorriente.Maximum = Convert.ToInt32(_rowCorriente["capacidad"]);
+                        SFpgCorriente.Value = Convert.ToInt32(_rowCorriente["existenciaProducto"]);
+                    }
+
+                    //Extra
+                    if (dtProductos.Select("tipoProducto = 3").Count() > 0)
+                    {
+                        DataRow _rowExtra = dtProductos.Select("tipoProducto = 3")[0];
+                        SFpgExtra.Maximum = Convert.ToInt32(_rowExtra["capacidad"]);
+                        SFpgExtra.Value = Convert.ToInt32(_rowExtra["existenciaProducto"]);
+                    }
+
+                }
+            }
+        }
+        #endregion 
     }
 
     public struct LogPantalla

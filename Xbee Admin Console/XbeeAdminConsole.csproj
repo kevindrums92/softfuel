@@ -88,6 +88,9 @@
     <Compile Include="Controles\ctrCara.Designer.cs">
       <DependentUpon>ctrCara.cs</DependentUpon>
     </Compile>
+    <Compile Include="Controles\VerticalProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -178,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cambioPrecio.txt" />
+    <Content Include="tramaspos.txt" />
     <None Include="Resources\dispensador.png" />
     <None Include="Resources\pos_pay.png" />
     <Content Include="sca.ico" />

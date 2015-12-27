@@ -34,6 +34,13 @@ namespace DataAccess
             return GetTable("select * from Xbee where tipoXbee <> 1");
         }
 
+        public DataTable ObtenerProductosGasolina()
+        {
+            return GetTable("select nomProducto, cantminProducto, existenciaProducto, tipoProducto, capacidad from producto where estadoProducto = 'activo' and tipoProducto IN (1,2,3) and idTipoProducto = 1");
+        }
+
+
+
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
         // Dispose() calls Dispose(true)
