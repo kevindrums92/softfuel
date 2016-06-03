@@ -27,6 +27,8 @@ namespace XbeeAdminConsole
         }
 
         #region Propiedades
+        public Color ColorCara { get; set; }
+        public Color ColorCaraHead { get; set; }
         public int idXbee { get; set; }
         private EnumEstadoCara _estadoCara = EnumEstadoCara.Normal;
 
@@ -89,7 +91,8 @@ namespace XbeeAdminConsole
             switch (EstadoCara)
             { 
                 case EnumEstadoCara.Normal:
-                    this.BackColor = Color.FromArgb(66, 73, 92);
+                    this.BackColor = ColorCara;
+                    this.SFlbNombreCara.BackColor = ColorCaraHead;
                     break;
 
                 case EnumEstadoCara.Atendiendo:

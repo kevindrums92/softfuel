@@ -28,7 +28,9 @@ namespace XbeeAdminConsole
 
         #region Propiedades
         public int idXbee { get; set; }
-       
+        public Color ColorCara { get; set; }
+        public Color ColorCaraHead { get; set; }
+
         public string NombrePOS
         {
             get
@@ -48,7 +50,12 @@ namespace XbeeAdminConsole
         #endregion
 
         #region Metodos
-       
+        public void EstableceColor()
+        {
+            this.BackColor = ColorCara;
+            this.SFlbNombrePOS.BackColor = ColorCaraHead;
+        }
+        
         #endregion
 
         private void SFPictureBox_Resize(object sender, EventArgs e)

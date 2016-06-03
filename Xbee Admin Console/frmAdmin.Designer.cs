@@ -104,7 +104,7 @@
             // 
             // SFbtnBarraTitulo
             // 
-            this.SFbtnBarraTitulo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.SFbtnBarraTitulo.BackColor = System.Drawing.Color.Transparent;
             this.SFbtnBarraTitulo.Controls.Add(this.SFLogo);
             this.SFbtnBarraTitulo.Controls.Add(this.SFbtnMinimizar);
             this.SFbtnBarraTitulo.Controls.Add(this.SFbtnMaximizar);
@@ -121,9 +121,9 @@
             // 
             // SFLogo
             // 
-            this.SFLogo.Location = new System.Drawing.Point(13, 9);
+            this.SFLogo.Location = new System.Drawing.Point(11, 0);
             this.SFLogo.Name = "SFLogo";
-            this.SFLogo.Size = new System.Drawing.Size(18, 20);
+            this.SFLogo.Size = new System.Drawing.Size(92, 39);
             this.SFLogo.TabIndex = 6;
             this.SFLogo.TabStop = false;
             // 
@@ -132,7 +132,7 @@
             this.SFbtnMinimizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SFbtnMinimizar.FlatAppearance.BorderSize = 0;
             this.SFbtnMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SFbtnMinimizar.ForeColor = System.Drawing.Color.White;
+            this.SFbtnMinimizar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.SFbtnMinimizar.Location = new System.Drawing.Point(876, 1);
             this.SFbtnMinimizar.Name = "SFbtnMinimizar";
             this.SFbtnMinimizar.Size = new System.Drawing.Size(40, 39);
@@ -146,7 +146,7 @@
             this.SFbtnMaximizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SFbtnMaximizar.FlatAppearance.BorderSize = 0;
             this.SFbtnMaximizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SFbtnMaximizar.ForeColor = System.Drawing.Color.White;
+            this.SFbtnMaximizar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.SFbtnMaximizar.Location = new System.Drawing.Point(915, 1);
             this.SFbtnMaximizar.Name = "SFbtnMaximizar";
             this.SFbtnMaximizar.Size = new System.Drawing.Size(40, 39);
@@ -159,12 +159,12 @@
             // 
             this.SFLabelNombreSofstware.AutoSize = true;
             this.SFLabelNombreSofstware.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
-            this.SFLabelNombreSofstware.ForeColor = System.Drawing.Color.White;
-            this.SFLabelNombreSofstware.Location = new System.Drawing.Point(37, 9);
+            this.SFLabelNombreSofstware.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
+            this.SFLabelNombreSofstware.Location = new System.Drawing.Point(109, 9);
             this.SFLabelNombreSofstware.Name = "SFLabelNombreSofstware";
-            this.SFLabelNombreSofstware.Size = new System.Drawing.Size(219, 20);
+            this.SFLabelNombreSofstware.Size = new System.Drawing.Size(157, 20);
             this.SFLabelNombreSofstware.TabIndex = 3;
-            this.SFLabelNombreSofstware.Text = "Softfuel Console Application";
+            this.SFLabelNombreSofstware.Text = "Console Application";
             this.SFLabelNombreSofstware.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.SFLabelNombreSofstware.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseMove);
             this.SFLabelNombreSofstware.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseUp);
@@ -174,7 +174,7 @@
             this.SFbtnCerrar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SFbtnCerrar.FlatAppearance.BorderSize = 0;
             this.SFbtnCerrar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.SFbtnCerrar.ForeColor = System.Drawing.Color.White;
+            this.SFbtnCerrar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.SFbtnCerrar.Location = new System.Drawing.Point(954, 1);
             this.SFbtnCerrar.Name = "SFbtnCerrar";
             this.SFbtnCerrar.Size = new System.Drawing.Size(40, 39);
@@ -185,7 +185,7 @@
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.tableLayoutPanel1.BackColor = System.Drawing.Color.Transparent;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 0.5F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 99.5F));
@@ -376,7 +376,7 @@
             // 
             // tableLayoutPanel5
             // 
-            this.tableLayoutPanel5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.tableLayoutPanel5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.tableLayoutPanel5.ColumnCount = 1;
             this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel5.Controls.Add(this.label3, 0, 1);
@@ -394,7 +394,7 @@
             // 
             this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label3.ForeColor = System.Drawing.Color.White;
+            this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.label3.Location = new System.Drawing.Point(3, 317);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(84, 36);
@@ -415,7 +415,7 @@
             // 
             // tableLayoutPanel4
             // 
-            this.tableLayoutPanel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.tableLayoutPanel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.tableLayoutPanel4.ColumnCount = 1;
             this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel4.Controls.Add(this.label2, 0, 1);
@@ -434,7 +434,7 @@
             // 
             this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label2.ForeColor = System.Drawing.Color.White;
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.label2.Location = new System.Drawing.Point(3, 317);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(84, 36);
@@ -455,7 +455,7 @@
             // 
             // tableLayoutPanel2
             // 
-            this.tableLayoutPanel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.tableLayoutPanel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.tableLayoutPanel2.ColumnCount = 1;
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel2.Controls.Add(this.label1, 0, 1);
@@ -473,7 +473,7 @@
             // 
             this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F);
-            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.label1.Location = new System.Drawing.Point(3, 317);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(84, 36);
@@ -495,7 +495,7 @@
             // 
             // SFPanelLog
             // 
-            this.SFPanelLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.SFPanelLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.SFPanelLog.Controls.Add(this.INDbtnEscanRed);
             this.SFPanelLog.Controls.Add(this.SFbtnBuscar);
             this.SFPanelLog.Controls.Add(this.SFtxtBuscar);
@@ -510,6 +510,7 @@
             // INDbtnEscanRed
             // 
             this.INDbtnEscanRed.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.INDbtnEscanRed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(124)))), ((int)(((byte)(0)))));
             this.INDbtnEscanRed.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.INDbtnEscanRed.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.INDbtnEscanRed.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
@@ -519,11 +520,12 @@
             this.INDbtnEscanRed.Size = new System.Drawing.Size(122, 30);
             this.INDbtnEscanRed.TabIndex = 4;
             this.INDbtnEscanRed.Text = "Escanear Red";
-            this.INDbtnEscanRed.UseVisualStyleBackColor = true;
+            this.INDbtnEscanRed.UseVisualStyleBackColor = false;
             this.INDbtnEscanRed.Click += new System.EventHandler(this.INDbtnEscanRed_Click);
             // 
             // SFbtnBuscar
             // 
+            this.SFbtnBuscar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(124)))), ((int)(((byte)(0)))));
             this.SFbtnBuscar.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.SFbtnBuscar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnBuscar.ForeColor = System.Drawing.Color.White;
@@ -532,7 +534,7 @@
             this.SFbtnBuscar.Size = new System.Drawing.Size(75, 23);
             this.SFbtnBuscar.TabIndex = 3;
             this.SFbtnBuscar.Text = "Buscar";
-            this.SFbtnBuscar.UseVisualStyleBackColor = true;
+            this.SFbtnBuscar.UseVisualStyleBackColor = false;
             this.SFbtnBuscar.Click += new System.EventHandler(this.SFbtnBuscar_Click);
             // 
             // SFtxtBuscar
@@ -553,12 +555,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.SFGridLog.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.SFGridLog.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.SFGridLog.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.SFGridLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
             dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(148)))), ((int)(((byte)(175)))));
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
             dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
@@ -569,9 +571,9 @@
             this.Mensaje,
             this.Dispositivo});
             dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
@@ -618,6 +620,7 @@
             // SFbtnMaximizarMinimizar
             // 
             this.SFbtnMaximizarMinimizar.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SFbtnMaximizarMinimizar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(124)))), ((int)(((byte)(0)))));
             this.SFbtnMaximizarMinimizar.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.SFbtnMaximizarMinimizar.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SFbtnMaximizarMinimizar.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F);
@@ -627,7 +630,7 @@
             this.SFbtnMaximizarMinimizar.Size = new System.Drawing.Size(95, 30);
             this.SFbtnMaximizarMinimizar.TabIndex = 0;
             this.SFbtnMaximizarMinimizar.Text = "Maximizar";
-            this.SFbtnMaximizarMinimizar.UseVisualStyleBackColor = true;
+            this.SFbtnMaximizarMinimizar.UseVisualStyleBackColor = false;
             this.SFbtnMaximizarMinimizar.Click += new System.EventHandler(this.SFbtnMaximizarMinimizar_Click);
             // 
             // tableLayoutPanel3
@@ -701,7 +704,7 @@
             // 
             // panel2
             // 
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.panel2.BackColor = System.Drawing.Color.Transparent;
             this.panel2.Controls.Add(this.SFVersion);
             this.panel2.Controls.Add(this.SFlbHora);
             this.panel2.Controls.Add(this.SFlbFechaHora);
@@ -716,7 +719,7 @@
             this.SFVersion.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.SFVersion.AutoSize = true;
             this.SFVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
-            this.SFVersion.ForeColor = System.Drawing.Color.White;
+            this.SFVersion.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.SFVersion.Location = new System.Drawing.Point(9, 9);
             this.SFVersion.Name = "SFVersion";
             this.SFVersion.Size = new System.Drawing.Size(160, 20);
@@ -728,7 +731,7 @@
             this.SFlbHora.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.SFlbHora.AutoSize = true;
             this.SFlbHora.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
-            this.SFlbHora.ForeColor = System.Drawing.Color.White;
+            this.SFlbHora.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.SFlbHora.Location = new System.Drawing.Point(586, 9);
             this.SFlbHora.Name = "SFlbHora";
             this.SFlbHora.Size = new System.Drawing.Size(73, 20);
@@ -740,7 +743,7 @@
             this.SFlbFechaHora.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.SFlbFechaHora.AutoSize = true;
             this.SFlbFechaHora.Font = new System.Drawing.Font("Microsoft Sans Serif", 12.25F);
-            this.SFlbFechaHora.ForeColor = System.Drawing.Color.White;
+            this.SFlbFechaHora.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(97)))), ((int)(((byte)(97)))), ((int)(((byte)(97)))));
             this.SFlbFechaHora.Location = new System.Drawing.Point(701, 9);
             this.SFlbFechaHora.Name = "SFlbFechaHora";
             this.SFlbFechaHora.Size = new System.Drawing.Size(267, 20);
@@ -772,7 +775,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(238)))), ((int)(((byte)(238)))));
             this.ClientSize = new System.Drawing.Size(1000, 700);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.panel2);

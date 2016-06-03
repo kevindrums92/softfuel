@@ -37,7 +37,7 @@
             this.SFlbDineroValor = new System.Windows.Forms.Label();
             this.SFpcImageDispensador = new System.Windows.Forms.PictureBox();
             this.SBPanelFooter = new System.Windows.Forms.Panel();
-            this.SFlbNombreCara= new System.Windows.Forms.Label();
+            this.SFlbNombreCara = new System.Windows.Forms.Label();
             this.tableLayoutPanel1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.SFpanelResultadosVenta.SuspendLayout();
@@ -155,6 +155,7 @@
             // 
             // SFlbNombreCara
             // 
+            this.SFlbNombreCara.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(119)))), ((int)(((byte)(189)))));
             this.SFlbNombreCara.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SFlbNombreCara.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
             this.SFlbNombreCara.ForeColor = System.Drawing.Color.White;
@@ -169,7 +170,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(195)))), ((int)(((byte)(247)))));
             this.Controls.Add(this.tableLayoutPanel1);
             this.Name = "ctrCara";
             this.Size = new System.Drawing.Size(155, 93);

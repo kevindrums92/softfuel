@@ -181,6 +181,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cambioPrecio.txt" />
+    <None Include="Resources\LOGO TICKETSOFT 4.png" />
     <Content Include="tramaspos.txt" />
     <None Include="Resources\dispensador.png" />
     <None Include="Resources\pos_pay.png" />
