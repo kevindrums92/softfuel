@@ -736,15 +736,22 @@ namespace XbeeAdminConsole
                 {
                     if (line.ToString().Trim() != "")
                     {
-                        NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.TipoDispositivo == Enumeraciones.TipoDispositivo.moduloPOS).FirstOrDefault();
+                        //Obtener Id de xbee y trama
+                        string[] LineRecibida = line.Split('|');
+
+                        var _trama = LineRecibida[0];
+                        var _idXbeeImprimir = LineRecibida[1];
+
+                        NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.IdXbee == Convert.ToInt16( _idXbeeImprimir)).FirstOrDefault();
                         if (nodeXbee != null)
                         {
-                            string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(line);
-                            NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.Mac == nodeXbee.MacImpresion);
-                            if (nodoImpresion != null)
-                            {
-                                claseMain.ProcesarTrama(arrayTramaRecibida, nodoImpresion);
-                            }
+                            string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(_trama);
+                            claseMain.ProcesarTrama(arrayTramaRecibida, nodeXbee,true);
+                            //NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.Mac == nodeXbee.MacImpresion);
+                            //if (nodoImpresion != null)
+                            //{
+                            //    claseMain.ProcesarTrama(arrayTramaRecibida, nodoImpresion);
+                            //}
                         }
                     }
                 }
@@ -754,7 +761,7 @@ namespace XbeeAdminConsole
                 sw.Close();
 
                 string cambioPrecio = System.IO.File.ReadAllText(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
-                if (cambioPrecio == "1")
+                if (cambioPrecio.StartsWith("1"))
                 {
                     if (ListadoObjetosCaras != null)
                     {
@@ -823,7 +830,10 @@ namespace XbeeAdminConsole
                     {
                         DataRow _rowAcpm = dtProductos.Select("tipoProducto = 1")[0];
                         SFpgACPM.Maximum = Convert.ToInt32(_rowAcpm["capacidad"]);
-                        SFpgACPM.Value = Convert.ToInt32(_rowAcpm["existenciaProducto"]);
+                        if(Convert.ToInt32(Convert.ToDecimal(_rowAcpm["existenciaProducto"]))>=0)
+                        {
+                            SFpgACPM.Value = Convert.ToInt32(Convert.ToDecimal(_rowAcpm["existenciaProducto"]));
+                        }
                     }
 
                     //Corriente
@@ -831,7 +841,10 @@ namespace XbeeAdminConsole
                     {
                         DataRow _rowCorriente = dtProductos.Select("tipoProducto = 2")[0];
                         SFpgCorriente.Maximum = Convert.ToInt32(_rowCorriente["capacidad"]);
-                        SFpgCorriente.Value = Convert.ToInt32(_rowCorriente["existenciaProducto"]);
+                        if (Convert.ToInt32(Convert.ToDecimal(_rowCorriente["existenciaProducto"])) >= 0)
+                        {
+                            SFpgCorriente.Value = Convert.ToInt32(Convert.ToDecimal(_rowCorriente["existenciaProducto"]));
+                        }
                     }
 
                     //Extra

@@ -70,10 +70,10 @@ namespace XbeeAdminConsole
             //string[] arrayTramaRecibida1 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida1);
             //claseMain.ProcesarTrama(arrayTramaRecibida1, _nodoPrueba1);
 
-            string tramaRecibida2 = "I:2:VXF168:5555";
-            NodosXbee _nodoPrueba2 = new NodosXbee(null, "MOD POS 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 1);
-            string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
-            claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba2);
+            //string tramaRecibida2 = "I:2:VXF168:5555";
+            //NodosXbee _nodoPrueba2 = new NodosXbee(null, "MOD POS 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 1);
+            //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
+            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba2);
         }
         
         public delegate void AsignarRegistrosRejilla();

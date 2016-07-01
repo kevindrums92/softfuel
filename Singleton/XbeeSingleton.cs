@@ -36,6 +36,7 @@ namespace Singleton
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
+        public List<TiquetesPorImprimir> ListaTiquetesPorImprimir;
         private List<FidelizadoCreditoPendiente> _listaFidelizadosCreditosPendientes;
         public List<FidelizadoCreditoPendiente> ListaFidelizadosCreditosPendientes 
         {
@@ -124,6 +125,13 @@ namespace Singleton
         public string cara { get; set; }
         public int descuento { get; set; }
         public ETipoSolicitudSerial tipoSolicitud { get; set; }
+    }
+    public class TiquetesPorImprimir
+    {
+        public string cara { get; set; }
+        public string placa { get; set; }
+        public string km { get; set; }
+        public int idXbeeImprimir { get; set; }
     }
     public enum ETipoSolicitudSerial
     { 

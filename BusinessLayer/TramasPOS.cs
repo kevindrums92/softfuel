@@ -47,6 +47,36 @@ namespace BusinessLayer
 
         #region "Procesos Tramas"
 
+        public ResultadoTrama PrepararTiquete(string[] data)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string cara = data[1];
+                string placa = data[2];
+                string km = data[3];
+                int idXbeeImprimir = Convert.ToInt32(data[4]);
+
+                if (instancia.ListaTiquetesPorImprimir == null) instancia.ListaTiquetesPorImprimir = new List<TiquetesPorImprimir>();
+                var _TiquetePorImprimir = new TiquetesPorImprimir() {
+                    cara = cara,
+                    placa = placa,
+                    km = km,
+                    idXbeeImprimir = idXbeeImprimir
+                };
+                instancia.ListaTiquetesPorImprimir.Add(_TiquetePorImprimir);
+                
+
+                return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "preparando tiquete en cara " + cara }),"preparando tiquete en cara " + cara);
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
         public ResultadoTrama Credito(string[] data)
         {
             try
@@ -64,7 +94,7 @@ namespace BusinessLayer
                     {
                         if (objCredito.cara != cara)
                         {
-                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "hay credito pendiente", "en la cara: " + objCredito.cara}), "Hay un credito pendiente en cara " + objCredito.cara);
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "hay credito pendiente", "en la cara: " + objCredito.cara }), "Hay un credito pendiente en cara " + objCredito.cara);
                         }
                         else
                         {
@@ -73,7 +103,7 @@ namespace BusinessLayer
                                 modPOS.RestarMaximoVentaCreditoCancelado(serial);
                             }
                             instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
-                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito Cancelado!!!"}), "Crédito cancelado");
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito Cancelado!!!" }), "Crédito cancelado");
                         }
                     }
                 }
@@ -774,8 +804,12 @@ namespace BusinessLayer
             {
                 puntosTotal = dtInfo.Rows[0]["puntosTotal"].ToString();
             }
-            mensajeTrama.Add("CPts C: " + puntosVenta + " Pts T: " + puntosTotal + "");
-            
+            mensajeTrama.Add("?     PUNTOS");
+            mensajeTrama.Add("?COMPRA: " + puntosVenta);
+            mensajeTrama.Add("?TOTAL: " + puntosTotal );
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
+                                                                       Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+
             return mensajeTrama;
         }
 

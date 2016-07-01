@@ -161,14 +161,14 @@ namespace BusinessLayer
                             NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.Mac == nodeXbee.MacImpresion);
                             if (nodoImpresion != null)
                             {
-                                ProcesarTrama(arrayTramaRecibida, nodoImpresion);
+                                ProcesarTrama(arrayTramaRecibida, nodoImpresion,true);
                             }
                             else {
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("No se encontró el dispositivo con mac " + nodeXbee.MacImpresion + " para impresión", ETipoEvento.Error, nodeXbee.IdXbee, ""));
                             }
                         }
                         else {
-                            ProcesarTrama(arrayTramaRecibida, nodeXbee);
+                            ProcesarTrama(arrayTramaRecibida, nodeXbee,false);
                         }
                     }
                 }
@@ -309,16 +309,37 @@ namespace BusinessLayer
         #endregion
 
         #region "Procesos Tramas"
-        public void ProcesarTrama(string[] arrayTramaRecibida,NodosXbee nodo)
+        public void ProcesarTrama(string[] arrayTramaRecibida,NodosXbee nodo,bool esSolicitudAplicacion)
         {
             if (arrayTramaRecibida.Count() > 1)
             {
                 //if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Llegó un paquete de " + nodo.Nombre + "", ETipoEvento.Exitoso, nodo.IdXbee, ""));
-                if (nodo.TipoDispositivo == Enumeraciones.TipoDispositivo.moduloPOS)
+                if (esSolicitudAplicacion == true)
                 {//Recibo petición de MOD POS
                     switch (arrayTramaRecibida[0])
                     {
-                            //Credito
+                        //Cualquier trama a cualquier dispensador:
+                        //La trama tiene que enviarse:CT:loque yo quiera
+                        case "CT":
+                            nodo.EnviarTrama(UtilidadesTramas.ObtenerByteDeString(arrayTramaRecibida[1]));
+                            break;
+                        //Trama de placa en venta= PE:1(cara):JEX30B(Placa):20000(KM):3(idXbee)|3(idxbee)
+                        //PE:1:JEX30B:20000:3|3
+                        case "PE":
+                            var resultPE = _tramasPOS.PrepararTiquete(arrayTramaRecibida);
+                            if (resultPE.Resultado == true)
+                            {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando tiquete", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            }
+                            else
+                            {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultPE.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                            }
+                            _tramasPOS.Dispose();
+                            break;
+
+
+                        //Credito
                         case "C":
                             var resultCre = _tramasPOS.Credito(arrayTramaRecibida);
                             if (resultCre.Resultado == true)
@@ -516,10 +537,19 @@ namespace BusinessLayer
                             var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
                             if (resultEnvioTotales.Resultado == true)
                             {
-                                if (resultEnvioTotales.Fidelizado_o_Credito == true)
+                                string caraProceso = arrayTramaRecibida[1];
+                                
+                                //verificamos si hay tiquetes pendientes de immprimir
+                                var TiquetePendiente = instancia.ListaTiquetesPorImprimir.Find(s => s.cara == caraProceso);
+                                if(TiquetePendiente != null)
                                 {
-                                    string caraProceso = arrayTramaRecibida[1];
+                                    NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.IdXbee == TiquetePendiente.idXbeeImprimir);
+                                    string[] _trama = { "I", caraProceso, TiquetePendiente.placa, TiquetePendiente.km };
+                                    ProcesarTrama(_trama, nodoImpresion, true);
+                                    instancia.ListaTiquetesPorImprimir.Remove(TiquetePendiente);
                                 }
+
+
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
                             }
                             else
