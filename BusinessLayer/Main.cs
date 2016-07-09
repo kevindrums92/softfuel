@@ -338,34 +338,7 @@ namespace BusinessLayer
                             _tramasPOS.Dispose();
                             break;
 
-
-                        //Credito
-                        case "C":
-                            var resultCre = _tramasPOS.Credito(arrayTramaRecibida);
-                            if (resultCre.Resultado == true)
-                            {
-                                foreach (Byte[] data in resultCre.TramaResultado)
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultCre.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
-                                if (resultCre.Fidelizado_o_Credito == true)
-                                {
-                                    FidelizadoCreditoPendiente _newCre = new FidelizadoCreditoPendiente();
-                                    _newCre.cara = arrayTramaRecibida[1];
-                                    _newCre.serial = arrayTramaRecibida[2];
-                                    _newCre.descuento = resultCre.DescuentoCredito;
-                                    _newCre.tipoSolicitud = ETipoSolicitudSerial.Credito;
-                                    instancia.ListaFidelizadosCreditosPendientes.Add(_newCre);
-                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Crédito en cara " + _newCre.cara, ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                                }
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCre.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
+                       
                         case "F":
                             var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
                             if (resultFid.Resultado == true)
@@ -538,17 +511,18 @@ namespace BusinessLayer
                             if (resultEnvioTotales.Resultado == true)
                             {
                                 string caraProceso = arrayTramaRecibida[1];
-                                
-                                //verificamos si hay tiquetes pendientes de immprimir
-                                var TiquetePendiente = instancia.ListaTiquetesPorImprimir.Find(s => s.cara == caraProceso);
-                                if(TiquetePendiente != null)
+                                if(instancia.ListaTiquetesPorImprimir != null)
                                 {
-                                    NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.IdXbee == TiquetePendiente.idXbeeImprimir);
-                                    string[] _trama = { "I", caraProceso, TiquetePendiente.placa, TiquetePendiente.km };
-                                    ProcesarTrama(_trama, nodoImpresion, true);
-                                    instancia.ListaTiquetesPorImprimir.Remove(TiquetePendiente);
+                                    //verificamos si hay tiquetes pendientes de immprimir
+                                    var TiquetePendiente = instancia.ListaTiquetesPorImprimir.Find(s => s.cara == caraProceso);
+                                    if (TiquetePendiente != null)
+                                    {
+                                        NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.IdXbee == TiquetePendiente.idXbeeImprimir);
+                                        string[] _trama = { "I", caraProceso, TiquetePendiente.placa, TiquetePendiente.km };
+                                        ProcesarTrama(_trama, nodoImpresion, true);
+                                        instancia.ListaTiquetesPorImprimir.Remove(TiquetePendiente);
+                                    }
                                 }
-
 
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
                             }

@@ -25,8 +25,6 @@ namespace XbeeAdminConsole
         DataTable dtLog;
         BindingSource bindingSource;
         List<ctrCara> ListadoObjetosCaras;
-        List<Color> ListadoColores;
-        List<Color> ListadoColoresHead;
         #endregion
 
         #region Constructor
@@ -41,21 +39,19 @@ namespace XbeeAdminConsole
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
             cargarImagenes();
-            InicializarColores();
-            InicializarColoresHead();
             Conectar();
             EstablecerPorcentajesProductosGasolina();
 
-            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba2 = new NodosXbee(null, "POS 1", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 2);
             //NodosXbee _nodoPrueba3 = new NodosXbee(null, "POS 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 4);
-            //NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
+            NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
 
-            //instancia.ListNodes = new List<NodosXbee>();
-            //instancia.AgregarNodo(_nodoPrueba);
+            instancia.ListNodes = new List<NodosXbee>();
+            instancia.AgregarNodo(_nodoPrueba);
             //instancia.AgregarNodo(_nodoPrueba2);
             //instancia.AgregarNodo(_nodoPrueba3);
-            //instancia.AgregarNodo(_nodoPrueba4);
+            instancia.AgregarNodo(_nodoPrueba4);
 
 
             //string tramaRecibida1 = "M:1:87";
@@ -129,7 +125,7 @@ namespace XbeeAdminConsole
 
         protected override void OnPaint(PaintEventArgs e) // you can safely omit this method if you want
         {
-            var _color = Color.FromArgb(238, 238, 238);
+            var _color = Color.FromArgb(38, 50, 56);
             SolidBrush myBrush = new SolidBrush(_color);
             e.Graphics.FillRectangle(myBrush, Top);
             e.Graphics.FillRectangle(myBrush, Left);
@@ -370,73 +366,7 @@ namespace XbeeAdminConsole
         #endregion 
 
         #region Metodos
-
-        void InicializarColores()
-        {
-            ListadoColores = new List<Color>();
-            ListadoColores.Add(Color.FromArgb(41, 182, 246));
-
-            ListadoColores.Add(Color.FromArgb(129, 199, 132));
-            
-            ListadoColores.Add(Color.FromArgb(239, 83, 80));
-            
-            ListadoColores.Add(Color.FromArgb(255, 224, 130));
-
-            ListadoColores.Add(Color.FromArgb(149, 117, 205));
-            
-            ListadoColores.Add(Color.FromArgb(255, 138, 101));
-            
-            ListadoColores.Add(Color.FromArgb(41, 182, 246));
-            
-            ListadoColores.Add(Color.FromArgb(240, 98, 146));
-
-            ListadoColores.Add(Color.FromArgb(186, 104, 200));
-
-            ListadoColores.Add(Color.FromArgb(128, 203, 196));
-
-            ListadoColores.Add(Color.FromArgb(255, 183, 77));
-
-            ListadoColores.Add(Color.FromArgb(144, 164, 174));
-
-            ListadoColores.Add(Color.FromArgb(212, 225, 87));
-
-            ListadoColores.Add(Color.FromArgb(161, 136, 127));
-
-        }
-
-        void InicializarColoresHead()
-        {
-            ListadoColoresHead = new List<Color>();
-            
-            ListadoColoresHead.Add(Color.FromArgb(2, 119, 189));
-            
-            ListadoColoresHead.Add(Color.FromArgb(56, 142, 60));
-            
-            ListadoColoresHead.Add(Color.FromArgb(211, 47, 47));
-            
-            ListadoColoresHead.Add(Color.FromArgb(225, 179, 0));
-            
-            ListadoColoresHead.Add(Color.FromArgb(81, 45, 168));
-            
-            ListadoColoresHead.Add(Color.FromArgb(244, 81, 30));
-
-            ListadoColoresHead.Add(Color.FromArgb(2, 119, 189));
-            
-            ListadoColoresHead.Add(Color.FromArgb(194, 24, 91));
-
-            ListadoColoresHead.Add(Color.FromArgb(142, 36, 170));
-
-            ListadoColoresHead.Add(Color.FromArgb(0, 137, 123));
-
-            ListadoColoresHead.Add(Color.FromArgb(245, 124, 0));
-
-            ListadoColoresHead.Add(Color.FromArgb(84, 110, 122));
-
-            ListadoColoresHead.Add(Color.FromArgb(175, 180, 43));
-
-            ListadoColoresHead.Add(Color.FromArgb(121, 85, 72));
-        }
-
+        
         void Conectar()
         {
             SFbtnConectar.Enabled = false;
@@ -530,14 +460,10 @@ namespace XbeeAdminConsole
                 }
                 if (dtCaras != null && dtCaras.Rows.Count > 1)
                 {
-                    var _aleatorio1 = NumeroAleatorio();
-                    var _aleatorio2 = NumeroAleatorio();
 
                     if (ListadoObjetosCaras == null) ListadoObjetosCaras = new List<ctrCara>();
                     ctrCara newCara1 = new ctrCara();
                     newCara1.NumCara = Convert.ToInt32(dtCaras.Rows[0][0]);
-                    newCara1.ColorCara = ListadoColores[_aleatorio1];
-                    newCara1.ColorCaraHead = ListadoColoresHead[_aleatorio1];
                     newCara1.EstadoCara = EnumEstadoCara.Normal;
                     newCara1.NombreCara = "Cara " + newCara1.NumCara.ToString();
                     newCara1.idXbee = e.IdXbee;
@@ -548,8 +474,6 @@ namespace XbeeAdminConsole
 
                     ctrCara newCara2 = new ctrCara();
                     newCara2.NumCara = Convert.ToInt32(dtCaras.Rows[1][0]);
-                    newCara2.ColorCara = ListadoColores[_aleatorio2];
-                    newCara2.ColorCaraHead = ListadoColoresHead[_aleatorio2];
                     newCara2.EstadoCara = EnumEstadoCara.Normal;
                     newCara2.NombreCara = "Cara " + newCara2.NumCara.ToString();
                     newCara2.idXbee = e.IdXbee;
@@ -590,10 +514,7 @@ namespace XbeeAdminConsole
                         DataTable dtPOS = modGEN.GetTable("select nomXbee FROM xbee WHERE idXbee = " + e.IdXbee);
                         if (dtPOS != null && dtPOS.Rows.Count > 0)
                         {
-                            var _aleatorio = NumeroAleatorio();
                             ctrPOS newPOS = new ctrPOS();
-                            newPOS.ColorCara = ListadoColores[_aleatorio];
-                            newPOS.ColorCaraHead = ListadoColoresHead[_aleatorio];
                             newPOS.NombrePOS = dtPOS.Rows[0][0].ToString();
                             newPOS.idXbee = e.IdXbee;
                             PanelPOS.Controls.Add(newPOS);
@@ -699,7 +620,7 @@ namespace XbeeAdminConsole
             Bitmap objimagenRed = new Bitmap(imagenRed, new Size(32, 32));
             SFbtnEscanearRed.Image = objimagenRed;
 
-            System.Drawing.Bitmap imagenIcono = Properties.Resources.LOGO_TICKETSOFT_4;
+            System.Drawing.Bitmap imagenIcono = Properties.Resources.logo_ticket_soft;
             Bitmap objimagenIcono = new Bitmap(imagenIcono, SFLogo.Size);
             SFLogo.Image = objimagenIcono;
         }
@@ -860,19 +781,6 @@ namespace XbeeAdminConsole
         }
         #endregion 
 
-        int _anterior = 0;
-        int NumeroAleatorio()
-        {
-            Random rnd = new Random();
-
-            var Num =  rnd.Next(0, ListadoColoresHead.Count-1);
-            while(Num == _anterior)
-            {
-                Num = rnd.Next(0, ListadoColoresHead.Count - 1);
-            }
-            _anterior = Num;
-            return Num;
-        }
     }
 
     public struct LogPantalla

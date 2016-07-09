@@ -183,6 +183,7 @@
   <ItemGroup>
     <Content Include="cambioPrecio.txt" />
     <None Include="Resources\LOGO TICKETSOFT 4.png" />
+    <None Include="Resources\logo ticket soft.png" />
     <Content Include="TicketSoftICO.ico" />
     <Content Include="tramaspos.txt" />
     <None Include="Resources\dispensador.png" />
