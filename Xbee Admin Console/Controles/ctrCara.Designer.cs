@@ -28,173 +28,198 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.SFpanelResultadosVenta = new System.Windows.Forms.Panel();
-            this.SFlbGalonesDesc = new System.Windows.Forms.Label();
-            this.SFlbGalonesValor = new System.Windows.Forms.Label();
-            this.SFlabelDineroDesc = new System.Windows.Forms.Label();
-            this.SFlbDineroValor = new System.Windows.Forms.Label();
-            this.SFpcImageDispensador = new System.Windows.Forms.PictureBox();
-            this.SBPanelFooter = new System.Windows.Forms.Panel();
             this.SFlbNombreCara = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1.SuspendLayout();
+            this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this.SFlbGalonesValor = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.SFlbDineroValor = new System.Windows.Forms.Label();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
-            this.SFpanelResultadosVenta.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.SFpcImageDispensador)).BeginInit();
-            this.SBPanelFooter.SuspendLayout();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
-            // tableLayoutPanel1
+            // SFlbNombreCara
             // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.tableLayoutPanel2, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.SBPanelFooter, 0, 0);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 30F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 70F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(155, 93);
-            this.tableLayoutPanel1.TabIndex = 1;
+            this.SFlbNombreCara.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.SFlbNombreCara.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SFlbNombreCara.Font = new System.Drawing.Font("Microsoft Sans Serif", 15F);
+            this.SFlbNombreCara.ForeColor = System.Drawing.Color.White;
+            this.SFlbNombreCara.Location = new System.Drawing.Point(0, 0);
+            this.SFlbNombreCara.Margin = new System.Windows.Forms.Padding(0);
+            this.SFlbNombreCara.Name = "SFlbNombreCara";
+            this.SFlbNombreCara.Size = new System.Drawing.Size(155, 96);
+            this.SFlbNombreCara.TabIndex = 2;
+            this.SFlbNombreCara.Text = "Cara";
+            this.SFlbNombreCara.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // tableLayoutPanel3
+            // 
+            this.tableLayoutPanel3.ColumnCount = 2;
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 30F));
+            this.tableLayoutPanel3.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 70F));
+            this.tableLayoutPanel3.Controls.Add(this.SFlbNombreCara, 0, 0);
+            this.tableLayoutPanel3.Controls.Add(this.panel1, 1, 0);
+            this.tableLayoutPanel3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel3.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel3.Name = "tableLayoutPanel3";
+            this.tableLayoutPanel3.RowCount = 1;
+            this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel3.Size = new System.Drawing.Size(518, 96);
+            this.tableLayoutPanel3.TabIndex = 2;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Gray;
+            this.panel1.Controls.Add(this.tableLayoutPanel4);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(155, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(363, 96);
+            this.panel1.TabIndex = 3;
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.BackColor = System.Drawing.Color.Gray;
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel2, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.tableLayoutPanel1, 0, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(363, 96);
+            this.tableLayoutPanel4.TabIndex = 0;
             // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.SFpanelResultadosVenta, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.SFpcImageDispensador, 0, 0);
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.tableLayoutPanel2.Controls.Add(this.label2, 0, 0);
+            this.tableLayoutPanel2.Controls.Add(this.SFlbGalonesValor, 1, 0);
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 30);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 51);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(149, 60);
-            this.tableLayoutPanel2.TabIndex = 3;
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(357, 42);
+            this.tableLayoutPanel2.TabIndex = 1;
             // 
-            // SFpanelResultadosVenta
+            // label2
             // 
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlbGalonesDesc);
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlbGalonesValor);
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlabelDineroDesc);
-            this.SFpanelResultadosVenta.Controls.Add(this.SFlbDineroValor);
-            this.SFpanelResultadosVenta.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFpanelResultadosVenta.Location = new System.Drawing.Point(77, 3);
-            this.SFpanelResultadosVenta.Name = "SFpanelResultadosVenta";
-            this.SFpanelResultadosVenta.Size = new System.Drawing.Size(69, 54);
-            this.SFpanelResultadosVenta.TabIndex = 1;
-            // 
-            // SFlbGalonesDesc
-            // 
-            this.SFlbGalonesDesc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlbGalonesDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SFlbGalonesDesc.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.SFlbGalonesDesc.Location = new System.Drawing.Point(0, 2);
-            this.SFlbGalonesDesc.Name = "SFlbGalonesDesc";
-            this.SFlbGalonesDesc.Size = new System.Drawing.Size(69, 13);
-            this.SFlbGalonesDesc.TabIndex = 3;
-            this.SFlbGalonesDesc.Text = "Gal:";
-            this.SFlbGalonesDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.label2.AutoSize = true;
+            this.label2.BackColor = System.Drawing.Color.Transparent;
+            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.25F);
+            this.label2.ForeColor = System.Drawing.Color.White;
+            this.label2.Location = new System.Drawing.Point(3, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(65, 42);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "G";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // SFlbGalonesValor
             // 
-            this.SFlbGalonesValor.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlbGalonesValor.ForeColor = System.Drawing.Color.White;
-            this.SFlbGalonesValor.Location = new System.Drawing.Point(0, 15);
+            this.SFlbGalonesValor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+            this.SFlbGalonesValor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.SFlbGalonesValor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SFlbGalonesValor.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SFlbGalonesValor.ForeColor = System.Drawing.Color.Gray;
+            this.SFlbGalonesValor.Location = new System.Drawing.Point(71, 0);
+            this.SFlbGalonesValor.Margin = new System.Windows.Forms.Padding(0);
             this.SFlbGalonesValor.Name = "SFlbGalonesValor";
-            this.SFlbGalonesValor.Size = new System.Drawing.Size(69, 13);
-            this.SFlbGalonesValor.TabIndex = 2;
+            this.SFlbGalonesValor.Size = new System.Drawing.Size(286, 42);
+            this.SFlbGalonesValor.TabIndex = 5;
             this.SFlbGalonesValor.Text = "0";
             this.SFlbGalonesValor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // SFlabelDineroDesc
+            // tableLayoutPanel1
             // 
-            this.SFlabelDineroDesc.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlabelDineroDesc.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.SFlabelDineroDesc.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.SFlabelDineroDesc.Location = new System.Drawing.Point(0, 28);
-            this.SFlabelDineroDesc.Name = "SFlabelDineroDesc";
-            this.SFlabelDineroDesc.Size = new System.Drawing.Size(69, 13);
-            this.SFlabelDineroDesc.TabIndex = 1;
-            this.SFlabelDineroDesc.Text = "Precio:";
-            this.SFlabelDineroDesc.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 20F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 80F));
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.SFlbDineroValor, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(357, 42);
+            this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.BackColor = System.Drawing.Color.Transparent;
+            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.25F);
+            this.label1.ForeColor = System.Drawing.Color.White;
+            this.label1.Location = new System.Drawing.Point(3, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(65, 42);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "$";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // SFlbDineroValor
             // 
-            this.SFlbDineroValor.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.SFlbDineroValor.ForeColor = System.Drawing.Color.White;
-            this.SFlbDineroValor.Location = new System.Drawing.Point(0, 41);
+            this.SFlbDineroValor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+            this.SFlbDineroValor.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.SFlbDineroValor.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.SFlbDineroValor.Font = new System.Drawing.Font("Verdana", 18F, System.Drawing.FontStyle.Bold);
+            this.SFlbDineroValor.ForeColor = System.Drawing.Color.Gray;
+            this.SFlbDineroValor.Location = new System.Drawing.Point(71, 0);
+            this.SFlbDineroValor.Margin = new System.Windows.Forms.Padding(0);
             this.SFlbDineroValor.Name = "SFlbDineroValor";
-            this.SFlbDineroValor.Size = new System.Drawing.Size(69, 13);
-            this.SFlbDineroValor.TabIndex = 0;
-            this.SFlbDineroValor.Text = "$0";
+            this.SFlbDineroValor.Size = new System.Drawing.Size(286, 42);
+            this.SFlbDineroValor.TabIndex = 4;
+            this.SFlbDineroValor.Text = "0";
             this.SFlbDineroValor.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // SFpcImageDispensador
-            // 
-            this.SFpcImageDispensador.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-            this.SFpcImageDispensador.Location = new System.Drawing.Point(12, 5);
-            this.SFpcImageDispensador.Name = "SFpcImageDispensador";
-            this.SFpcImageDispensador.Size = new System.Drawing.Size(49, 52);
-            this.SFpcImageDispensador.TabIndex = 2;
-            this.SFpcImageDispensador.TabStop = false;
-            // 
-            // SBPanelFooter
-            // 
-            this.SBPanelFooter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(30)))), ((int)(((byte)(30)))));
-            this.SBPanelFooter.Controls.Add(this.SFlbNombreCara);
-            this.SBPanelFooter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SBPanelFooter.Location = new System.Drawing.Point(3, 3);
-            this.SBPanelFooter.Name = "SBPanelFooter";
-            this.SBPanelFooter.Size = new System.Drawing.Size(149, 21);
-            this.SBPanelFooter.TabIndex = 3;
-            // 
-            // SFlbNombreCara
-            // 
-            this.SFlbNombreCara.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(2)))), ((int)(((byte)(119)))), ((int)(((byte)(189)))));
-            this.SFlbNombreCara.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.SFlbNombreCara.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F);
-            this.SFlbNombreCara.ForeColor = System.Drawing.Color.White;
-            this.SFlbNombreCara.Location = new System.Drawing.Point(0, 0);
-            this.SFlbNombreCara.Name = "SFlbNombreCara";
-            this.SFlbNombreCara.Size = new System.Drawing.Size(149, 21);
-            this.SFlbNombreCara.TabIndex = 2;
-            this.SFlbNombreCara.Text = "Cara";
-            this.SFlbNombreCara.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ctrCara
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(79)))), ((int)(((byte)(195)))), ((int)(((byte)(247)))));
-            this.Controls.Add(this.tableLayoutPanel1);
+            this.BackColor = System.Drawing.Color.White;
+            this.Controls.Add(this.tableLayoutPanel3);
             this.Name = "ctrCara";
-            this.Size = new System.Drawing.Size(155, 93);
-            this.tableLayoutPanel1.ResumeLayout(false);
+            this.Size = new System.Drawing.Size(518, 96);
+            this.Load += new System.EventHandler(this.ctrCara_Load);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
-            this.SFpanelResultadosVenta.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.SFpcImageDispensador)).EndInit();
-            this.SBPanelFooter.ResumeLayout(false);
+            this.tableLayoutPanel2.PerformLayout();
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
-        private System.Windows.Forms.Panel SBPanelFooter;
         private System.Windows.Forms.Label SFlbNombreCara;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel3;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel4;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
-        private System.Windows.Forms.Panel SFpanelResultadosVenta;
-        private System.Windows.Forms.Label SFlbGalonesDesc;
         private System.Windows.Forms.Label SFlbGalonesValor;
-        private System.Windows.Forms.Label SFlabelDineroDesc;
         private System.Windows.Forms.Label SFlbDineroValor;
-        private System.Windows.Forms.PictureBox SFpcImageDispensador;
-
     }
 }

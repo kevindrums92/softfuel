@@ -40,28 +40,29 @@ namespace BusinessLayer
                 string ventaGalones = "";
                 string ventaDinero = "";
                 bool esCredito = false;
+                int ImprimeTiquete = 0;
 
                 string serialFidelizado = "";
                 string serialCredito = "";
                 int descuentoCredito = 0;
-                //Capturo si es venta fidelizado 
-                if (instancia.ListaFidelizadosCreditosPendientes.Count > 0)
-                {
-                    FidelizadoCreditoPendiente objFidelizado = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Fidelizado);
-                    if (objFidelizado != null)
-                    {
-                        serialFidelizado = objFidelizado.serial;
-                        instancia.ListaFidelizadosCreditosPendientes.Remove(objFidelizado);
-                    }
-                    FidelizadoCreditoPendiente objCredito = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Credito);
-                    if (objCredito != null)
-                    {
-                        esCredito = true;
-                        serialCredito = objCredito.serial;
-                        descuentoCredito = objCredito.descuento;
-                        instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
-                    }
-                }
+                ////Capturo si es venta fidelizado 
+                //if (instancia.ListaFidelizadosCreditosPendientes.Count > 0)
+                //{
+                //    FidelizadoCreditoPendiente objFidelizado = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Fidelizado);
+                //    if (objFidelizado != null)
+                //    {
+                //        serialFidelizado = objFidelizado.serial;
+                //        instancia.ListaFidelizadosCreditosPendientes.Remove(objFidelizado);
+                //    }
+                //    FidelizadoCreditoPendiente objCredito = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Credito);
+                //    if (objCredito != null)
+                //    {
+                //        esCredito = true;
+                //        serialCredito = objCredito.serial;
+                //        descuentoCredito = objCredito.descuento;
+                //        instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
+                //    }
+                //}
 
                 //obtengo el id de la posición por la cara, y traigo el idProducto tambien
                 //Obtengo el ultimo registro de ventas en la cara
@@ -88,6 +89,7 @@ namespace BusinessLayer
                         return new ResultadoTrama(false, null, "No se pudo obtener el id del producto de la posición");
                     }
                     dtVentasTotales = modPOS.ObtenerTotalesVentaPorCara(cara);
+
                     
                     if (dtVentasTotales == null) return new ResultadoTrama(false, null, "Hubo error obteniendo los valores de las ventas totales");
                     if (dtVentasTotales.Rows.Count > 0)
@@ -105,7 +107,7 @@ namespace BusinessLayer
                                 DataTable dtPosicionProductoCorrecto;
                                 dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara,"1");
                                 if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 1");
-                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado,serialCredito,descuentoCredito);
+                                ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado,serialCredito,descuentoCredito);
                             }
                         }
                         if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]) != galon_m2)
@@ -120,7 +122,7 @@ namespace BusinessLayer
                             ventaDinero = difDinero.ToString();
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
-                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
                             }
                         }
                         if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]) != galon_m3)
@@ -135,7 +137,7 @@ namespace BusinessLayer
                             ventaDinero = difDinero.ToString();
                             using (ModeloDispensador modDIS = new ModeloDispensador())
                             {
-                                var resultGuardar = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
                             }
                         }
                     }
@@ -153,7 +155,7 @@ namespace BusinessLayer
                     }
                 }
 
-                return new ResultadoTrama(true, null,"",_ventaGalones:ventaGalones,_ventaDinero:ventaDinero,_esCredito: esCredito);
+                return new ResultadoTrama(true, null,"",_ventaGalones:ventaGalones,_ventaDinero:ventaDinero,_esCredito: esCredito,_imprimeTiquete:ImprimeTiquete);
             }
             catch (Exception e)
             {

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Drawing.Text;
+using System.IO;
 
 namespace XbeeAdminConsole
 {
@@ -22,13 +24,11 @@ namespace XbeeAdminConsole
         public void ColocarImagen()
         {
             System.Drawing.Bitmap imagenDis = Properties.Resources.dispensador;
-            Bitmap objimagenDis = new Bitmap(imagenDis, SFpcImageDispensador.Size);
-            SFpcImageDispensador.Image = objimagenDis;
+            //Bitmap objimagenDis = new Bitmap(imagenDis, SFpcImageDispensador.Size);
+            //SFpcImageDispensador.Image = objimagenDis;
         }
 
         #region Propiedades
-        public Color ColorCara { get; set; }
-        public Color ColorCaraHead { get; set; }
         public int idXbee { get; set; }
         private EnumEstadoCara _estadoCara = EnumEstadoCara.Normal;
 
@@ -91,12 +91,12 @@ namespace XbeeAdminConsole
             switch (EstadoCara)
             { 
                 case EnumEstadoCara.Normal:
-                    this.BackColor = ColorCara;
-                    this.SFlbNombreCara.BackColor = ColorCaraHead;
+                    this.tableLayoutPanel4.BackColor = Color.Gray;
+                    this.SFlbNombreCara.BackColor = Color.FromArgb(66, 66, 66);
                     break;
 
                 case EnumEstadoCara.Atendiendo:
-                    this.BackColor = Color.FromArgb(75, 175, 79);
+                    this.tableLayoutPanel4.BackColor = Color.FromArgb(75, 175, 79);
                     break;
 
                 default:
@@ -119,6 +119,23 @@ namespace XbeeAdminConsole
         {
             ColocarImagen();
         }
+
+        private void ctrCara_Load(object sender, EventArgs e)
+        {
+            //PrivateFontCollection myFonts;
+
+            //FontFamily family = LoadFontFamily(Path.GetDirectoryName(Application.ExecutablePath) + "/fuenteLabel.ttf", out myFonts);
+            //Font theFont = new Font(family, 21.0f);
+            //SFlbDineroValor.Font = theFont;
+            //SFlbGalonesValor.Font = theFont;
+        }
+
+        //private FontFamily LoadFontFamily(string filename, out PrivateFontCollection _myFonts)
+        //{
+        //    //_myFonts = new PrivateFontCollection();
+        //    //_myFonts.AddFontFile(filename);
+        //    //return _myFonts.Families[0];
+        //}
     }
     #region Enumeraciones
     public enum EnumEstadoCara

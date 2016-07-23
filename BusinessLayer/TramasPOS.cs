@@ -527,8 +527,9 @@ namespace BusinessLayer
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL CREDITO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-                mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
-                mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
+                //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                mensajeTrama.Add("C$: " + infoVenta.TotalCredTran);
             }
 
             if (infoVenta.TotalProdTran != "0")
@@ -541,7 +542,11 @@ namespace BusinessLayer
             
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL EFECTIVO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            mensajeTrama.Add("C$: " + infoVenta.TotalEfectivo.ToString());
+            var totalEfectivo = Convert.ToDecimal(infoVenta.TotalEfectivo.ToString());
+            var totalCredito = Convert.ToDecimal(infoVenta.TotalCredTran);
+            var totalVendidoEfectivo = totalEfectivo - totalCredito;
+            
+            mensajeTrama.Add("C$: " + totalVendidoEfectivo);
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL ELECTRONICOS INICIALES",
@@ -677,8 +682,17 @@ namespace BusinessLayer
                 {
                     descuento = dtInfo.Rows[0]["descuento"].ToString();
                 }
-                decimal DineroDescontar = Convert.ToDecimal(dtInfo.Rows[0]["precio"]) - (Convert.ToDecimal(dtInfo.Rows[0]["precio"]) * Convert.ToDecimal(descuento) / 100);
-                mensajeTrama.Add("CDescuento: %" + descuento + "");
+                decimal DineroDescontar = Convert.ToDecimal(dtInfo.Rows[0]["precio"]) - Convert.ToDecimal(descuento);
+
+                if(Convert.ToDecimal(descuento) <0)
+                {
+                    mensajeTrama.Add("CIncremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
+                }
+                else
+                {
+                    mensajeTrama.Add("CDescuento: $" + descuento + "");
+                }
+                
                 mensajeTrama.Add("CTotal acreditado: $" + DineroDescontar + "");
             }
             else

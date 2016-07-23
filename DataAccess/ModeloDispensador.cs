@@ -10,20 +10,50 @@ using XbeeUtils;
 
 namespace DataAccess
 {
+    
     public class ModeloDispensador: Connection, IDisposable
     {
 
         #region Enviar Totales
         
-        public bool GuardaVenta(string idProducto, string cara, string manguera, string dinero, string galones, string ppu, string fecha, string islero, string xbee,string serialFidelizado,string serialCredito, int descuento)
+        public int GuardaVenta(string idProducto, string cara, string manguera, string dinero, string galones, string ppu, string fecha, string islero, string xbee,string serialFidelizado,string serialCredito, int descuento)
         {
+            int ImprimeTiquete = 0;
+            var dtCreditosEnCara = GetTable("select idVehiculo,idUsuario,idCredito,cara,cast(descuento as signed) as descuento,cupo,saldo,dia,pendiente,estadoCredito from credito where cara = " + cara + " and pendiente = 1");
+            int tipoVenta = 2; //tipo de cuenta 1-> credito, 2-> Contado
+            string idVehiculo = "NULL";
+            //Parte para crédito
+            decimal descuentoporGalon = 0;
+            decimal valCredito = 0;
+            decimal descuentoReal = 0;
+            if (dtCreditosEnCara.Rows.Count>0)
+            {
+                ImprimeTiquete = 1;
+                descuentoporGalon = Convert.ToInt32(dtCreditosEnCara.Rows[0]["descuento"].ToString());
+                var valGalonDescuento = Convert.ToDecimal(ppu) + descuentoporGalon;
+                valCredito = Convert.ToDecimal(galones) * Convert.ToDecimal(valGalonDescuento); 
+
+                tipoVenta = 1;
+                idVehiculo = dtCreditosEnCara.Rows[0]["idVehiculo"].ToString();
+                decimal DineroDescontar = valCredito;
+                descuentoReal = Convert.ToDecimal(dinero) - valCredito;
+                decimal saldoAntiguo = 0;
+                if (object.Equals(dtCreditosEnCara.Rows[0]["saldo"], DBNull.Value) == false && dtCreditosEnCara.Rows[0]["saldo"].ToString().Trim() != "")
+                {
+                    saldoAntiguo = Convert.ToDecimal(dtCreditosEnCara.Rows[0]["saldo"]);
+                }
+                decimal nuevoSaldo = saldoAntiguo - DineroDescontar;
+                ExecuteQuery("update credito set pendiente = 0, saldo = " + nuevoSaldo.ToString().Replace(',', '.') + " where idCredito = " + dtCreditosEnCara.Rows[0]["idCredito"].ToString());
+            }
+
+
+            var dtFidelizadoEnCara = GetTable("select * from puntos where cara = " + cara + " and pendiente = 1");
 
             //Parte para fidelizado
             string puntos = "NULL";
-            string idVehiculo = "NULL";
-            if (serialFidelizado != "")
+            if (dtFidelizadoEnCara.Rows.Count>0)
             {
-                DataTable dtFidelizado = ObtenerFidelizadoPorSerial(serialFidelizado);
+                DataTable dtFidelizado = ObtenerFidelizadoPorIdUsuario(dtFidelizadoEnCara.Rows[0]["idUsuario"].ToString());
                 if (dtFidelizado.Rows.Count > 0)
                 {
                     idVehiculo = dtFidelizado.Rows[0]["idVehiculo"].ToString();
@@ -31,36 +61,28 @@ namespace DataAccess
                     int valorPuntos = Convert.ToInt32(dtFidelizado.Rows[0]["valorPuntos"]);
 
                     puntos = ((Convert.ToInt32(dinero) / valorDinero) * valorPuntos).ToString();
-                    ExecuteQuery("update puntos set puntos = " + puntos + " where idPuntos = " + dtFidelizado.Rows[0]["idPuntos"] + "");
+                    ExecuteQuery("update puntos set puntos = puntos + " + puntos + " where idPuntos = " + dtFidelizadoEnCara.Rows[0]["idPuntos"] + "");
+                    ExecuteQuery("update puntos set pendiente = 0 where idPuntos = " + dtFidelizadoEnCara.Rows[0]["idPuntos"].ToString());
                 }
             }
 
-            int tipoVenta = 2; //tipo de cuenta 1-> credito, 2-> Contado
-            
-            //Parte para crédito
-            if (serialCredito != "")
+            var placa = "";
+            //saco la placa
+            if (idVehiculo != "NULL")
             {
-                tipoVenta = 1;
-                DataTable dtCredito = ObtenerCreditoPorSerial(serialCredito);
-                if (dtCredito.Rows.Count > 0)
+                var dtVehiculo = GetTable("select placa from vehiculo where id=" + idVehiculo);
+                if (dtVehiculo.Rows[0][0] != DBNull.Value)
                 {
-                    idVehiculo = dtCredito.Rows[0]["id"].ToString();
-                    decimal DineroDescontar = Convert.ToDecimal(dinero) - (Convert.ToDecimal(dinero) * Convert.ToDecimal(descuento) / 100);
-                    decimal saldoAntiguo = 0;
-                    if (object.Equals(dtCredito.Rows[0]["saldo"], DBNull.Value) == false && dtCredito.Rows[0]["saldo"].ToString().Trim() != "")
-                    {
-                        saldoAntiguo = Convert.ToDecimal(dtCredito.Rows[0]["saldo"]);
-                    }
-                    decimal nuevoSaldo = saldoAntiguo - DineroDescontar;
-                    ExecuteQuery("update credito set saldo = " + nuevoSaldo.ToString().Replace(',','.') + " where idCredito = " + dtCredito.Rows[0]["idCredito"].ToString());
+                    placa = dtVehiculo.Rows[0][0].ToString();
                 }
+
             }
 
-
-            string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee,puntos,idVehiculo,tipoCuenta,descuento) values";
-            ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',', '.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + "," + tipoVenta + "," + descuento + ")");
+            string sqlInsertInto = "insert into ventas (idProducto, cara, manguera, precio, galones, ppu, fecha, islero, idXbee,puntos,idVehiculo,tipoCuenta,descuento,placa) values";
+            ExecuteQuery(sqlInsertInto + "(" + idProducto + "," + cara + "," + manguera + "," + dinero + "," + galones.ToString().Replace(',', '.') + "," + ppu + ",'" + fecha + "','" + islero + "'," + xbee + "," + puntos + "," + idVehiculo + "," + tipoVenta + "," + descuentoReal.ToString().Replace(',', '.') + ",'" + placa + "')");
             string sqlUpdate = "update producto set existenciaProducto = existenciaProducto - " + galones.ToString().Replace(',', '.') + " where idProducto = " + idProducto;
-            return ExecuteQuery(sqlUpdate);
+            ExecuteQuery(sqlUpdate);
+            return ImprimeTiquete;
         }
 
         public bool GuardaVentasTotales(string[] datos,string fecha, string idXbee)
@@ -83,9 +105,9 @@ namespace DataAccess
         #endregion
 
         #region Fidelizado
-        public DataTable ObtenerFidelizadoPorSerial(string serial)
+        public DataTable ObtenerFidelizadoPorIdUsuario(string idUsuario)
         {
-            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero, V.propietario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan WHERE `serial` = '" + serial + "' AND V.tipoCliente = 1");
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero, V.propietario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan WHERE V.propietario = '" + idUsuario + "'");
         }
         #endregion
         #region Credito

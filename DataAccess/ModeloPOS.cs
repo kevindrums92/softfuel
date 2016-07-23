@@ -172,7 +172,10 @@ namespace DataAccess
 
             newVentas.TotalCaraDin = (newVentas.TotalDineroMang1 + newVentas.TotalDineroMang2 + newVentas.TotalDineroMang3).ToString();
             newVentas.TotalCaraGal = (newVentas.TotalGalonesMang1 + newVentas.TotalGalonesMang2 + newVentas.TotalGalonesMang3).ToString();
-            newVentas.TotalCredTran = "0";
+
+            var dtTotalCredito = GetTable("SELECT IFNULL(SUM(precio),0) AS credito FROM ventas WHERE cara = " + newVentas.Cara.ToString() + " AND tipoCuenta = 1 AND fecha > (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaAbrir"]) + ")) AND fecha <  (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaCerrar"]) + "))");
+            
+            newVentas.TotalCredTran = dtTotalCredito.Rows[0][0].ToString();
             newVentas.TotalCredDin = "";
             newVentas.TotalCredGal = "";
 
@@ -249,7 +252,13 @@ namespace DataAccess
         /// <returns></returns>
         public bool ActualizarPlacaKmUltimaVenta(string placa, string km,string idVenta)
         {
-            return ExecuteQuery("update ventas set placa = '" + placa + "', kilometraje = '" + km + "' where idVenta = " + idVenta);
+            string updatePlaca = "";
+            if (placa != "")
+            {
+                updatePlaca = " placa = '" + placa + "', ";
+            }
+            
+            return ExecuteQuery("update ventas set " + updatePlaca + " kilometraje = '" + km + "' where idVenta = " + idVenta);
         }
         #endregion
 
@@ -369,7 +378,7 @@ namespace DataAccess
 
         public DataTable ObtenerFidelizadoPorVehiculo(string idVehiculo)
         {
-            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero,V.propietario,U.nomUsuario,U.apeUsuario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan INNER JOIN usuario as U ON U.idUsuario = V.propietario WHERE V.id = '" + idVehiculo + "' AND V.tipoCliente = 1 and V.estado = 'activo'");
+            return GetTable("SELECT V.id AS idVehiculo, V.placa, P.idPuntos, P.puntos, P.idPlan,PP.nomPlan, TP.valorPuntos, TP.valorDinero,V.propietario,U.nomUsuario,U.apeUsuario FROM vehiculo V LEFT OUTER JOIN puntos P ON P.idVehiculo = V.id LEFT OUTER JOIN parametrizapuntos PP ON PP.idPlan = P.idPlan LEFT OUTER JOIN tipoplan TP ON TP.idTipoplan = PP.tipoPlan INNER JOIN usuario as U ON U.idUsuario = V.propietario WHERE V.id = '" + idVehiculo + "' and V.estado = 'activo'");
         }
         
         #endregion

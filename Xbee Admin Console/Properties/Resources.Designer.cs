@@ -131,6 +131,16 @@ namespace XbeeAdminConsole.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Open_24_Display_St {
+            get {
+                object obj = ResourceManager.GetObject("Open_24_Display_St", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap pos_pay {

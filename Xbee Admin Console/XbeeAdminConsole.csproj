@@ -187,6 +187,7 @@
     <Content Include="TicketSoftICO.ico" />
     <Content Include="tramaspos.txt" />
     <None Include="Resources\dispensador.png" />
+    <None Include="Resources\Open 24 Display St.ttf" />
     <None Include="Resources\pos_pay.png" />
     <Content Include="sca.ico" />
     <None Include="Resources\sca.ico" />

@@ -522,6 +522,16 @@ namespace BusinessLayer
                                         ProcesarTrama(_trama, nodoImpresion, true);
                                         instancia.ListaTiquetesPorImprimir.Remove(TiquetePendiente);
                                     }
+
+                                   
+                                }
+
+                                //si es venta de credito imprimo tiquete
+                                if (resultEnvioTotales.ImprimeTiquete == 1)
+                                {
+                                    string[] _trama = { "I", caraProceso, "", "" };
+                                    ProcesarTrama(_trama, nodo, true);
+                                    ProcesarTrama(_trama, nodo, true);
                                 }
 
                                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));

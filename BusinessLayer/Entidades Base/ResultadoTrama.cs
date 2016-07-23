@@ -17,8 +17,9 @@ namespace BusinessLayer
         public int DescuentoCredito { get; set; }
         public string VentaGalones { get; set; }
         public string VentaDinero { get; set; }
+        public int ImprimeTiquete { get; set; }
 
-        public ResultadoTrama(bool _resultado, List<byte[]> _tramaResultado,string _mensaje,int _idXbee = 0, bool _esCredito = false,string _ventaGalones  = "",string _ventaDinero = "",int _descuentoCredito = 0)
+        public ResultadoTrama(bool _resultado, List<byte[]> _tramaResultado,string _mensaje,int _idXbee = 0, bool _esCredito = false,string _ventaGalones  = "",string _ventaDinero = "",int _descuentoCredito = 0,int _imprimeTiquete = 0)
         {
             this.Resultado = _resultado;
             this.TramaResultado = _tramaResultado;
@@ -28,6 +29,7 @@ namespace BusinessLayer
             this.VentaGalones = _ventaGalones;
             this.VentaDinero = _ventaDinero;
             this.DescuentoCredito = _descuentoCredito;
+            this.ImprimeTiquete = _imprimeTiquete;
         }
     }
 }

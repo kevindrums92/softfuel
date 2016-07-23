@@ -42,16 +42,16 @@ namespace XbeeAdminConsole
             Conectar();
             EstablecerPorcentajesProductosGasolina();
 
-            NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
+            //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba2 = new NodosXbee(null, "POS 1", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 2);
             //NodosXbee _nodoPrueba3 = new NodosXbee(null, "POS 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 4);
-            NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
+            //NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
 
-            instancia.ListNodes = new List<NodosXbee>();
-            instancia.AgregarNodo(_nodoPrueba);
+            //instancia.ListNodes = new List<NodosXbee>();
+            //instancia.AgregarNodo(_nodoPrueba);
             //instancia.AgregarNodo(_nodoPrueba2);
             //instancia.AgregarNodo(_nodoPrueba3);
-            instancia.AgregarNodo(_nodoPrueba4);
+            //instancia.AgregarNodo(_nodoPrueba4);
 
 
             //string tramaRecibida1 = "M:1:87";
@@ -72,7 +72,7 @@ namespace XbeeAdminConsole
 
             //string tramaRecibida2 = "E:2";
             //string[] arrayTramaRecibida2 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida2);
-            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba);
+            //claseMain.ProcesarTrama(arrayTramaRecibida2, _nodoPrueba,false);
 
             //string tramaRecibida4 = "I:2:asd654:654";
             //string[] arrayTramaRecibida4 = UtilidadesTramas.ObtieneArrayTrama(tramaRecibida4);
@@ -81,7 +81,7 @@ namespace XbeeAdminConsole
         #endregion
 
         #region Eventos Mover Ventana
-       
+
         int ex;
 
         int ey;
@@ -369,9 +369,6 @@ namespace XbeeAdminConsole
         
         void Conectar()
         {
-            SFbtnConectar.Enabled = false;
-            SFbtnEscanearRed.Enabled = true;
-            SFbtnDesconectar.Enabled = true;
             claseMain.ConectaryDescubrirRed();
             SFTimerCambioPrecios.Enabled = true;
             SFTimerCambioPrecios.Start();
@@ -382,9 +379,6 @@ namespace XbeeAdminConsole
             DialogResult result = MessageBox.Show("Esta seguro que desea desconectar la red?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                SFbtnConectar.Enabled = true;
-                SFbtnEscanearRed.Enabled = false;
-                SFbtnDesconectar.Enabled = false;
                 claseMain.Desconectar();
                 SFTimerCambioPrecios.Enabled = false;
                 SFTimerCambioPrecios.Stop();
@@ -405,18 +399,18 @@ namespace XbeeAdminConsole
         void LimpiarDispositivos()
         {
             if (ListadoObjetosCaras != null) ListadoObjetosCaras.Clear();
-            SFPanelCara1.Controls.Clear();
-            SFPanelCara2.Controls.Clear();
-            SFPanelCara3.Controls.Clear();
-            SFPanelCara4.Controls.Clear();
-            SFPanelCara5.Controls.Clear();
-            SFPanelCara6.Controls.Clear();
-            SFPanelCara7.Controls.Clear();
-            SFPanelCara8.Controls.Clear();
-            SFPanelPOS1.Controls.Clear();
-            SFPanelPOS2.Controls.Clear();
-            SFPanelPOS3.Controls.Clear();
-            SFPanelPOS4.Controls.Clear();
+            //SFPanelCara1.Controls.Clear();
+            //SFPanelCara2.Controls.Clear();
+            //SFPanelCara3.Controls.Clear();
+            //SFPanelCara4.Controls.Clear();
+            //SFPanelCara5.Controls.Clear();
+            //SFPanelCara6.Controls.Clear();
+            //SFPanelCara7.Controls.Clear();
+            //SFPanelCara8.Controls.Clear();
+            //SFPanelPOS1.Controls.Clear();
+            //SFPanelPOS2.Controls.Clear();
+            //SFPanelPOS3.Controls.Clear();
+            //SFPanelPOS4.Controls.Clear();
         }
 
         void NodoAgregadoEventHandler(NodosXbee e)
@@ -450,8 +444,8 @@ namespace XbeeAdminConsole
                     cara2 = "SFPanelCara8";
                 }
 
-                Panel PanelCara1 = FindPanel(SFLayoutContainer, cara1);
-                Panel PanelCara2 = FindPanel(SFLayoutContainer, cara2);
+                Panel PanelCara1 = FindPanel(TsPanelContainerDispensadores, cara1);
+                Panel PanelCara2 = FindPanel(TsPanelContainerDispensadores, cara2);
 
                 DataTable dtCaras;
                 using (Generales modGEN = new Generales())
@@ -483,48 +477,48 @@ namespace XbeeAdminConsole
                     ListadoObjetosCaras.Add(newCara2);
                 }
             }
-            else if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS)
-            {
-                string pos = "";
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 1)
-                {
-                    pos = "SFPanelPOS1";
-                }
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 2)
-                {
-                    pos = "SFPanelPOS2";
-                }
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 3)
-                {
-                    pos = "SFPanelPOS3";
-                }
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 4)
-                {
-                    pos = "SFPanelPOS4";
-                }
-                Panel PanelPOS = FindPanel(SFLayoutContainer, pos);
-                if (PanelPOS != null)
-                {
-                    using (Generales modGEN = new Generales())
-                    {
-                        DataTable dtPOS = modGEN.GetTable("select nomXbee FROM xbee WHERE idXbee = " + e.IdXbee);
-                        if (dtPOS != null && dtPOS.Rows.Count > 0)
-                        {
-                            ctrPOS newPOS = new ctrPOS();
-                            newPOS.NombrePOS = dtPOS.Rows[0][0].ToString();
-                            newPOS.idXbee = e.IdXbee;
-                            PanelPOS.Controls.Add(newPOS);
-                            newPOS.Dock = DockStyle.Fill;
-                            newPOS.EstableceColor();
+            //else if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS)
+            //{
+            //    string pos = "";
+            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 1)
+            //    {
+            //        pos = "SFPanelPOS1";
+            //    }
+            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 2)
+            //    {
+            //        pos = "SFPanelPOS2";
+            //    }
+            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 3)
+            //    {
+            //        pos = "SFPanelPOS3";
+            //    }
+            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
+            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 4)
+            //    {
+            //        pos = "SFPanelPOS4";
+            //    }
+            //    Panel PanelPOS = FindPanel(SFLayoutContainer, pos);
+            //    if (PanelPOS != null)
+            //    {
+            //        using (Generales modGEN = new Generales())
+            //        {
+            //            DataTable dtPOS = modGEN.GetTable("select nomXbee FROM xbee WHERE idXbee = " + e.IdXbee);
+            //            if (dtPOS != null && dtPOS.Rows.Count > 0)
+            //            {
+            //                ctrPOS newPOS = new ctrPOS();
+            //                newPOS.NombrePOS = dtPOS.Rows[0][0].ToString();
+            //                newPOS.idXbee = e.IdXbee;
+            //                PanelPOS.Controls.Add(newPOS);
+            //                newPOS.Dock = DockStyle.Fill;
+            //                newPOS.EstableceColor();
 
-                        }
-                    }
-                }
-            }
+            //            }
+            //        }
+            //    }
+            //}
         }
 
         private Panel FindPanel(Panel parent, string ctlName)
@@ -559,14 +553,16 @@ namespace XbeeAdminConsole
         {
             if (expandir == true)
             {
-                this.SFLyContainer.RowStyles[0].Height = 0F;
-                this.SFLyContainer.RowStyles[1].Height = 100F;
+                this.TypDispensadoresRejilla.RowStyles[0].Height = 0F;
+                this.TypDispensadoresRejilla.RowStyles[1].SizeType = SizeType.Percent;
+                this.TypDispensadoresRejilla.RowStyles[1].Height = 100F;
                 SFbtnMaximizarMinimizar.Text = "Minimizar";
             }
             else
             {
-                this.SFLyContainer.RowStyles[0].Height = 60.98039F;
-                this.SFLyContainer.RowStyles[1].Height = 39.01961F;
+                this.TypDispensadoresRejilla.RowStyles[0].Height = 100F;
+                this.TypDispensadoresRejilla.RowStyles[1].SizeType = SizeType.Absolute;
+                this.TypDispensadoresRejilla.RowStyles[1].Height = 40;
                 SFbtnMaximizarMinimizar.Text = "Maximizar";
             }
         }
@@ -590,7 +586,7 @@ namespace XbeeAdminConsole
                 {
                     Ctrcara.EstadoCara = EnumEstadoCara.Atendiendo;
                     Ctrcara.Galones = "0";
-                    Ctrcara.Dinero = "$0";
+                    Ctrcara.Dinero = "0";
                 }
                 else
                 {
@@ -598,7 +594,7 @@ namespace XbeeAdminConsole
                     if (galones != "" && galones != "0")
                     {
                         Ctrcara.Galones = galones;
-                        Ctrcara.Dinero = "$" + dinero;
+                        Ctrcara.Dinero = dinero;
                     }
                     EstablecerPorcentajesProductosGasolina();
                 }
@@ -608,18 +604,7 @@ namespace XbeeAdminConsole
 
         void cargarImagenes()
         {
-            System.Drawing.Bitmap imagenConexion = Properties.Resources.conectar;
-            Bitmap objBitmapConexion = new Bitmap(imagenConexion, new Size(32, 32));
-            SFbtnConectar.Image = objBitmapConexion;
-
-            System.Drawing.Bitmap imagenDesc = Properties.Resources.conexion;
-            Bitmap objBitmapDesc = new Bitmap(imagenDesc, new Size(32, 32));
-            SFbtnDesconectar.Image = objBitmapDesc;
-
-            System.Drawing.Bitmap imagenRed = Properties.Resources.network;
-            Bitmap objimagenRed = new Bitmap(imagenRed, new Size(32, 32));
-            SFbtnEscanearRed.Image = objimagenRed;
-
+           
             System.Drawing.Bitmap imagenIcono = Properties.Resources.logo_ticket_soft;
             Bitmap objimagenIcono = new Bitmap(imagenIcono, SFLogo.Size);
             SFLogo.Image = objimagenIcono;
@@ -743,40 +728,48 @@ namespace XbeeAdminConsole
         {
             if (e.Result != null)
             {
-                DataTable dtProductos = (DataTable) e.Result;
-                if (dtProductos.Rows.Count > 0)
+                try
                 {
-                    //ACPM
-                    if (dtProductos.Select("tipoProducto = 1").Count() > 0)
+                    DataTable dtProductos = (DataTable)e.Result;
+                    if (dtProductos.Rows.Count > 0)
                     {
-                        DataRow _rowAcpm = dtProductos.Select("tipoProducto = 1")[0];
-                        SFpgACPM.Maximum = Convert.ToInt32(_rowAcpm["capacidad"]);
-                        if(Convert.ToInt32(Convert.ToDecimal(_rowAcpm["existenciaProducto"]))>=0)
+                        //ACPM
+                        if (dtProductos.Select("tipoProducto = 1").Count() > 0)
                         {
-                            SFpgACPM.Value = Convert.ToInt32(Convert.ToDecimal(_rowAcpm["existenciaProducto"]));
+                            DataRow _rowAcpm = dtProductos.Select("tipoProducto = 1")[0];
+                            SFpgACPM.Maximum = Convert.ToInt32(_rowAcpm["capacidad"]);
+                            if (Convert.ToInt32(Convert.ToDecimal(_rowAcpm["existenciaProducto"])) >= 0)
+                            {
+                                SFpgACPM.Value = Convert.ToInt32(Convert.ToDecimal(_rowAcpm["existenciaProducto"]));
+                            }
                         }
-                    }
 
-                    //Corriente
-                    if (dtProductos.Select("tipoProducto = 2").Count() > 0)
-                    {
-                        DataRow _rowCorriente = dtProductos.Select("tipoProducto = 2")[0];
-                        SFpgCorriente.Maximum = Convert.ToInt32(_rowCorriente["capacidad"]);
-                        if (Convert.ToInt32(Convert.ToDecimal(_rowCorriente["existenciaProducto"])) >= 0)
+                        //Corriente
+                        if (dtProductos.Select("tipoProducto = 2").Count() > 0)
                         {
-                            SFpgCorriente.Value = Convert.ToInt32(Convert.ToDecimal(_rowCorriente["existenciaProducto"]));
+                            DataRow _rowCorriente = dtProductos.Select("tipoProducto = 2")[0];
+                            SFpgCorriente.Maximum = Convert.ToInt32(_rowCorriente["capacidad"]);
+                            if (Convert.ToInt32(Convert.ToDecimal(_rowCorriente["existenciaProducto"])) >= 0)
+                            {
+                                SFpgCorriente.Value = Convert.ToInt32(Convert.ToDecimal(_rowCorriente["existenciaProducto"]));
+                            }
                         }
-                    }
 
-                    //Extra
-                    if (dtProductos.Select("tipoProducto = 3").Count() > 0)
-                    {
-                        DataRow _rowExtra = dtProductos.Select("tipoProducto = 3")[0];
-                        SFpgExtra.Maximum = Convert.ToInt32(_rowExtra["capacidad"]);
-                        SFpgExtra.Value = Convert.ToInt32(_rowExtra["existenciaProducto"]);
-                    }
+                        //Extra
+                        if (dtProductos.Select("tipoProducto = 3").Count() > 0)
+                        {
+                            DataRow _rowExtra = dtProductos.Select("tipoProducto = 3")[0];
+                            SFpgExtra.Maximum = Convert.ToInt32(_rowExtra["capacidad"]);
+                            SFpgExtra.Value = Convert.ToInt32(_rowExtra["existenciaProducto"]);
+                        }
 
+                    }
                 }
+                catch (Exception)
+                {
+                    
+                }
+                
             }
         }
         #endregion 
