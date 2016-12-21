@@ -180,7 +180,7 @@ namespace XbeeAdminConsole
         #region Eventos Formulario
         private void SFbtnCerrar_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Esta seguro que desea salir?", "SOFTFUEL .NET", MessageBoxButtons.YesNo);
+            DialogResult result = MessageBox.Show("Esta seguro que desea salir?", "TICKETSOFT .NET", MessageBoxButtons.YesNo);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
                 claseMain.Desconectar();

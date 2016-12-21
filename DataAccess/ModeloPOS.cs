@@ -173,9 +173,13 @@ namespace DataAccess
             newVentas.TotalCaraDin = (newVentas.TotalDineroMang1 + newVentas.TotalDineroMang2 + newVentas.TotalDineroMang3).ToString();
             newVentas.TotalCaraGal = (newVentas.TotalGalonesMang1 + newVentas.TotalGalonesMang2 + newVentas.TotalGalonesMang3).ToString();
 
-            var dtTotalCredito = GetTable("SELECT IFNULL(SUM(precio),0) AS credito FROM ventas WHERE cara = " + newVentas.Cara.ToString() + " AND tipoCuenta = 1 AND fecha > (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaAbrir"]) + ")) AND fecha <  (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaCerrar"]) + "))");
-            
+            var dtTotalCredito = GetTable("SELECT IFNULL(SUM(precio),0) AS credito FROM ventas WHERE cara = " + newVentas.Cara.ToString() + " AND tipoCuenta = 1 AND fecha >= (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaAbrir"]) + ")) AND fecha <=  (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaCerrar"]) + "))");
+            var dtTotalPrepago = GetTable("SELECT IFNULL(SUM(precio),0) AS prepago FROM ventas WHERE cara = " + newVentas.Cara.ToString() + " AND tipoCuenta = 3 AND fecha >= (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaAbrir"]) + ")) AND fecha <=  (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaCerrar"]) + "))");
+            var dtTotalTarjetaCredito = GetTable("SELECT IFNULL(SUM(precio),0) AS datafono FROM ventas WHERE cara = " + newVentas.Cara.ToString() + " AND tipoCuenta = 4 AND fecha >= (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaAbrir"]) + ")) AND fecha <=  (SELECT fecha FROM ventatotal WHERE id IN(" + Convert.ToInt32(dtVentas.Rows[0]["idVentaCerrar"]) + "))");
+
             newVentas.TotalCredTran = dtTotalCredito.Rows[0][0].ToString();
+            newVentas.TotalPrepago = dtTotalPrepago.Rows[0][0].ToString();
+            newVentas.TotalTarjetaCredito = dtTotalTarjetaCredito.Rows[0][0].ToString();
             newVentas.TotalCredDin = "";
             newVentas.TotalCredGal = "";
 
@@ -497,6 +501,9 @@ namespace DataAccess
         public string TotalProdDin { get; set; }
         public string TotalProdCant { get; set; }
         public string TotalEfectivo { get; set; }
+
+        public string TotalPrepago { get; set; }
+        public string TotalTarjetaCredito { get; set; }
 
         public int IniDineroMang1 { get; set; }
         public decimal IniGalMang1 { get; set; }

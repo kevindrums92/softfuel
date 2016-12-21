@@ -532,6 +532,24 @@ namespace BusinessLayer
                 mensajeTrama.Add("C$: " + infoVenta.TotalCredTran);
             }
 
+            if (infoVenta.TotalPrepago != "0")
+            {
+                mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL PREPAGO",
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
+                //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                mensajeTrama.Add("C$: " + infoVenta.TotalPrepago);
+            }
+
+            if (infoVenta.TotalTarjetaCredito != "0")
+            {
+                mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL DATAFONO",
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
+                //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                mensajeTrama.Add("C$: " + infoVenta.TotalTarjetaCredito);
+            }
+
             if (infoVenta.TotalProdTran != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL PRODUCTO",
@@ -544,7 +562,9 @@ namespace BusinessLayer
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
             var totalEfectivo = Convert.ToDecimal(infoVenta.TotalEfectivo.ToString());
             var totalCredito = Convert.ToDecimal(infoVenta.TotalCredTran);
-            var totalVendidoEfectivo = totalEfectivo - totalCredito;
+            var totalPrepago = Convert.ToDecimal(infoVenta.TotalPrepago);
+            var totalTarjCredito = Convert.ToDecimal(infoVenta.TotalTarjetaCredito);
+            var totalVendidoEfectivo = totalEfectivo - totalCredito - totalPrepago - totalTarjCredito;
             
             mensajeTrama.Add("C$: " + totalVendidoEfectivo);
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
@@ -684,20 +704,51 @@ namespace BusinessLayer
                 }
                 decimal DineroDescontar = Convert.ToDecimal(dtInfo.Rows[0]["precio"]) - Convert.ToDecimal(descuento);
 
-                if(Convert.ToDecimal(descuento) <0)
+                if (Convert.ToDecimal(descuento) != 0)
                 {
-                    mensajeTrama.Add("CIncremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
-                }
-                else
-                {
-                    mensajeTrama.Add("CDescuento: $" + descuento + "");
+                    if (Convert.ToDecimal(descuento) < 0)
+                    {
+                        mensajeTrama.Add("CIncremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
+                    }
+                    else
+                    {
+                        mensajeTrama.Add("CDescuento: $" + descuento + "");
+                    }
                 }
                 
                 mensajeTrama.Add("CTotal acreditado: $" + DineroDescontar + "");
             }
-            else
+            else if (object.Equals(dtInfo.Rows[0]["tipoCuenta"], DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "2")
             {
                 mensajeTrama.Add("CForma de Pago: Contado");
+            }
+            else if (object.Equals(dtInfo.Rows[0]["tipoCuenta"], DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "3")
+            {
+                mensajeTrama.Add("CForma de Pago: Prepago");
+                string descuento = "0";
+                if (object.Equals(dtInfo.Rows[0]["descuento"], DBNull.Value) == false && dtInfo.Rows[0]["descuento"].ToString().Trim() != "")
+                {
+                    descuento = dtInfo.Rows[0]["descuento"].ToString();
+                }
+                decimal DineroDescontar = Convert.ToDecimal(dtInfo.Rows[0]["precio"]) - Convert.ToDecimal(descuento);
+
+                if (Convert.ToDecimal(descuento) != 0)
+                {
+                    if (Convert.ToDecimal(descuento) < 0)
+                    {
+                        mensajeTrama.Add("CIncremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
+                    }
+                    else
+                    {
+                        mensajeTrama.Add("CDescuento: $" + descuento + "");
+                    }
+                }
+                mensajeTrama.Add("CTotal Venta Prepago:");
+                mensajeTrama.Add("C$" + DineroDescontar + "");
+            }
+            else
+            {
+                mensajeTrama.Add("CForma de Pago: Datafono");
             }
             mensajeTrama.Add("CCliente: " + dtInfo.Rows[0]["cliente"].ToString());
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",

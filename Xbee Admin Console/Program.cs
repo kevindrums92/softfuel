@@ -10,26 +10,37 @@ namespace XbeeAdminConsole
 {
     static class Program
     {
+        private static string appGuid = "c0a76b5a-12ab-45c5-b9d9-d693faa6e7b9";
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
         [STAThread]
         static void Main()
         {
-            // Add the event handler for handling UI thread exceptions to the event.
-            Application.ThreadException += new ThreadExceptionEventHandler(UIThreadException);
+            using (Mutex mutex = new Mutex(false, "Global\\" + appGuid))
+            {
+                if (!mutex.WaitOne(0, false))
+                {
+                    MessageBox.Show("Ticket Soft Console Application ya está corriendo!");
+                    return;
+                }
 
-            // Set the unhandled exception mode to force all Windows Forms errors to go through
-            // our handler.
-            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+                // Add the event handler for handling UI thread exceptions to the event.
+                Application.ThreadException += new ThreadExceptionEventHandler(UIThreadException);
 
-            // Add the event handler for handling non-UI thread exceptions to the event. 
-            AppDomain.CurrentDomain.UnhandledException +=
-                new UnhandledExceptionEventHandler(UnhandledException);
+                // Set the unhandled exception mode to force all Windows Forms errors to go through
+                // our handler.
+                Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
-            //Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new frmAdmin());
+                // Add the event handler for handling non-UI thread exceptions to the event. 
+                AppDomain.CurrentDomain.UnhandledException +=
+                    new UnhandledExceptionEventHandler(UnhandledException);
+
+                //Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new frmAdmin());
+            }
+            
         }
 
         private static void UnhandledException(object sender, UnhandledExceptionEventArgs e)
