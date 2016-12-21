@@ -318,6 +318,16 @@ namespace BusinessLayer
                 {//Recibo petición de MOD POS
                     switch (arrayTramaRecibida[0])
                     {
+                            //Trama que debe llegar así: CTD:Mensaje que quiero enviar, solo esos 2 parametros
+                        case "CTD":
+                            var resultCTD = _tramasPOS.GuardarTramaCTD(arrayTramaRecibida,nodo.IdXbee);
+                            if (resultCTD.Resultado == true) {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama CTD Recibida", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            }else{
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCTD.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                            }
+                            _tramasPOS.Dispose();
+                            break;
                         //Cualquier trama a cualquier dispensador:
                         //La trama tiene que enviarse:CT:loque yo quiera
                         case "CT":
@@ -499,7 +509,20 @@ namespace BusinessLayer
                 else 
                 {//recibo tramas de dispesadores
                     switch (arrayTramaRecibida[0])
-                    { 
+                    {
+                        //Trama que debe llegar así: CTD:Mensaje que quiero enviar, solo esos 2 parametros
+                        case "CTD":
+                            var resultCTD = _tramasPOS.GuardarTramaCTD(arrayTramaRecibida, nodo.IdXbee);
+                            if (resultCTD.Resultado == true)
+                            {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama CTD Recibida", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            }
+                            else
+                            {
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCTD.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                            }
+                            _tramasPOS.Dispose();
+                            break;
                             //Abrir Venta
                         case "E":
                             string cara = arrayTramaRecibida[1].ToString();

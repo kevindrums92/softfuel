@@ -47,6 +47,28 @@ namespace BusinessLayer
 
         #region "Procesos Tramas"
 
+        public ResultadoTrama GuardarTramaCTD(string[] data, int idXbee)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string dato = data[1];
+
+                using (ModeloPOS modPOS = new ModeloPOS())
+                {
+                    modPOS.GuardaTramaCTD(dato, idXbee);
+                }
+
+                return new ResultadoTrama(true, null, "Trama CTD recibida");
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
         public ResultadoTrama PrepararTiquete(string[] data)
         {
             try

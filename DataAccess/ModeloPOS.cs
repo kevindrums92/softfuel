@@ -447,6 +447,15 @@ namespace DataAccess
         }
         #endregion
 
+        #region Trama CTD
+        public bool GuardaTramaCTD(string mensaje, int idXbee)
+        {
+            string fecha = DateTime.Now.ToString("yyyy-MM-dd");
+            ExecuteQuery("insert into comunicacion (xbee,trama,fecha, estado) values('" + idXbee.ToString() + "','" + mensaje + "','" + fecha + "',1)");
+            return true;
+        }
+        #endregion
+
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
         // Dispose() calls Dispose(true)
