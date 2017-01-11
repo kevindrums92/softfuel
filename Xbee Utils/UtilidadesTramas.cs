@@ -123,11 +123,30 @@ namespace XbeeUtils
         /// <param name="trama"></param>
         /// <returns></returns>
         public static string[] ObtieneArrayTrama(string trama)
-        { 
+        {
             string[] resultado = trama.Split(':');
             for (int i = 0; i <= resultado.Count() - 1; i++)
             {
                 resultado[i] = resultado[i].Trim();
+            }
+            return resultado;
+        }
+
+        /// <summary>
+        /// Obtiene el string de la trama de un array de string
+        /// </summary>
+        /// <param name="trama"></param>
+        /// <returns></returns>
+        public static string ObtieneStringTramaDeArray(string[] trama)
+        {
+            var resultado = "";
+            for (int i = 0; i <= trama.Count() - 1; i++)
+            {
+                resultado += trama[i].ToString();
+                if(i <= trama.Count() - 2)
+                {
+                    resultado += ":";
+                }
             }
             return resultado;
         }

@@ -202,9 +202,14 @@ namespace DataAccess
         }
         #endregion
         #region CambioPrecio
-        public DataTable ObtenerPreciosActualizados()
+        public DataTable ObtenerPreciosActualizadosProducto(string idProducto)
         {
-            return GetTable("select precioventaProducto from producto where idProducto IN(1,2,3,4)");
+            return GetTable("select precioventaProducto from producto where idProducto = " + idProducto);
+        }
+
+        public DataTable ObtenerProductosDispensador(string idXbee)
+        {
+            return GetTable("SELECT distinct  idProducto  FROM posicion where idXbee = " + idXbee + " order by numPosicion");
         }
         #endregion
         #region "IDisposable"

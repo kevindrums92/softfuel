@@ -11,10 +11,57 @@ using XbeeUtils;
 
 namespace BusinessLayer
 {
+    public class ActionResult
+    {
+        public bool Estado { get; set; }
+        public string Mensaje { get; set; }
+        public List<Byte[]> ResultadoDevolver { get; set; }
+    }
     class TramasDispensador : IDisposable
     {
         XbeeSingleton instancia = XbeeSingleton.Instance;
+
+
         #region "Procesos Tramas"
+        public ActionResult ValidacionAutorizarVenta(string cara, string manguera, int idXbee)
+        {
+            try
+            {
+                ActionResult resultado = new ActionResult();
+                resultado.Estado = false;
+                List<byte[]> TramasDevolver = new List<byte[]> { };
+                resultado.ResultadoDevolver = TramasDevolver;
+                using (var modPOS = new ModeloPOS())
+                {
+                    //Validar si el dispensador requiere autorización para vender
+                    DataTable dtXbee = modPOS.InformacionXbee(idXbee.ToString());
+                    if (dtXbee.Rows.Count > 0)
+                    {
+                        if (Convert.ToBoolean(dtXbee.Rows[0]["requiereAutVenta"]) == true)
+                        {
+                            DataTable dtAutorizados = modPOS.EstaTurnoAbiertoPorIdXbee(idXbee.ToString());
+                            if (dtAutorizados.Select("numPosicion = " + cara).Length > 0)
+                            {
+                                resultado.Estado = true;
+                                TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("OK" + cara));
+                            }
+                        }
+                        else {
+                            return null;
+                        }
+                    }
+                }
+
+                //Validar si hay credito y si puede tanquear el producto que contiene la maguera
+                return resultado;
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+                return null;
+            }
+        }
+
         public ResultadoTrama EnvioTotales(string[] data)
         {
             try
@@ -24,19 +71,23 @@ namespace BusinessLayer
                 string cara = data[1];
                 decimal galon_m1 = (Convert.ToDecimal(data[2])/1000);
                 int dinero_m1 = Convert.ToInt32(data[3]);
-                int ppu_m1 = Convert.ToInt32(data[4]);
+                int ppu_m1 = 0;
+                ppu_m1 = (data[4].ToString().Trim() != "") ? Convert.ToInt32(data[4]) : 0;
                 decimal galon_m2 = (Convert.ToDecimal(data[5])/1000);
                 int dinero_m2 = Convert.ToInt32(data[6]);
-                int ppu_m2 = Convert.ToInt32(data[7]);
+                int ppu_m2 = 0;
+                ppu_m2 = (data[7].ToString().Trim() != "") ? Convert.ToInt32(data[7]) : 0;
                 decimal galon_m3 = (Convert.ToDecimal(data[8])/1000);
                 int dinero_m3 = Convert.ToInt32(data[9]);
                 int ppu_m3 = Convert.ToInt32(data[10]);
+                ppu_m3 = (data[10].ToString().Trim() != "") ? Convert.ToInt32(data[10]) : 0;
                 string idProducto;
                 string usuarioIslero;
                 string idXbeeDispensador;
                 DataTable dtPosicion;
                 DataTable dtVentasTotales;
                 bool RealizoVentaTotal = false;
+                bool VentaMayorA9999999 = false;
                 string ventaGalones = "";
                 string ventaDinero = "";
                 bool esCredito = false;
@@ -102,13 +153,21 @@ namespace BusinessLayer
                             int difDinero = (dinero_m1 - Convert.ToInt32(dtVentasTotales.Rows[0]["p1"]));
                             ventaGalones = difGalon.ToString();
                             ventaDinero = difDinero.ToString();
-                            using (ModeloDispensador modDIS = new ModeloDispensador())
+                            //validamos si es negativo
+                            if (Convert.ToInt32(ventaDinero)> Convert.ToInt32(9999999))
                             {
-                                DataTable dtPosicionProductoCorrecto;
-                                dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara,"1");
-                                if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 1");
-                                ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado,serialCredito,descuentoCredito);
+                                VentaMayorA9999999 = true;
                             }
+                            else {
+                                using (ModeloDispensador modDIS = new ModeloDispensador())
+                                {
+                                    DataTable dtPosicionProductoCorrecto;
+                                    dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara, "1");
+                                    if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 1");
+                                    ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                }
+                            }
+                            
                         }
                         if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]) != galon_m2)
                         {
@@ -120,10 +179,18 @@ namespace BusinessLayer
                             int difDinero = (dinero_m2 - Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]));
                             ventaGalones = difGalon.ToString();
                             ventaDinero = difDinero.ToString();
-                            using (ModeloDispensador modDIS = new ModeloDispensador())
+                            //validamos si es negativo
+                            if (Convert.ToInt32(ventaDinero) > Convert.ToInt32(9999999))
                             {
-                                ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                VentaMayorA9999999 = true;
                             }
+                            else {
+                                using (ModeloDispensador modDIS = new ModeloDispensador())
+                                {
+                                    ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "2", difDinero.ToString(), difGalon.ToString(), ppu_m2.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                }
+                            }
+                            
                         }
                         if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]) != galon_m3)
                         {
@@ -135,13 +202,22 @@ namespace BusinessLayer
                             int difDinero = (dinero_m3 - Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]));
                             ventaGalones = difGalon.ToString();
                             ventaDinero = difDinero.ToString();
-                            using (ModeloDispensador modDIS = new ModeloDispensador())
+                            //validamos si es negativo
+                            if (Convert.ToInt32(ventaDinero) > Convert.ToInt32(9999999))
                             {
-                                ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                VentaMayorA9999999 = true;
                             }
+                            else
+                            {
+                                using (ModeloDispensador modDIS = new ModeloDispensador())
+                                {
+                                    ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "3", difDinero.ToString(), difGalon.ToString(), ppu_m3.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
+                                }
+                            }
+                            
                         }
                     }
-                    if (RealizoVentaTotal)
+                    if (RealizoVentaTotal == true && VentaMayorA9999999 == false)
                     {
                         using (ModeloDispensador modDIS = new ModeloDispensador())
                         {
@@ -151,7 +227,14 @@ namespace BusinessLayer
                     }
                     else
                     {
-                        return new ResultadoTrama(false, null, "No se guardo venta por que no se detectaron diferencias en galones ni dinero");
+                        if (VentaMayorA9999999 == true)
+                        {
+                            return new ResultadoTrama(false, null, "ET_001 Venta mayor a 9999999");
+                        }
+                        else {
+                            return new ResultadoTrama(false, null, "No se guardo venta por que no se detectaron diferencias en galones ni dinero");
+                        }
+                        
                     }
                 }
 
@@ -159,7 +242,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -172,23 +255,59 @@ namespace BusinessLayer
                 DataTable dtPrecios;
                 using (ModeloDispensador modDIS = new ModeloDispensador())
                 {
-                    dtPrecios = modDIS.ObtenerPreciosActualizados();
+                    dtPrecios = modDIS.ObtenerProductosDispensador(idXbee);
                 }
-                int precioAcpm = Convert.ToInt32(dtPrecios.Rows[0][0]);
-                int precioGasolina = Convert.ToInt32(dtPrecios.Rows[1][0]);
-                int precioExtra = Convert.ToInt32(dtPrecios.Rows[2][0]);
-                int precioGas = Convert.ToInt32(0);
-                string TramaDevolver = "MM:" + UtilidadesTramas.ConcatenarCerosIzquiera(precioAcpm.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGasolina.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioExtra.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGas.ToString()) + "";
-                //string TramaDevolver = "XP:" + UtilidadesTramas.ConcatenarCerosIzquiera(precioAcpm.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGasolina.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioExtra.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precioGas.ToString()) + "";
-                //string TramaDevolver = "XXX";
+
+                int precio1 = 0;
+                int precio2 = 0;
+                int precio3 = 0;
+                int precio4 = 0;
+
+                precio1 = (dtPrecios.Rows.Count > 0) ? getPrecioProducto(dtPrecios.Rows[0][0].ToString()) : 0;
+                precio2 = (dtPrecios.Rows.Count > 1) ? getPrecioProducto(dtPrecios.Rows[1][0].ToString()) : 0;
+                precio3 = (dtPrecios.Rows.Count > 2) ? getPrecioProducto(dtPrecios.Rows[2][0].ToString()) : 0;
+                precio4 = (dtPrecios.Rows.Count > 3) ? getPrecioProducto(dtPrecios.Rows[3][0].ToString()) : 0;
+                string TramaDevolver = "MM:" + UtilidadesTramas.ConcatenarCerosIzquiera(precio1.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precio2.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precio3.ToString()) + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(precio4.ToString()) + "";
+                
                 TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString(TramaDevolver));
 
                 return TramasDevolver;
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return null;
+            }
+        }
+
+        public int getPrecioProducto(string idProducto)
+        {
+            using (ModeloDispensador modDIS = new ModeloDispensador())
+            {
+                var res = modDIS.ObtenerPreciosActualizadosProducto(idProducto);
+                if (res.Rows.Count > 0)
+                {
+                    return Convert.ToInt32(res.Rows[0][0]);
+                }
+                else {
+                    return 0;
+                }
+            }
+        }
+
+        public List<Byte[]> SolicitudTotales(string cara) {
+            try
+            {
+                List<byte[]> TramasDevolver = new List<byte[]> { };
+
+                TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("ST" + cara));
+                return TramasDevolver;
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+                return null;
+
             }
         }
         #endregion 

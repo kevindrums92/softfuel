@@ -24,8 +24,8 @@ namespace XbeeAdminConsole
         public void ColocarImagen()
         {
             System.Drawing.Bitmap imagenDis = Properties.Resources.dispensador;
-            //Bitmap objimagenDis = new Bitmap(imagenDis, SFpcImageDispensador.Size);
-            //SFpcImageDispensador.Image = objimagenDis;
+            Bitmap objimagenDis = new Bitmap(imagenDis, pcImageDispensador.Size);
+            pcImageDispensador.Image = objimagenDis;
         }
 
         #region Propiedades

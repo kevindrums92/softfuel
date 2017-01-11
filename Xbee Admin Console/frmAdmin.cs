@@ -14,6 +14,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using XbeeUtils;
+using System.ServiceProcess;
+using System.Threading;
 
 namespace XbeeAdminConsole
 {
@@ -27,6 +29,39 @@ namespace XbeeAdminConsole
         List<ctrCara> ListadoObjetosCaras;
         #endregion
 
+        #region Conocer estado del XAMPP
+
+
+        private void bwEstadoXamp_DoWork(object sender, DoWorkEventArgs e)
+        {
+            SaberSiEstaIniciadoXamp();
+        }
+
+        private void bwEstadoXamp_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Conectar();
+            EstablecerPorcentajesProductosGasolina();
+        }
+        
+        public void SaberSiEstaIniciadoXamp()
+        {
+            //mysql
+            ServiceController sc = new ServiceController("mysql");
+
+            var statusService = sc.Status;
+            while (statusService != ServiceControllerStatus.Running)
+            {
+                sc.Refresh();
+                statusService = sc.Status;
+                
+                //AsignarRegistrosRejilla d = new AsignarRegistrosRejilla(RefrescarRejilla);
+                //this.Invoke(d, new LogPantalla() { Dispositivo = "", Fecha = DateTime.Now, Mensaje = "Mysql no está iniciado!" });
+            }
+        }
+        #endregion
+
+
+
         #region Constructor
         public frmAdmin()
         {
@@ -39,19 +74,25 @@ namespace XbeeAdminConsole
             instancia.NodoAgregadoEvent += NodoAgregadoEventHandler;
             claseMain.MonitoreoEvent += MonitoreoProceso_Main;
             cargarImagenes();
-            Conectar();
-            EstablecerPorcentajesProductosGasolina();
+            bwEstadoXamp.RunWorkerAsync();
+            
 
             //NodosXbee _nodoPrueba = new NodosXbee(null, "DISPENSADOR 1", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 3);
             //NodosXbee _nodoPrueba2 = new NodosXbee(null, "POS 1", "13A20040D29D35", "13A20040D29D35", 0, Enumeraciones.TipoDispositivo.moduloPOS, 2);
             //NodosXbee _nodoPrueba3 = new NodosXbee(null, "POS 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.moduloPOS, 4);
             //NodosXbee _nodoPrueba4 = new NodosXbee(null, "DISPENSADOR 2", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 5);
+            //NodosXbee _nodoPrueba5 = new NodosXbee(null, "DISPENSADOR 3", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 7);
+            //NodosXbee _nodoPrueba6 = new NodosXbee(null, "DISPENSADOR 4", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 8);
+            //NodosXbee _nodoPrueba7 = new NodosXbee(null, "DISPENSADOR 5", "MACPRUEBA", "MACIMPRESION", 0, Enumeraciones.TipoDispositivo.Dispensador, 9);
 
             //instancia.ListNodes = new List<NodosXbee>();
             //instancia.AgregarNodo(_nodoPrueba);
             //instancia.AgregarNodo(_nodoPrueba2);
             //instancia.AgregarNodo(_nodoPrueba3);
             //instancia.AgregarNodo(_nodoPrueba4);
+            //instancia.AgregarNodo(_nodoPrueba5);
+            //instancia.AgregarNodo(_nodoPrueba6);
+            //instancia.AgregarNodo(_nodoPrueba7);
 
 
             //string tramaRecibida1 = "M:1:87";
@@ -417,108 +458,43 @@ namespace XbeeAdminConsole
         {
             if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador)
             {
-                string cara1 = "";
-                string cara2 = "";
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 1)
-                {
-                    cara1 = "SFPanelCara1";
-                    cara2 = "SFPanelCara2";
-                }
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 2)
-                {
-                    cara1 = "SFPanelCara3";
-                    cara2 = "SFPanelCara4";
-                }
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 3)
-                {
-                    cara1 = "SFPanelCara5";
-                    cara2 = "SFPanelCara6";
-                }
-                if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-                    XbeeUtils.Enumeraciones.TipoDispositivo.Dispensador).Count == 4)
-                {
-                    cara1 = "SFPanelCara7";
-                    cara2 = "SFPanelCara8";
-                }
-
-                Panel PanelCara1 = FindPanel(TsPanelContainerDispensadores, cara1);
-                Panel PanelCara2 = FindPanel(TsPanelContainerDispensadores, cara2);
-
                 DataTable dtCaras;
                 using (Generales modGEN = new Generales())
                 {
                     dtCaras = modGEN.GetTable("select DISTINCT numPosicion FROM posicion WHERE idXbee = " + e.IdXbee);
                 }
-                if (dtCaras != null && dtCaras.Rows.Count > 1)
+                if (dtCaras != null && dtCaras.Rows.Count > 0)
                 {
-
-                    if (ListadoObjetosCaras == null) ListadoObjetosCaras = new List<ctrCara>();
-                    ctrCara newCara1 = new ctrCara();
-                    newCara1.NumCara = Convert.ToInt32(dtCaras.Rows[0][0]);
-                    newCara1.EstadoCara = EnumEstadoCara.Normal;
-                    newCara1.NombreCara = "Cara " + newCara1.NumCara.ToString();
-                    newCara1.idXbee = e.IdXbee;
-                    newCara1.NombreNodo = e.Nombre;
-                    PanelCara1.Controls.Add(newCara1);
-                    newCara1.Dock = DockStyle.Fill;
-                    ListadoObjetosCaras.Add(newCara1);
-
-                    ctrCara newCara2 = new ctrCara();
-                    newCara2.NumCara = Convert.ToInt32(dtCaras.Rows[1][0]);
-                    newCara2.EstadoCara = EnumEstadoCara.Normal;
-                    newCara2.NombreCara = "Cara " + newCara2.NumCara.ToString();
-                    newCara2.idXbee = e.IdXbee;
-                    newCara2.NombreNodo = e.Nombre;
-                    PanelCara2.Controls.Add(newCara2);
-                    newCara2.Dock = DockStyle.Fill;
-                    ListadoObjetosCaras.Add(newCara2);
+                    foreach (DataRow row in dtCaras.Rows) {
+                        if (ListadoObjetosCaras == null) ListadoObjetosCaras = new List<ctrCara>();
+                        ctrCara newCara1 = new ctrCara();
+                        newCara1.NumCara = Convert.ToInt32(row[0]);
+                        newCara1.EstadoCara = EnumEstadoCara.Normal;
+                        newCara1.NombreCara = "Cara " + newCara1.NumCara.ToString();
+                        newCara1.idXbee = e.IdXbee;
+                        newCara1.NombreNodo = e.Nombre;
+                        FloatPanelDispositivos.Controls.Add(newCara1);
+                        ListadoObjetosCaras.Add(newCara1);
+                    }
                 }
             }
-            //else if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS)
-            //{
-            //    string pos = "";
-            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 1)
-            //    {
-            //        pos = "SFPanelPOS1";
-            //    }
-            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 2)
-            //    {
-            //        pos = "SFPanelPOS2";
-            //    }
-            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 3)
-            //    {
-            //        pos = "SFPanelPOS3";
-            //    }
-            //    if (instancia.ListNodes.FindAll(item => item.TipoDispositivo ==
-            //        XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS).Count == 4)
-            //    {
-            //        pos = "SFPanelPOS4";
-            //    }
-            //    Panel PanelPOS = FindPanel(SFLayoutContainer, pos);
-            //    if (PanelPOS != null)
-            //    {
-            //        using (Generales modGEN = new Generales())
-            //        {
-            //            DataTable dtPOS = modGEN.GetTable("select nomXbee FROM xbee WHERE idXbee = " + e.IdXbee);
-            //            if (dtPOS != null && dtPOS.Rows.Count > 0)
-            //            {
-            //                ctrPOS newPOS = new ctrPOS();
-            //                newPOS.NombrePOS = dtPOS.Rows[0][0].ToString();
-            //                newPOS.idXbee = e.IdXbee;
-            //                PanelPOS.Controls.Add(newPOS);
-            //                newPOS.Dock = DockStyle.Fill;
-            //                newPOS.EstableceColor();
+            else if (e.TipoDispositivo == XbeeUtils.Enumeraciones.TipoDispositivo.moduloPOS)
+            {
+                using (Generales modGEN = new Generales())
+                {
+                    DataTable dtPOS = modGEN.GetTable("select nomXbee FROM xbee WHERE idXbee = " + e.IdXbee);
+                    if (dtPOS != null && dtPOS.Rows.Count > 0)
+                    {
+                        ctrPOS newPOS = new ctrPOS();
+                        newPOS.NombrePOS = dtPOS.Rows[0][0].ToString();
+                        newPOS.idXbee = e.IdXbee;
+                        FloatPanelDispositivos.Controls.Add(newPOS);
+                        newPOS.Dock = DockStyle.Fill;
+                        newPOS.EstableceColor();
 
-            //            }
-            //        }
-            //    }
-            //}
+                    }
+                }
+            }
         }
 
         private Panel FindPanel(Panel parent, string ctlName)
@@ -600,6 +576,7 @@ namespace XbeeAdminConsole
                 }
             }
         }
+
         
 
         void cargarImagenes()
@@ -636,35 +613,29 @@ namespace XbeeAdminConsole
         {
             try
             {
-                string line;
-                System.IO.StreamReader file = new System.IO.StreamReader(Path.GetDirectoryName(Application.ExecutablePath) + "/tramaspos.txt");
-                while ((line = file.ReadLine()) != null)
+                var dtTramasManuales = claseMain.GetTramasManuales();
+
+                foreach(DataRow _row in dtTramasManuales.Rows)
                 {
-                    if (line.ToString().Trim() != "")
+                    //Obtener Id de xbee y trama
+                    string[] LineRecibida = _row[1].ToString().Split('|');
+
+                    var _trama = LineRecibida[0];
+                    var _idXbeeImprimir = LineRecibida[1];
+
+                    NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.IdXbee == Convert.ToInt16(_idXbeeImprimir)).FirstOrDefault();
+                    if (nodeXbee != null)
                     {
-                        //Obtener Id de xbee y trama
-                        string[] LineRecibida = line.Split('|');
-
-                        var _trama = LineRecibida[0];
-                        var _idXbeeImprimir = LineRecibida[1];
-
-                        NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.IdXbee == Convert.ToInt16( _idXbeeImprimir)).FirstOrDefault();
-                        if (nodeXbee != null)
-                        {
-                            string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(_trama);
-                            claseMain.ProcesarTrama(arrayTramaRecibida, nodeXbee,true);
-                            //NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.Mac == nodeXbee.MacImpresion);
-                            //if (nodoImpresion != null)
-                            //{
-                            //    claseMain.ProcesarTrama(arrayTramaRecibida, nodoImpresion);
-                            //}
-                        }
+                        string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(_trama);
+                        claseMain.ProcesarTrama(arrayTramaRecibida, nodeXbee, true);
+                        //NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.Mac == nodeXbee.MacImpresion);
+                        //if (nodoImpresion != null)
+                        //{
+                        //    claseMain.ProcesarTrama(arrayTramaRecibida, nodoImpresion);
+                        //}
                     }
                 }
-                file.Close();
-                System.IO.StreamWriter sw = new System.IO.StreamWriter(Path.GetDirectoryName(Application.ExecutablePath) + "/tramaspos.txt");
-                sw.WriteLine("");
-                sw.Close();
+                
 
                 string cambioPrecio = System.IO.File.ReadAllText(Path.GetDirectoryName(Application.ExecutablePath) + "/cambioPrecio.txt");
                 if (cambioPrecio.StartsWith("1"))

@@ -16,6 +16,7 @@ namespace BusinessLayer
     public  class Main : IDisposable
     {
         #region "Variables"
+        bool EnviarVentaConDifNegativa = true;
         XbeeSingleton instancia = XbeeSingleton.Instance;
         TramasPOS _tramasPOS = new TramasPOS();
         TramasDispensador _tramaDIS = new TramasDispensador();
@@ -274,11 +275,21 @@ namespace BusinessLayer
             {
                 if (nodo != null)
                 {
+                    //Enviar Información al dispensador acerca del estado de los turnos en sus caras
                     var result = _tramasPOS.TramaAutorizarVentaDispensador(nodo.IdXbee.ToString());
                     foreach (Byte[] data in result)
                     {
                         nodo.EnviarTrama(data);
                         if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.ObtenerStringDeBytes(data), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
+                    }
+
+                    //Enviar al dispensador trama para decirle si puede autorizar venta solo, o si depende de la 
+                    //Autorización por partde de la consola
+                    var resultAutorizaVenta = _tramasPOS.EnviarMododeTrabajo(nodo.IdXbee.ToString());
+                    foreach (Byte[] data in resultAutorizaVenta)
+                    {
+                        nodo.EnviarTrama(data);
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.ObtenerStringDeBytes(data), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                     }
                 }
             }
@@ -305,276 +316,313 @@ namespace BusinessLayer
                 }
             }
         }
-        
+
         #endregion
 
         #region "Procesos Tramas"
-        public void ProcesarTrama(string[] arrayTramaRecibida,NodosXbee nodo,bool esSolicitudAplicacion)
+        public void ProcesarTrama(string[] arrayTramaRecibida, NodosXbee nodo, bool esSolicitudAplicacion)
         {
             if (arrayTramaRecibida.Count() > 1)
             {
-                //if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Llegó un paquete de " + nodo.Nombre + "", ETipoEvento.Exitoso, nodo.IdXbee, ""));
-                if (esSolicitudAplicacion == true)
-                {//Recibo petición de MOD POS
-                    switch (arrayTramaRecibida[0])
-                    {
-                            //Trama que debe llegar así: CTD:Mensaje que quiero enviar, solo esos 2 parametros
-                        case "CTD":
-                            var resultCTD = _tramasPOS.GuardarTramaCTD(arrayTramaRecibida,nodo.IdXbee);
-                            if (resultCTD.Resultado == true) {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama CTD Recibida", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
-                            }else{
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCTD.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
-                        //Cualquier trama a cualquier dispensador:
-                        //La trama tiene que enviarse:CT:loque yo quiera
-                        case "CT":
-                            nodo.EnviarTrama(UtilidadesTramas.ObtenerByteDeString(arrayTramaRecibida[1]));
-                            break;
-                        //Trama de placa en venta= PE:1(cara):JEX30B(Placa):20000(KM):3(idXbee)|3(idxbee)
-                        //PE:1:JEX30B:20000:3|3
-                        case "PE":
-                            var resultPE = _tramasPOS.PrepararTiquete(arrayTramaRecibida);
-                            if (resultPE.Resultado == true)
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando tiquete", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultPE.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
+                switch (arrayTramaRecibida[0])
+                {
+                    //Trama que debe llegar así: CTD:Mensaje que quiero enviar, solo esos 2 parametros
+                    case "CTD":
+                        var resultCTD = _tramasPOS.GuardarTramaCTD(arrayTramaRecibida, nodo.IdXbee);
+                        if (resultCTD.Resultado == true)
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama CTD Recibida", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCTD.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+                    //Cualquier trama a cualquier dispensador:
+                    //La trama tiene que enviarse:CT:loque yo quiera
+                    case "CT":
+                        nodo.EnviarTrama(UtilidadesTramas.ObtenerByteDeString(arrayTramaRecibida[1]));
+                        break;
+                    //Trama de placa en venta= PE:1(cara):JEX30B(Placa):20000(KM):3(idXbee)|3(idxbee)
+                    //PE:1:JEX30B:20000:3|3
+                    case "PE":
+                        var resultPE = _tramasPOS.PrepararTiquete(arrayTramaRecibida);
+                        if (resultPE.Resultado == true)
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando tiquete", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultPE.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
 
-                       
-                        case "F":
-                            var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
-                            if (resultFid.Resultado == true)
-                            {
-                                foreach (Byte[] data in resultFid.TramaResultado)
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                                if (resultFid.Fidelizado_o_Credito == true)
-                                {
-                                    FidelizadoCreditoPendiente _newFid = new FidelizadoCreditoPendiente();
-                                    _newFid.cara = arrayTramaRecibida[1];
-                                    _newFid.serial = arrayTramaRecibida[2];
-                                    _newFid.tipoSolicitud = ETipoSolicitudSerial.Fidelizado;
-                                    instancia.ListaFidelizadosCreditosPendientes.Add(_newFid);
-                                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Fidelizado en cara " + _newFid.cara, ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                                }
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultFid.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
-                        ///Petición Consignación en efectivo
-                        case "H":
-                            var result = _tramasPOS.ConsignacionEfectivo(arrayTramaRecibida);
-                            if (result.Resultado == true)
-                            {
-                                foreach (Byte[] data in result.TramaResultado)
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(result.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
 
-                            //Petición abrir turno
-                        case "T":
-                            var resultAbrirTurno = _tramasPOS.AbrirTurno(arrayTramaRecibida);
-                            if (resultAbrirTurno.Resultado == true)
+                    case "F":
+                        var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
+                        if (resultFid.Resultado == true)
+                        {
+                            foreach (Byte[] data in resultFid.TramaResultado)
                             {
-                                foreach (Byte[] data in resultAbrirTurno.TramaResultado)
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (resultFid.Fidelizado_o_Credito == true)
+                            {
+                                FidelizadoCreditoPendiente _newFid = new FidelizadoCreditoPendiente();
+                                _newFid.cara = arrayTramaRecibida[1];
+                                _newFid.serial = arrayTramaRecibida[2];
+                                _newFid.tipoSolicitud = ETipoSolicitudSerial.Fidelizado;
+                                instancia.ListaFidelizadosCreditosPendientes.Add(_newFid);
+                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Preparando Fidelizado en cara " + _newFid.cara, ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            }
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultFid.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+                    ///Petición Consignación en efectivo
+                    case "H":
+                        var result = _tramasPOS.ConsignacionEfectivo(arrayTramaRecibida);
+                        if (result.Resultado == true)
+                        {
+                            foreach (Byte[] data in result.TramaResultado)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(result.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    ///Petición Impresion Consecutivo Consignación en efectivo
+                    case "HC":
+                        var resultHC = _tramasPOS.ConsecutivoConsignacionEfectivo(arrayTramaRecibida);
+                        if (resultHC.Resultado == true)
+                        {
+                            foreach (Byte[] data in resultHC.TramaResultado)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultHC.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultHC.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Petición abrir turno
+                    case "T":
+                        var resultAbrirTurno = _tramasPOS.AbrirTurno(arrayTramaRecibida);
+                        if (resultAbrirTurno.Resultado == true)
+                        {
+                            foreach (Byte[] data in resultAbrirTurno.TramaResultado)
+                            {
+
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultAbrirTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultAbrirTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        if (resultAbrirTurno.IdXbee > 0) ActualizarDatosDispensador(resultAbrirTurno.IdXbee);
+
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Peticion de guardar venta canasta
+                    case "P":
+                        var resultVentaCanasta = _tramasPOS.VentaCanasta(arrayTramaRecibida);
+                        if (resultVentaCanasta.Resultado == true)
+                        {
+                            foreach (Byte[] data in resultVentaCanasta.TramaResultado)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultVentaCanasta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultVentaCanasta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+                    //Cerrar Turno
+                    case "E":
+                        var resultCerrarTurno = _tramasPOS.CerrarTurno(arrayTramaRecibida);
+                        if (resultCerrarTurno.Resultado == true)
+                        {
+                            foreach (Byte[] data in resultCerrarTurno.TramaResultado)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultCerrarTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCerrarTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        if (resultCerrarTurno.IdXbee > 0) ActualizarDatosDispensador(resultCerrarTurno.IdXbee);
+                        _tramasPOS.Dispose();
+                        break;
+                    //Consecutivo de cerrar Turno
+                    case "M":
+                        var resultConsecutivoTurno = _tramasPOS.ConsecutivoCierre_AperturaTurno(arrayTramaRecibida);
+                        if (resultConsecutivoTurno.Resultado == true)
+                        {
+                            foreach (Byte[] data in resultConsecutivoTurno.TramaResultado)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultConsecutivoTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultConsecutivoTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Imprimir Ultima venta
+                    case "I":
+                        var resultUltimaVenta = _tramasPOS.UltimaVenta(arrayTramaRecibida);
+                        if (resultUltimaVenta.Resultado == true)
+                        {
+                            foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado))
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVenta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVenta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    case "N":
+                        var resultUltimaVentaConsecutivo = _tramasPOS.ConsecutivoUltimaVenta(arrayTramaRecibida);
+                        if (resultUltimaVentaConsecutivo.Resultado == true)
+                        {
+                            foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado))
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVentaConsecutivo.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Abrir Venta
+                    case "AV":
+                        string cara = arrayTramaRecibida[1].ToString();
+                        string manguera = arrayTramaRecibida[2].ToString();
+
+                        var resultAutorizarVenta = _tramaDIS.ValidacionAutorizarVenta(cara, manguera, nodo.IdXbee);
+
+                        if(resultAutorizarVenta != null)
+                        {
+                            //si autorizo
+                            foreach (Byte[] data in resultAutorizarVenta.ResultadoDevolver)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultAutorizarVenta.ResultadoDevolver), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+
+                        }
+
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("LEVANTAMANGUERA", ETipoEvento.Exitoso, nodo.IdXbee, cara));
+                        break;
+
+                        //Trama para solicitar Totales en una cara específica
+                    case "ST":
+                        var resultSolicitudTotales = _tramaDIS.SolicitudTotales(arrayTramaRecibida[1]);
+                        foreach (Byte[] data in resultSolicitudTotales)
+                        {
+                            nodo.EnviarTrama(data);
+                        }
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se solicitaron totales en la cara "+ arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        _tramaDIS.Dispose();
+                        break;
+                    //Totales de venta
+                    case "ET":
+                        var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
+                        string caraProceso = arrayTramaRecibida[1];
+                        if (resultEnvioTotales.Resultado == true)
+                        {
+                            EnviarVentaConDifNegativa = true;
+                            if (instancia.ListaTiquetesPorImprimir != null)
+                            {
+                                //verificamos si hay tiquetes pendientes de immprimir
+                                var TiquetePendiente = instancia.ListaTiquetesPorImprimir.Find(s => s.cara == caraProceso);
+                                if (TiquetePendiente != null)
                                 {
-
-                                    nodo.EnviarTrama(data);
+                                    NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.IdXbee == TiquetePendiente.idXbeeImprimir);
+                                    string[] _trama = { "I", caraProceso, TiquetePendiente.placa, TiquetePendiente.km };
+                                    ProcesarTrama(_trama, nodoImpresion, true);
+                                    instancia.ListaTiquetesPorImprimir.Remove(TiquetePendiente);
                                 }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultAbrirTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
                             }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultAbrirTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            if (resultAbrirTurno.IdXbee > 0) ActualizarDatosDispensador(resultAbrirTurno.IdXbee);
-                            
-                            _tramasPOS.Dispose();
-                            break;
 
-                            //Peticion de guardar venta canasta
-                        case "P":
-                            var resultVentaCanasta = _tramasPOS.VentaCanasta(arrayTramaRecibida);
-                            if (resultVentaCanasta.Resultado == true)
+                            //si es venta de credito imprimo tiquete
+                            if (resultEnvioTotales.ImprimeTiquete == 1)
                             {
-                                foreach (Byte[] data in resultVentaCanasta.TramaResultado)
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultVentaCanasta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
+                                string[] _trama = { "I", caraProceso, "", "" };
+                                ProcesarTrama(_trama, nodo, true);
+                                ProcesarTrama(_trama, nodo, true);
                             }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultVentaCanasta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
-                            //Cerrar Turno
-                        case "E":
-                            var resultCerrarTurno = _tramasPOS.CerrarTurno(arrayTramaRecibida);
-                            if (resultCerrarTurno.Resultado == true)
-                            {
-                                foreach (Byte[] data in resultCerrarTurno.TramaResultado)
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultCerrarTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCerrarTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            if (resultCerrarTurno.IdXbee > 0) ActualizarDatosDispensador(resultCerrarTurno.IdXbee);
-                            _tramasPOS.Dispose();
-                            break;
-                            //Consecutivo de cerrar Turno
-                        case "M":
-                            var resultConsecutivoTurno = _tramasPOS.ConsecutivoCierre_AperturaTurno(arrayTramaRecibida);
-                            if (resultConsecutivoTurno.Resultado == true)
-                            {
-                                foreach (Byte[] data in resultConsecutivoTurno.TramaResultado)
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultConsecutivoTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultConsecutivoTurno.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
 
-                            //Imprimir Ultima venta
-                        case "I":
-                            var resultUltimaVenta = _tramasPOS.UltimaVenta(arrayTramaRecibida);
-                            if (resultUltimaVenta.Resultado == true)
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1], nodo.Nombre));
+                        }
+                        else
+                        {
+                            //Capturamos codigo de error de ventas negativas
+                            if (resultEnvioTotales.Mensaje.ToString().StartsWith("ET_001") && EnviarVentaConDifNegativa == true)
                             {
-                                foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado))
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVenta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
+                                EnviarVentaConDifNegativa = false;
+                                LocalLogManager.EscribeLog("Venta mayor a 9.999.999,  la trama que llegó es la siguiente\n" + UtilidadesTramas.ObtieneStringTramaDeArray(arrayTramaRecibida), LocalLogManager.TipoImagen.TipoError);
+                                string[] _trama = { "ST", caraProceso };
+                                ProcesarTrama(_trama, nodo, true);
                             }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVenta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
 
-                        case "N":
-                            var resultUltimaVentaConsecutivo = _tramasPOS.ConsecutivoUltimaVenta(arrayTramaRecibida);
-                            if (resultUltimaVentaConsecutivo.Resultado == true)
-                            {
-                                foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado))
-                                {
-                                    nodo.EnviarTrama(data);
-                                }
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVentaConsecutivo.Mensaje, ETipoEvento.Error, nodo.IdXbee, "",nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1], nodo.Nombre));
+                        }
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("BAJAMANGUERA:" + resultEnvioTotales.VentaGalones + ":" + resultEnvioTotales.VentaDinero, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
+                        _tramaDIS.Dispose();
+                        break;
 
-                        default:
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, "",nodo.Nombre));
-                            break;
-                    }
-                }
-                else 
-                {//recibo tramas de dispesadores
-                    switch (arrayTramaRecibida[0])
-                    {
-                        //Trama que debe llegar así: CTD:Mensaje que quiero enviar, solo esos 2 parametros
-                        case "CTD":
-                            var resultCTD = _tramasPOS.GuardarTramaCTD(arrayTramaRecibida, nodo.IdXbee);
-                            if (resultCTD.Resultado == true)
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama CTD Recibida", ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCTD.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
-                            }
-                            _tramasPOS.Dispose();
-                            break;
-                            //Abrir Venta
-                        case "E":
-                            string cara = arrayTramaRecibida[1].ToString();
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("LEVANTAMANGUERA",ETipoEvento.Exitoso,nodo.IdXbee,cara));
-                            break;
-                            //Totales de venta
-                        case "ET":
-                            var resultEnvioTotales = _tramaDIS.EnvioTotales(arrayTramaRecibida);
-                            if (resultEnvioTotales.Resultado == true)
-                            {
-                                string caraProceso = arrayTramaRecibida[1];
-                                if(instancia.ListaTiquetesPorImprimir != null)
-                                {
-                                    //verificamos si hay tiquetes pendientes de immprimir
-                                    var TiquetePendiente = instancia.ListaTiquetesPorImprimir.Find(s => s.cara == caraProceso);
-                                    if (TiquetePendiente != null)
-                                    {
-                                        NodosXbee nodoImpresion = instancia.ListNodes.Find(item => item.IdXbee == TiquetePendiente.idXbeeImprimir);
-                                        string[] _trama = { "I", caraProceso, TiquetePendiente.placa, TiquetePendiente.km };
-                                        ProcesarTrama(_trama, nodoImpresion, true);
-                                        instancia.ListaTiquetesPorImprimir.Remove(TiquetePendiente);
-                                    }
-
-                                   
-                                }
-
-                                //si es venta de credito imprimo tiquete
-                                if (resultEnvioTotales.ImprimeTiquete == 1)
-                                {
-                                    string[] _trama = { "I", caraProceso, "", "" };
-                                    ProcesarTrama(_trama, nodo, true);
-                                    ProcesarTrama(_trama, nodo, true);
-                                }
-
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se guardó ventas totales en cara " + arrayTramaRecibida[1], ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
-                            }
-                            else
-                            {
-                                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1],nodo.Nombre));
-                            }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("BAJAMANGUERA:" + resultEnvioTotales.VentaGalones + ":" + resultEnvioTotales.VentaDinero, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1]));
-                            _tramaDIS.Dispose();
-                            break;
-
-                        default:
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, "",nodo.Nombre));
-                            break;
-                    }
+                    default:
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Trama sin objetivo", ETipoEvento.Exitoso, 0, "", nodo.Nombre));
+                        break;
                 }
             }
         }
         #endregion
+
+        public DataTable GetTramasManuales()
+        {
+            using (Generales modGenerales = new Generales())
+            {
+                return modGenerales.GetTramasManuales();
+            }
+                
+        }
 
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);

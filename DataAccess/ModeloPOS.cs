@@ -12,13 +12,26 @@ namespace DataAccess
 {
     public class ModeloPOS: Connection, IDisposable
     {
+        #region Información
+        public DataTable InformacionXbee(string idXbee)
+        {
+            return GetTable("select * from xbee where idXbee = " + idXbee);
+        }
+        #endregion
 
         #region "Consignaciones"
-        public bool GuardaConsignacion(string idUsuario, string valorConsig )
+        public DataTable GetDatosConsignacion(int consecutivo)
+        {
+            return GetTable("select * from consignaciones where idConsig = " + consecutivo.ToString());
+        }
+
+        public int GuardaConsignacion(string idUsuario, string valorConsig )
         {
             string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
-            return ExecuteQuery("insert into consignaciones (valorConsig, fechaConsig, idUsuario) values ('" + valorConsig + "','" + _FechaActual + "'," +
+            ExecuteQuery("insert into consignaciones (valorConsig, fechaConsig, idUsuario) values ('" + valorConsig + "','" + _FechaActual + "'," +
                 idUsuario +")");
+            var dtMax = GetTable("SELECT max(idConsig) FROM consignaciones");
+            return Convert.ToInt32(dtMax.Rows[0][0]);
 
         }       
         #endregion
@@ -159,6 +172,15 @@ namespace DataAccess
             string fechaFinTurno = Convert.ToDateTime(dtVentas.Rows[0]["cerrarTurno"]).ToString("yyyy-MM-dd H:mm:ss");
             DataTable dtVentasProductos = GetTable("select V.idVenta, V.idProducto, V.precio, P.precioventaProducto,   V.galones as Cantidad from ventas as V inner join producto AS P on P.idProducto = V.idProducto " +
                             "where V.cara = '" + newVentas.Cara + "' and V.fecha between '" + fechaInicioTurno + "' and '" + fechaFinTurno + "' and manguera is NULL ");
+            DataTable dtTotalReversado = GetTable("select Sum(precio) AS TotalReversado from reversar_ventas where fecha between '" + fechaInicioTurno + "' and '" + fechaFinTurno + "'");
+            double TotalReversado = 0;
+            if(dtTotalReversado.Rows.Count >0 && dtTotalReversado.Rows[0]["TotalReversado"] != DBNull.Value)
+            {
+                TotalReversado = Convert.ToDouble(dtTotalReversado.Rows[0]["TotalReversado"]);
+            }
+
+            newVentas.TotalReversado = TotalReversado;
+
             newVentas.Usuario = dtVentas.Rows[0]["nomUsuario"].ToString() + ' ' + dtVentas.Rows[0]["apeUsuario"].ToString();
             newVentas.NumTurno = idTurno;
             newVentas.Fecha = Convert.ToDateTime(fechaFinTurno);
@@ -513,6 +535,7 @@ namespace DataAccess
 
         public string TotalPrepago { get; set; }
         public string TotalTarjetaCredito { get; set; }
+        public double TotalReversado { get; set; }
 
         public int IniDineroMang1 { get; set; }
         public decimal IniGalMang1 { get; set; }

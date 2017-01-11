@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle7 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle8 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle9 = new System.Windows.Forms.DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmAdmin));
             this.SFbtnBarraTitulo = new System.Windows.Forms.Panel();
             this.SFLogo = new System.Windows.Forms.PictureBox();
@@ -42,10 +42,13 @@
             this.LayoutPanelPorcentajesCantidades = new System.Windows.Forms.TableLayoutPanel();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.label3 = new System.Windows.Forms.Label();
+            this.SFpgExtra = new XbeeAdminConsole.Controles.VerticalProgressBar();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.label2 = new System.Windows.Forms.Label();
+            this.SFpgCorriente = new XbeeAdminConsole.Controles.VerticalProgressBar();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
+            this.SFpgACPM = new XbeeAdminConsole.Controles.VerticalProgressBar();
             this.SFPanelLog = new System.Windows.Forms.Panel();
             this.SFbtnBuscar = new System.Windows.Forms.Button();
             this.SFtxtBuscar = new System.Windows.Forms.TextBox();
@@ -65,13 +68,8 @@
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
             this.TypDispensadoresRejilla = new System.Windows.Forms.TableLayoutPanel();
             this.TsPanelContainerDispensadores = new System.Windows.Forms.Panel();
-            this.SFPanelCara4 = new System.Windows.Forms.Panel();
-            this.SFPanelCara3 = new System.Windows.Forms.Panel();
-            this.SFPanelCara2 = new System.Windows.Forms.Panel();
-            this.SFPanelCara1 = new System.Windows.Forms.Panel();
-            this.SFpgExtra = new XbeeAdminConsole.Controles.VerticalProgressBar();
-            this.SFpgCorriente = new XbeeAdminConsole.Controles.VerticalProgressBar();
-            this.SFpgACPM = new XbeeAdminConsole.Controles.VerticalProgressBar();
+            this.FloatPanelDispositivos = new System.Windows.Forms.FlowLayoutPanel();
+            this.bwEstadoXamp = new System.ComponentModel.BackgroundWorker();
             this.SFbtnBarraTitulo.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.SFLogo)).BeginInit();
             this.LayoutPanelPorcentajesCantidades.SuspendLayout();
@@ -213,6 +211,17 @@
             this.label3.Text = "Extra";
             this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // SFpgExtra
+            // 
+            this.SFpgExtra.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.SFpgExtra.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(130)))), ((int)(((byte)(204)))));
+            this.SFpgExtra.Location = new System.Drawing.Point(8, 3);
+            this.SFpgExtra.Name = "SFpgExtra";
+            this.SFpgExtra.Size = new System.Drawing.Size(41, 537);
+            this.SFpgExtra.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.SFpgExtra.TabIndex = 2;
+            this.SFpgExtra.Value = 60;
+            // 
             // tableLayoutPanel4
             // 
             this.tableLayoutPanel4.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
@@ -242,6 +251,17 @@
             this.label2.Text = "Corriente";
             this.label2.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
+            // SFpgCorriente
+            // 
+            this.SFpgCorriente.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.SFpgCorriente.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(30)))), ((int)(((byte)(29)))));
+            this.SFpgCorriente.Location = new System.Drawing.Point(8, 3);
+            this.SFpgCorriente.Name = "SFpgCorriente";
+            this.SFpgCorriente.Size = new System.Drawing.Size(41, 537);
+            this.SFpgCorriente.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.SFpgCorriente.TabIndex = 2;
+            this.SFpgCorriente.Value = 40;
+            // 
             // tableLayoutPanel2
             // 
             this.tableLayoutPanel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
@@ -269,6 +289,18 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Acmp";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // SFpgACPM
+            // 
+            this.SFpgACPM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
+            this.SFpgACPM.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
+            this.SFpgACPM.Location = new System.Drawing.Point(8, 3);
+            this.SFpgACPM.Maximum = 5000;
+            this.SFpgACPM.Name = "SFpgACPM";
+            this.SFpgACPM.Size = new System.Drawing.Size(41, 537);
+            this.SFpgACPM.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
+            this.SFpgACPM.TabIndex = 1;
+            this.SFpgACPM.Value = 2343;
             // 
             // SFPanelLog
             // 
@@ -319,39 +351,39 @@
             this.SFGridLog.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
             this.SFGridLog.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
             this.SFGridLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
-            dataGridViewCellStyle1.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(148)))), ((int)(((byte)(175)))));
-            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SFGridLog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle7.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
+            dataGridViewCellStyle7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.25F);
+            dataGridViewCellStyle7.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.SelectionBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(75)))), ((int)(((byte)(148)))), ((int)(((byte)(175)))));
+            dataGridViewCellStyle7.SelectionForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle7.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SFGridLog.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle7;
             this.SFGridLog.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.SFGridLog.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.Fecha,
             this.Mensaje,
             this.Dispositivo});
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
-            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle2.ForeColor = System.Drawing.Color.White;
-            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
-            this.SFGridLog.DefaultCellStyle = dataGridViewCellStyle2;
+            dataGridViewCellStyle8.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(50)))), ((int)(((byte)(56)))));
+            dataGridViewCellStyle8.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle8.ForeColor = System.Drawing.Color.White;
+            dataGridViewCellStyle8.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle8.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle8.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.SFGridLog.DefaultCellStyle = dataGridViewCellStyle8;
             this.SFGridLog.EnableHeadersVisualStyles = false;
             this.SFGridLog.Location = new System.Drawing.Point(3, 40);
             this.SFGridLog.Name = "SFGridLog";
             this.SFGridLog.RowHeadersBorderStyle = System.Windows.Forms.DataGridViewHeaderBorderStyle.None;
-            dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
-            dataGridViewCellStyle3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            dataGridViewCellStyle3.ForeColor = System.Drawing.SystemColors.WindowText;
-            dataGridViewCellStyle3.SelectionBackColor = System.Drawing.SystemColors.Highlight;
-            dataGridViewCellStyle3.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
-            dataGridViewCellStyle3.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
-            this.SFGridLog.RowHeadersDefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle9.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(66)))), ((int)(((byte)(73)))), ((int)(((byte)(92)))));
+            dataGridViewCellStyle9.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle9.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle9.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle9.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle9.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.SFGridLog.RowHeadersDefaultCellStyle = dataGridViewCellStyle9;
             this.SFGridLog.RowHeadersVisible = false;
             this.SFGridLog.Size = new System.Drawing.Size(770, 20);
             this.SFGridLog.TabIndex = 1;
@@ -499,10 +531,7 @@
             // TsPanelContainerDispensadores
             // 
             this.TsPanelContainerDispensadores.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.TsPanelContainerDispensadores.Controls.Add(this.SFPanelCara4);
-            this.TsPanelContainerDispensadores.Controls.Add(this.SFPanelCara3);
-            this.TsPanelContainerDispensadores.Controls.Add(this.SFPanelCara2);
-            this.TsPanelContainerDispensadores.Controls.Add(this.SFPanelCara1);
+            this.TsPanelContainerDispensadores.Controls.Add(this.FloatPanelDispositivos);
             this.TsPanelContainerDispensadores.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TsPanelContainerDispensadores.Location = new System.Drawing.Point(10, 10);
             this.TsPanelContainerDispensadores.Margin = new System.Windows.Forms.Padding(10);
@@ -510,79 +539,21 @@
             this.TsPanelContainerDispensadores.Size = new System.Drawing.Size(762, 550);
             this.TsPanelContainerDispensadores.TabIndex = 2;
             // 
-            // SFPanelCara4
+            // FloatPanelDispositivos
             // 
-            this.SFPanelCara4.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SFPanelCara4.Location = new System.Drawing.Point(0, 300);
-            this.SFPanelCara4.Margin = new System.Windows.Forms.Padding(10);
-            this.SFPanelCara4.Name = "SFPanelCara4";
-            this.SFPanelCara4.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.SFPanelCara4.Size = new System.Drawing.Size(762, 100);
-            this.SFPanelCara4.TabIndex = 3;
+            this.FloatPanelDispositivos.AutoScroll = true;
+            this.FloatPanelDispositivos.AutoSize = true;
+            this.FloatPanelDispositivos.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.FloatPanelDispositivos.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.FloatPanelDispositivos.Location = new System.Drawing.Point(0, 0);
+            this.FloatPanelDispositivos.Name = "FloatPanelDispositivos";
+            this.FloatPanelDispositivos.Size = new System.Drawing.Size(762, 550);
+            this.FloatPanelDispositivos.TabIndex = 0;
             // 
-            // SFPanelCara3
+            // bwEstadoXamp
             // 
-            this.SFPanelCara3.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SFPanelCara3.Location = new System.Drawing.Point(0, 200);
-            this.SFPanelCara3.Margin = new System.Windows.Forms.Padding(10);
-            this.SFPanelCara3.Name = "SFPanelCara3";
-            this.SFPanelCara3.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.SFPanelCara3.Size = new System.Drawing.Size(762, 100);
-            this.SFPanelCara3.TabIndex = 2;
-            // 
-            // SFPanelCara2
-            // 
-            this.SFPanelCara2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SFPanelCara2.Location = new System.Drawing.Point(0, 100);
-            this.SFPanelCara2.Margin = new System.Windows.Forms.Padding(10);
-            this.SFPanelCara2.Name = "SFPanelCara2";
-            this.SFPanelCara2.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.SFPanelCara2.Size = new System.Drawing.Size(762, 100);
-            this.SFPanelCara2.TabIndex = 1;
-            // 
-            // SFPanelCara1
-            // 
-            this.SFPanelCara1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.SFPanelCara1.Location = new System.Drawing.Point(0, 0);
-            this.SFPanelCara1.Margin = new System.Windows.Forms.Padding(0);
-            this.SFPanelCara1.Name = "SFPanelCara1";
-            this.SFPanelCara1.Padding = new System.Windows.Forms.Padding(0, 0, 0, 5);
-            this.SFPanelCara1.Size = new System.Drawing.Size(762, 100);
-            this.SFPanelCara1.TabIndex = 0;
-            // 
-            // SFpgExtra
-            // 
-            this.SFpgExtra.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.SFpgExtra.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(32)))), ((int)(((byte)(130)))), ((int)(((byte)(204)))));
-            this.SFpgExtra.Location = new System.Drawing.Point(8, 3);
-            this.SFpgExtra.Name = "SFpgExtra";
-            this.SFpgExtra.Size = new System.Drawing.Size(41, 537);
-            this.SFpgExtra.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.SFpgExtra.TabIndex = 2;
-            this.SFpgExtra.Value = 60;
-            // 
-            // SFpgCorriente
-            // 
-            this.SFpgCorriente.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.SFpgCorriente.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(212)))), ((int)(((byte)(30)))), ((int)(((byte)(29)))));
-            this.SFpgCorriente.Location = new System.Drawing.Point(8, 3);
-            this.SFpgCorriente.Name = "SFpgCorriente";
-            this.SFpgCorriente.Size = new System.Drawing.Size(41, 537);
-            this.SFpgCorriente.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.SFpgCorriente.TabIndex = 2;
-            this.SFpgCorriente.Value = 40;
-            // 
-            // SFpgACPM
-            // 
-            this.SFpgACPM.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)));
-            this.SFpgACPM.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(238)))), ((int)(((byte)(255)))), ((int)(((byte)(65)))));
-            this.SFpgACPM.Location = new System.Drawing.Point(8, 3);
-            this.SFpgACPM.Maximum = 5000;
-            this.SFpgACPM.Name = "SFpgACPM";
-            this.SFpgACPM.Size = new System.Drawing.Size(41, 537);
-            this.SFpgACPM.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
-            this.SFpgACPM.TabIndex = 1;
-            this.SFpgACPM.Value = 2343;
+            this.bwEstadoXamp.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bwEstadoXamp_DoWork);
+            this.bwEstadoXamp.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bwEstadoXamp_RunWorkerCompleted);
             // 
             // frmAdmin
             // 
@@ -615,6 +586,7 @@
             this.tableLayoutPanel6.ResumeLayout(false);
             this.TypDispensadoresRejilla.ResumeLayout(false);
             this.TsPanelContainerDispensadores.ResumeLayout(false);
+            this.TsPanelContainerDispensadores.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -656,9 +628,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel6;
         private System.Windows.Forms.TableLayoutPanel TypDispensadoresRejilla;
         private System.Windows.Forms.Panel TsPanelContainerDispensadores;
-        private System.Windows.Forms.Panel SFPanelCara1;
-        private System.Windows.Forms.Panel SFPanelCara2;
-        private System.Windows.Forms.Panel SFPanelCara3;
-        private System.Windows.Forms.Panel SFPanelCara4;
+        private System.Windows.Forms.FlowLayoutPanel FloatPanelDispositivos;
+        private System.ComponentModel.BackgroundWorker bwEstadoXamp;
     }
 }

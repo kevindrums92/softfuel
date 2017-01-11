@@ -15,31 +15,80 @@ namespace BusinessLayer
     class TramasPOS : IDisposable
     {
         XbeeSingleton instancia = XbeeSingleton.Instance;
+
+
+
         #region "Actualizar Dispensador"
+        /// <summary>
+        /// esta funcion se usa para definir si los turnos estan abiertos en las caras,
+        /// en caso de estar abierto el turno en la cara 1, se envía W1, de lo contrario W0, lo mismo para la car 2
+        /// con la letra Q, 
+        /// </summary>
+        /// <param name="idXbee"></param>
+        /// <returns></returns>
         public List<byte[]> TramaAutorizarVentaDispensador(string idXbee)
         {
             List<byte[]> TramasDevolver = new List<byte[]> { };
-            string TramaCara1 = "W0";
-            string TramaCara2 = "Q0";
+            string TramaCara1 = "_CARA1_0";
+            string TramaCara2 = "_CARA2_0";
+            string TramaCara3 = "_CARA3_0";
+            string TramaCara4 = "_CARA4_0";
             using (ModeloPOS modPOS = new ModeloPOS())
             {
                 DataTable dtAutorizados = modPOS.EstaTurnoAbiertoPorIdXbee(idXbee);
                 foreach (DataRow _row in dtAutorizados.Rows)
                 {
                     //Cara1
-                    if (_row["LetraTrama"].ToString() == "W")
+                    if (_row["LetraTrama"].ToString() == "CARA1")
                     {
-                        TramaCara1 = "W1";
+                        TramaCara1 = "_CARA1_1";
                     }
                     //Cara2
-                    if (_row["LetraTrama"].ToString() == "Q")
+                    if (_row["LetraTrama"].ToString() == "CARA2")
                     {
-                        TramaCara2 = "Q1";
+                        TramaCara2 = "_CARA2_1";
+                    }
+
+                    //Cara3
+                    if (_row["LetraTrama"].ToString() == "CARA3")
+                    {
+                        TramaCara3 = "_CARA3_1";
+                    }
+                    //Cara4
+                    if (_row["LetraTrama"].ToString() == "CARA4")
+                    {
+                        TramaCara4 = "_CARA4_1";
                     }
                 }
 
                 TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString(TramaCara1));
                 TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString(TramaCara2));
+                TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString(TramaCara3));
+                TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString(TramaCara4));
+                return TramasDevolver;
+            }
+        }
+
+        public List<byte[]> EnviarMododeTrabajo(string idXbee)
+        {
+            List<byte[]> TramasDevolver = new List<byte[]> { };
+            using (ModeloPOS modPOS = new ModeloPOS())
+            {
+                DataTable dtXbee = modPOS.InformacionXbee(idXbee);
+                if (dtXbee.Rows.Count > 0)
+                {
+                    if (Convert.ToBoolean(dtXbee.Rows[0]["requiereAutVenta"]) == true)
+                    {
+                        TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("RA1"));
+                    }
+                    else {
+                        TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("RA0"));
+                    }
+                }
+                else {
+                    TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("RA0"));
+                }
+                
                 return TramasDevolver;
             }
         }
@@ -181,11 +230,12 @@ namespace BusinessLayer
                 {
                     using (ModeloPOS modPOS = new ModeloPOS())
                     {
-                        if (modPOS.GuardaConsignacion(Identificacion,Dinero.ToString()) == true) //mando a guardar la consignación en la base de datos
+                        var consecutivo = modPOS.GuardaConsignacion(Identificacion, Dinero.ToString());
+                        if (consecutivo > 0) //mando a guardar la consignación en la base de datos
                         {
                             NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
                             //Devuelvo trama exitosa
-                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CONSIGNACION",
+                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CONSIGNACION #" + consecutivo.ToString(),
                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(NomApeUsuario,
                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
@@ -202,22 +252,79 @@ namespace BusinessLayer
                         }
                         else
                         {
-                            return new ResultadoTrama(false, null,"No se pudo guardar la consignación en la base de datos");
+                            return new ResultadoTrama(false, null, "No se pudo guardar la consignación en la base de datos");
                         }
                     }
-                    
+
                 }
                 else
                 {
                     //Devuelvo trama que el usuario no es islero
-                    return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto"}), "Usuario no existe o incorrecto para consignación en efectivo");
+                    return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto para consignación en efectivo");
                 }
-                return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(mensajeTrama),"");
+                return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(mensajeTrama), "");
             }
             catch (Exception e)
             {
                 LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                return new ResultadoTrama(false, null,e.Message);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Resuelve la peticion de consecutivo consignacion en efectivo, HC:100
+        /// </summary>
+        /// <param name="data">recivo un array de strings con la informacion de la trama recibida
+        /// donde 0 es el tipo de petición, 1 es la identificación del usuario, y 2 es el dinero que consigna</param>
+        /// <returns></returns>
+        public ResultadoTrama ConsecutivoConsignacionEfectivo(string[] data)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                int consecutivo = Convert.ToInt32(data[1]);
+
+                DataTable dtConsignacion;
+                using (var modPos = new ModeloPOS())
+                {
+                    dtConsignacion = modPos.GetDatosConsignacion(consecutivo);
+                }
+                if (dtConsignacion.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay consignacion con ", "Consecutivo " + consecutivo }), "No hay consignación con consecutivo " + consecutivo);
+
+                double Dinero = Convert.ToDouble(dtConsignacion.Rows[0]["valorConsig"].ToString());
+                string Identificacion = dtConsignacion.Rows[0]["idUsuario"].ToString();
+                string NomApeUsuario = "";
+                DataTable dtUsuario = null;
+                using (Generales modGenerales = new Generales())
+                {
+                    //Buscar el usuario y validar que sea islero.
+                    dtUsuario = modGenerales.ObtenerUsuario(Identificacion);
+                    if (dtUsuario != null && dtUsuario.Rows.Count > 0)
+                    {
+                        NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
+                        //Devuelvo trama exitosa
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CONSIGNACION #" + consecutivo.ToString(),
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(NomApeUsuario,
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(DateTime.Now.ToString("yyyy-MM-dd H:mm:ss"),
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("$" + Dinero.ToString(""),
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
+                    }
+                }
+                return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(mensajeTrama), "");
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
             }
         }
 
@@ -579,7 +686,14 @@ namespace BusinessLayer
                 mensajeTrama.Add("CTransacciones: " + infoVenta.TotalProdTran.ToString());
                 mensajeTrama.Add("C$ :" + infoVenta.TotalProdDin.ToString() + " | G: " + infoVenta.TotalProdCant.ToString());
             }
-            
+
+            if (infoVenta.TotalReversado != Convert.ToDouble(0)) 
+            {
+                mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL REVERSADO",
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                mensajeTrama.Add("CReversado: $" + infoVenta.TotalReversado.ToString());
+            }
+
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL EFECTIVO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
             var totalEfectivo = Convert.ToDecimal(infoVenta.TotalEfectivo.ToString());
@@ -691,7 +805,10 @@ namespace BusinessLayer
             {
                 dtInfo = modPOS.ObtenerUltimaVentaPorId(idVenta);
             }
-            if (dtInfo.Rows.Count == 0) throw new Exception("No se pudo obtener información de la venta con consecutivo " + idVenta);
+            if (dtInfo.Rows.Count == 0)
+            {
+                throw new Exception("No se pudo obtener información de la venta con consecutivo " + idVenta);
+            }
             List<string> mensajeTrama = new List<string>();
             string textoEncabezado;
             if (esOriginal == true)

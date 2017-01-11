@@ -39,6 +39,13 @@ namespace DataAccess
             return GetTable("select nomProducto, cantminProducto, existenciaProducto, tipoProducto, capacidad from producto where estadoProducto = 'activo' and tipoProducto IN (1,2,3) and idTipoProducto = 1");
         }
 
+        public DataTable GetTramasManuales()
+        {
+            var dtTramas = GetTable("select * from tramas_pos order by id");
+            ExecuteQuery("delete from tramas_pos");
+            return dtTramas;
+        }
+
 
 
         #region "IDisposable"
