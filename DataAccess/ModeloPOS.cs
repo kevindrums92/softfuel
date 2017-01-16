@@ -103,7 +103,7 @@ namespace DataAccess
         /// <returns></returns>
         public DataTable ObtenerPosicionesPorCarayManguera(string cara,string manguera)
         {
-            return GetTable("select idPosicion, x.macXbee,p.idProducto, p.idXbee from posicion as p inner join xbee as x on p.idXbee = x.idXbee where p.numPosicion = " + cara + " AND p.mangPosicion = '" + manguera + "'  limit 1");
+            return GetTable("select idPosicion, x.macXbee,p.idProducto, p.idXbee, pro.precioVentaProducto, pro.nomProducto from posicion as p inner join xbee as x on p.idXbee = x.idXbee inner join producto pro on pro.idProducto = p.idProducto where p.numPosicion = " + cara + " AND p.mangPosicion = '" + manguera + "'  limit 1");
         }
         /// <summary>
         /// Obtiene los totales de ventas por cara

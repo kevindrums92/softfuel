@@ -164,6 +164,13 @@ namespace BusinessLayer
                                     DataTable dtPosicionProductoCorrecto;
                                     dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara, "1");
                                     if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 1");
+
+                                    if(ppu_m1 != Convert.ToInt32(dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"])){
+                                        return new ResultadoTrama(false, null, "ET_002 El valor del producto " 
+                                            + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString()
+                                            + " es diferente al que llego en la venta\nppu venta: "+ ppu_m1 + "\nppu parametrizado:" + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString());
+                                    }
+
                                     ImprimeTiquete = modDIS.GuardaVenta(dtPosicionProductoCorrecto.Rows[0]["idProducto"].ToString(), cara, "1", difDinero.ToString(), difGalon.ToString(), ppu_m1.ToString(), _FechaActual, usuarioIslero, idXbeeDispensador, serialFidelizado, serialCredito, descuentoCredito);
                                 }
                             }
@@ -174,6 +181,12 @@ namespace BusinessLayer
                             DataTable dtPosicionProductoCorrecto;
                             dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara, "2");
                             if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 2");
+                            if (ppu_m2 != Convert.ToInt32(dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"]))
+                            {
+                                return new ResultadoTrama(false, null, "ET_002 El valor del producto "
+                                    + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString()
+                                    + " es diferente al que llego en la venta\nppu venta: " + ppu_m2 + "\nppu parametrizado:" + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString());
+                            }
                             RealizoVentaTotal = true;
                             decimal difGalon = (galon_m2 - Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]));
                             int difDinero = (dinero_m2 - Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]));
@@ -197,6 +210,12 @@ namespace BusinessLayer
                             DataTable dtPosicionProductoCorrecto;
                             dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara, "3");
                             if (dtPosicionProductoCorrecto.Rows.Count == 0) return new ResultadoTrama(false, null, "No se encontro producto en la cara " + cara + " manguera 3");
+                            if (ppu_m3 != Convert.ToInt32(dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"]))
+                            {
+                                return new ResultadoTrama(false, null, "ET_002 El valor del producto "
+                                    + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString()
+                                    + " es diferente al que llego en la venta\nppu venta: " + ppu_m3 + "\nppu parametrizado:" + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString());
+                            }
                             RealizoVentaTotal = true;
                             decimal difGalon = (galon_m3 - Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]));
                             int difDinero = (dinero_m3 - Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]));

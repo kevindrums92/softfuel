@@ -326,6 +326,13 @@ namespace BusinessLayer
             {
                 switch (arrayTramaRecibida[0])
                 {
+                    //Trama para avisarle a los dispensadores que deben actualizar el modo operación MO:1|3
+                    case "MO":
+                        foreach (NodosXbee _nodo in instancia.ListNodes.FindAll(item => item.TipoDispositivo== Enumeraciones.TipoDispositivo.Dispensador)) {
+                            ActualizarDatosDispensador(_nodo.IdXbee);
+                        }
+                        break;
+
                     //Trama que debe llegar así: CTD:Mensaje que quiero enviar, solo esos 2 parametros
                     case "CTD":
                         var resultCTD = _tramasPOS.GuardarTramaCTD(arrayTramaRecibida, nodo.IdXbee);
@@ -599,6 +606,13 @@ namespace BusinessLayer
                                 LocalLogManager.EscribeLog("Venta mayor a 9.999.999,  la trama que llegó es la siguiente\n" + UtilidadesTramas.ObtieneStringTramaDeArray(arrayTramaRecibida), LocalLogManager.TipoImagen.TipoError);
                                 string[] _trama = { "ST", caraProceso };
                                 ProcesarTrama(_trama, nodo, true);
+                            }
+
+                            //Capturamos codigo de error de PPU Diferente
+                            if (resultEnvioTotales.Mensaje.ToString().StartsWith("ET_002"))
+                            {
+                                LocalLogManager.EscribeLog(resultEnvioTotales.Mensaje.ToString() + "\nla trama que llegó es la siguiente\n" + UtilidadesTramas.ObtieneStringTramaDeArray(arrayTramaRecibida), LocalLogManager.TipoImagen.TipoError);
+                                CambioPrecioDispensador(nodo.IdXbee);
                             }
 
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultEnvioTotales.Mensaje, ETipoEvento.Exitoso, nodo.IdXbee, arrayTramaRecibida[1], nodo.Nombre));

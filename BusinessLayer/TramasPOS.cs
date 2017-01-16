@@ -707,11 +707,17 @@ namespace BusinessLayer
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL ELECTRONICOS INICIALES",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            mensajeTrama.Add("CMANGUERA1");
-            mensajeTrama.Add("C$: " + infoVenta.IniDineroMang1.ToString() + " | G: " + infoVenta.IniGalMang1.ToString());
+            if (infoVenta.IniDineroMang1 > 0) {
+                mensajeTrama.Add("CMANGUERA1");
+                mensajeTrama.Add("C$: " + infoVenta.IniDineroMang1.ToString() + " | G: " + infoVenta.IniGalMang1.ToString());
+            }
 
-            mensajeTrama.Add("CMANGUERA2");
-            mensajeTrama.Add("C$: " + infoVenta.IniDineroMang2.ToString() + " | G:" + infoVenta.IniGalMang2.ToString());
+            if (infoVenta.IniDineroMang2 > 0)
+            {
+                mensajeTrama.Add("CMANGUERA2");
+                mensajeTrama.Add("C$: " + infoVenta.IniDineroMang2.ToString() + " | G:" + infoVenta.IniGalMang2.ToString());
+            }
+               
 
             if (infoVenta.IniDineroMang3 > 0)
             {
@@ -905,9 +911,13 @@ namespace BusinessLayer
             {
                 puntosTotal = dtInfo.Rows[0]["puntosTotal"].ToString();
             }
-            mensajeTrama.Add("?     PUNTOS");
-            mensajeTrama.Add("?COMPRA: " + puntosVenta);
-            mensajeTrama.Add("?TOTAL: " + puntosTotal );
+
+            if(Convert.ToInt32(puntosTotal) != Convert.ToInt32(0))
+            {
+                mensajeTrama.Add("?     PUNTOS");
+                mensajeTrama.Add("?COMPRA: " + puntosVenta);
+                mensajeTrama.Add("?TOTAL: " + puntosTotal);
+            }
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
                                                                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
 
