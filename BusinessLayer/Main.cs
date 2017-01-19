@@ -99,7 +99,7 @@ namespace BusinessLayer
                             controller.DataReceived += DataReceivedXbee;
                             //Configuro manejador para escuchar el metodo que descubre los xbee en red
                             controller.NodeDiscovered += NodeDiscovered_controller;
-                            await controller.DiscoverNetworkAsync();
+                            await controller.DiscoverNetworkAsync(TimeSpan.FromSeconds(5));
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " ", ETipoEvento.Exitoso, 0, ""));
                             instancia.Controllers.Add(controller);
                         }
