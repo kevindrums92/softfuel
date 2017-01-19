@@ -69,12 +69,12 @@ namespace BusinessLayer
         private int velocidadTrasmision { get; set; }
         private List<FidelizadoCreditoPendiente> ListaFidelizadosPendientes= new List<FidelizadoCreditoPendiente>();
         #endregion
-                
+
         #region "Conexión y procesos Xbee"
         /// <summary>
         /// Metodo para abrir conexion a xbee con el puerto predefinido
         /// </summary>
-        private void Conectar()
+        private async void Conectar()
         {
             try
             {
@@ -83,28 +83,27 @@ namespace BusinessLayer
                     var XbeeCoordinador = modGenerales.ObtenerXbeeCoordinador();
                     if (XbeeCoordinador == null)
                     {
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Error Sql al momento de obtener el xbee coordinador",ETipoEvento.Error,0,""));
+                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Error Sql al momento de obtener el xbee coordinador", ETipoEvento.Error, 0, ""));
                     }
                     if (XbeeCoordinador != null && XbeeCoordinador.Rows.Count > 0)
                     {
-                        foreach(DataRow _item in XbeeCoordinador.Rows)
+                        foreach (DataRow _item in XbeeCoordinador.Rows)
                         {
                             puerto = _item["puertoXbee"].ToString().Trim();
                             velocidadTrasmision = (int)_item["velocidadXbee"];
 
                             XBeeController controller = null;
-                            controller = new XBeeController();
+                            controller = new XBeeController(puerto, velocidadTrasmision);
+                            await controller.OpenAsync();
                             //Configuro el manejador para escuchar los datos recibidos
                             controller.DataReceived += DataReceivedXbee;
                             //Configuro manejador para escuchar el metodo que descubre los xbee en red
                             controller.NodeDiscovered += NodeDiscovered_controller;
-                            controller.OpenAsync(puerto, velocidadTrasmision);
-                            controller.DiscoverNetwork();
+                            await controller.DiscoverNetworkAsync();
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " ", ETipoEvento.Exitoso, 0, ""));
                             instancia.Controllers.Add(controller);
-                            Thread.Sleep(2000);
                         }
-                        
+
                     }
                     else
                     {
@@ -112,13 +111,13 @@ namespace BusinessLayer
                         return;
                     }
                 }
-                
+
                 //instancia.Controller.Dispose();
             }
             catch (Exception e)
             {
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
-                LocalLogManager.EscribeLog(e.Message,LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
             }
         }
 
@@ -149,7 +148,6 @@ namespace BusinessLayer
         {
             try
             {
-                instancia.ListadoPruebas.Add(args.Node);
                 if (instancia.ListNodes == null)
                 {
                     if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red...", ETipoEvento.Exitoso, 0, ""));
@@ -183,7 +181,6 @@ namespace BusinessLayer
                         if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se encontro dispositivo pero no esta registrado en base de datos: " + args.Name + " MAC: " + _macNodoEncontrado + "", ETipoEvento.Exitoso, 0, ""));
                     }
                 }
-                Thread.Sleep(2000);
             }
             catch (Exception e)
             {
@@ -572,7 +569,9 @@ namespace BusinessLayer
                             var TramaTotal = TramaExtensa(resultConsecutivoTurno.TramaResultado);
                             foreach (Byte[] data in TramaTotal)
                             {
-                                nodo.EnviarTrama(data);
+                                string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
+                                var dato = UtilidadesTramas.ObtenerByteDeString(texto);
+                                nodo.EnviarTrama(dato);
                             }
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
@@ -592,26 +591,12 @@ namespace BusinessLayer
                             var TramaConEncabezado = AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado);
                             var TramaTotal = TramaExtensa(TramaConEncabezado);
 
-                            foreach(var item in instancia.ListadoPruebas)
+                            foreach (Byte[] data in TramaTotal)
                             {
-                                var XX = "";
-                                //item.WriteChanges();
-                                foreach (Byte[] data in TramaTotal)
-                                {
-                                    //item.Reset();
-                                    item.TransmitDataAsync(data,false);
-                                    Thread.Sleep(200);
-                                }
-                                
-                                
+                                string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
+                                var dato = UtilidadesTramas.ObtenerByteDeString(texto);
+                                nodo.EnviarTrama(dato);
                             }
-
-                            //foreach (Byte[] data in TramaTotal)
-                            //{
-                            //    string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
-                            //    var dato = UtilidadesTramas.ObtenerByteDeString(texto);
-                            //    nodo.EnviarTrama(dato);
-                            //}
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
 
                         }

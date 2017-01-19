@@ -185,12 +185,24 @@ namespace DataAccess
             newVentas.NumTurno = idTurno;
             newVentas.Fecha = Convert.ToDateTime(fechaFinTurno);
 
-            newVentas.TotalDineroMang1 = Convert.ToInt32(dtVentasTotales.Rows[1]["p1"]) - Convert.ToInt32(dtVentasTotales.Rows[0]["p1"]);
-            newVentas.TotalDineroMang2 = Convert.ToInt32(dtVentasTotales.Rows[1]["p2"]) - Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]);
-            newVentas.TotalDineroMang3 = Convert.ToInt32(dtVentasTotales.Rows[1]["p3"]) - Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]);
-            newVentas.TotalGalonesMang1 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g1"]) - Convert.ToDecimal(dtVentasTotales.Rows[0]["g1"]);
-            newVentas.TotalGalonesMang2 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g2"]) - Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]);
-            newVentas.TotalGalonesMang3 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g3"]) - Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]);
+            if (dtVentasTotales.Rows[1]["p1"] != DBNull.Value)
+            {
+                newVentas.TotalDineroMang1 = Convert.ToInt32(dtVentasTotales.Rows[1]["p1"]) - Convert.ToInt32(dtVentasTotales.Rows[0]["p1"]);
+                newVentas.TotalGalonesMang1 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g1"]) - Convert.ToDecimal(dtVentasTotales.Rows[0]["g1"]);
+            }
+                
+            if (dtVentasTotales.Rows[1]["p2"] != DBNull.Value)
+            {
+                newVentas.TotalDineroMang2 = Convert.ToInt32(dtVentasTotales.Rows[1]["p2"]) - Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]);
+                newVentas.TotalGalonesMang2 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g2"]) - Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]);
+            }
+
+            if (dtVentasTotales.Rows[1]["p3"] != DBNull.Value)
+            {
+                newVentas.TotalDineroMang3 = Convert.ToInt32(dtVentasTotales.Rows[1]["p3"]) - Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]);
+                newVentas.TotalGalonesMang3 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g3"]) - Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]);
+            }
+                
 
             newVentas.TotalCaraDin = (newVentas.TotalDineroMang1 + newVentas.TotalDineroMang2 + newVentas.TotalDineroMang3).ToString();
             newVentas.TotalCaraGal = (newVentas.TotalGalonesMang1 + newVentas.TotalGalonesMang2 + newVentas.TotalGalonesMang3).ToString();
@@ -222,18 +234,29 @@ namespace DataAccess
 
             newVentas.TotalEfectivo = (Convert.ToInt32(newVentas.TotalCaraDin) + sumaValorVentaProductos).ToString();
 
-            newVentas.IniDineroMang1 = Convert.ToInt32(dtVentasTotales.Rows[0]["p1"]);
-            newVentas.IniDineroMang2 = Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]);
-            newVentas.IniDineroMang3 = Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]);
-            newVentas.IniGalMang1 = Convert.ToDecimal(dtVentasTotales.Rows[0]["g1"]);
-            newVentas.IniGalMang2 = Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]);
-            newVentas.IniGalMang3 = Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]);
-            newVentas.FinDineroMang1 = Convert.ToInt32(dtVentasTotales.Rows[1]["p1"]);
-            newVentas.FinDineroMang2 = Convert.ToInt32(dtVentasTotales.Rows[1]["p2"]);
-            newVentas.FinDineroMang3 = Convert.ToInt32(dtVentasTotales.Rows[1]["p3"]);
-            newVentas.FinGalMang1 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g1"]);
-            newVentas.FinGalMang2 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g2"]);
-            newVentas.FinGalMang3 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g3"]);
+            if(dtVentasTotales.Rows[0]["p1"] != DBNull.Value)
+            {
+                newVentas.IniDineroMang1 = Convert.ToInt32(dtVentasTotales.Rows[0]["p1"]);
+                newVentas.IniGalMang1 = Convert.ToDecimal(dtVentasTotales.Rows[0]["g1"]);
+                newVentas.FinDineroMang1 = Convert.ToInt32(dtVentasTotales.Rows[1]["p1"]);
+                newVentas.FinGalMang1 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g1"]);
+            }
+
+            if(dtVentasTotales.Rows[0]["p2"] != DBNull.Value)
+            {
+                newVentas.IniDineroMang2 = Convert.ToInt32(dtVentasTotales.Rows[0]["p2"]);
+                newVentas.IniGalMang2 = Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]);
+                newVentas.FinDineroMang2 = Convert.ToInt32(dtVentasTotales.Rows[1]["p2"]);
+                newVentas.FinGalMang2 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g2"]);
+            }
+
+            if(dtVentasTotales.Rows[0]["p3"] != DBNull.Value)
+            {
+                newVentas.IniDineroMang3 = Convert.ToInt32(dtVentasTotales.Rows[0]["p3"]);
+                newVentas.IniGalMang3 = Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]);
+                newVentas.FinDineroMang3 = Convert.ToInt32(dtVentasTotales.Rows[1]["p3"]);
+                newVentas.FinGalMang3 = Convert.ToDecimal(dtVentasTotales.Rows[1]["g3"]);
+            }
 
             return newVentas;
         }

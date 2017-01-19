@@ -785,69 +785,69 @@ namespace BusinessLayer
             List<string> mensajeTrama = new List<string>();
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CIERRE DE TURNO",
                                                 Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-            mensajeTrama.Add("CCara: " + infoVenta.Cara);
-            mensajeTrama.Add("CIslero: " + infoVenta.Usuario);
-            mensajeTrama.Add("CNum de Turno: " + infoVenta.NumTurno);
-            mensajeTrama.Add("CFecha: " + infoVenta.Fecha.ToString("yyyy-MM-dd") + " " + infoVenta.Fecha.ToString("H:mm:ss"));
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Cara: " + infoVenta.Cara);
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Islero: " + infoVenta.Usuario);
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Num de Turno: " + infoVenta.NumTurno);
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Fecha: " + infoVenta.Fecha.ToString("yyyy-MM-dd") + " " + infoVenta.Fecha.ToString("H:mm:ss"));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL MANGUERAS",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             
-            mensajeTrama.Add("CMANGUERA1");
-            mensajeTrama.Add("C$: " + infoVenta.TotalDineroMang1.ToString() + " | G: " + infoVenta.TotalGalonesMang1.ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA1");
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalDineroMang1.ToString() + " | G: " + infoVenta.TotalGalonesMang1.ToString());
 
-            mensajeTrama.Add("CMANGUERA2");
-            mensajeTrama.Add("C$: " + infoVenta.TotalDineroMang2.ToString() + " | G: " + infoVenta.TotalGalonesMang2.ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA2");
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalDineroMang2.ToString() + " | G: " + infoVenta.TotalGalonesMang2.ToString());
 
 
             if (infoVenta.TotalDineroMang3 > 0)
             {
-                mensajeTrama.Add("CMANGUERA3");
-                mensajeTrama.Add("C$: " + infoVenta.TotalDineroMang3.ToString() + " | G: " + infoVenta.TotalGalonesMang3.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA3");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalDineroMang3.ToString() + " | G: " + infoVenta.TotalGalonesMang3.ToString());
             }
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL CARA",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-            mensajeTrama.Add("C$: " + infoVenta.TotalCaraDin.ToString() + " | G: " + infoVenta.TotalCaraGal.ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalCaraDin.ToString() + " | G: " + infoVenta.TotalCaraGal.ToString());
 
             if (infoVenta.TotalCredTran != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL CREDITO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
-                //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
-                mensajeTrama.Add("C$: " + infoVenta.TotalCredTran);
+                //mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Transacciones: " + infoVenta.TotalCredTran.ToString());
+                //mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalCredTran);
             }
 
             if (infoVenta.TotalPrepago != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL PREPAGO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
-                //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
-                mensajeTrama.Add("C$: " + infoVenta.TotalPrepago);
+                //mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Transacciones: " + infoVenta.TotalCredTran.ToString());
+                //mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalPrepago);
             }
 
             if (infoVenta.TotalTarjetaCredito != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL DATAFONO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
-                //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
-                mensajeTrama.Add("C$: " + infoVenta.TotalTarjetaCredito);
+                //mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Transacciones: " + infoVenta.TotalCredTran.ToString());
+                //mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.TotalTarjetaCredito);
             }
 
             if (infoVenta.TotalProdTran != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL PRODUCTO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                mensajeTrama.Add("CTransacciones: " + infoVenta.TotalProdTran.ToString());
-                mensajeTrama.Add("C$ :" + infoVenta.TotalProdDin.ToString() + " | G: " + infoVenta.TotalProdCant.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Transacciones: " + infoVenta.TotalProdTran.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$ :" + infoVenta.TotalProdDin.ToString() + " | G: " + infoVenta.TotalProdCant.ToString());
             }
 
             if (infoVenta.TotalReversado != Convert.ToDouble(0)) 
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL REVERSADO",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                mensajeTrama.Add("CReversado: $" + infoVenta.TotalReversado.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Reversado: $" + infoVenta.TotalReversado.ToString());
             }
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL EFECTIVO",
@@ -858,40 +858,40 @@ namespace BusinessLayer
             var totalTarjCredito = Convert.ToDecimal(infoVenta.TotalTarjetaCredito);
             var totalVendidoEfectivo = totalEfectivo - totalCredito - totalPrepago - totalTarjCredito;
             
-            mensajeTrama.Add("C$: " + totalVendidoEfectivo);
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + totalVendidoEfectivo);
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL ELECTRONICOS INICIALES",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             if (infoVenta.IniDineroMang1 > 0) {
-                mensajeTrama.Add("CMANGUERA1");
-                mensajeTrama.Add("C$: " + infoVenta.IniDineroMang1.ToString() + " | G: " + infoVenta.IniGalMang1.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA1");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.IniDineroMang1.ToString() + " | G: " + infoVenta.IniGalMang1.ToString());
             }
 
             if (infoVenta.IniDineroMang2 > 0)
             {
-                mensajeTrama.Add("CMANGUERA2");
-                mensajeTrama.Add("C$: " + infoVenta.IniDineroMang2.ToString() + " | G:" + infoVenta.IniGalMang2.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA2");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.IniDineroMang2.ToString() + " | G:" + infoVenta.IniGalMang2.ToString());
             }
                
 
             if (infoVenta.IniDineroMang3 > 0)
             {
-                mensajeTrama.Add("CMANGUERA3");
-                mensajeTrama.Add("C$: " + infoVenta.IniDineroMang3.ToString() + " | G: " + infoVenta.IniGalMang3.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA3");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.IniDineroMang3.ToString() + " | G: " + infoVenta.IniGalMang3.ToString());
             }
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL ELECTRONICOS FINALES",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-            mensajeTrama.Add("CMANGUERA1");
-            mensajeTrama.Add("C$: " + infoVenta.FinDineroMang1.ToString() + " | G: " + infoVenta.FinGalMang1.ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA1");
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.FinDineroMang1.ToString() + " | G: " + infoVenta.FinGalMang1.ToString());
 
-            mensajeTrama.Add("CMANGUERA2");
-            mensajeTrama.Add("C$: " + infoVenta.FinDineroMang2.ToString() + " | G: " + infoVenta.FinGalMang2.ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA2");
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.FinDineroMang2.ToString() + " | G: " + infoVenta.FinGalMang2.ToString());
             if (infoVenta.FinDineroMang3 > 0)
             {
-                mensajeTrama.Add("CMANGUERA3");
-                mensajeTrama.Add("C$: " + infoVenta.FinDineroMang3.ToString() + " | G: " + infoVenta.FinGalMang3.ToString());
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "MANGUERA3");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$: " + infoVenta.FinDineroMang3.ToString() + " | G: " + infoVenta.FinGalMang3.ToString());
             }
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
@@ -913,13 +913,13 @@ namespace BusinessLayer
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("ABRIR TURNO",
                                                 Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
 
-            mensajeTrama.Add("C Consecutivo: " + idConsecutivo);
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + " Consecutivo: " + idConsecutivo);
 
-            mensajeTrama.Add("C " + dtDatosApertura.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtDatosApertura.Rows[0]["apeUsuario"].ToString().Trim());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + " " + dtDatosApertura.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtDatosApertura.Rows[0]["apeUsuario"].ToString().Trim());
 
-            mensajeTrama.Add("C CARA: " + dtDatosApertura.Rows[0]["cara"].ToString().Trim());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + " CARA: " + dtDatosApertura.Rows[0][_CARACTERINICIALIMPRESION + "ara"].ToString().Trim());
 
-            mensajeTrama.Add("C " + dtDatosApertura.Rows[0]["abrirTurno"].ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + " " + dtDatosApertura.Rows[0]["abrirTurno"].ToString());
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("INICIO DE TURNO",
                 Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
@@ -928,24 +928,24 @@ namespace BusinessLayer
             if ((int)dtDatosApertura.Rows[0]["p1"] != 0)
             {
                 int dinero = (int)dtDatosApertura.Rows[0]["p1"];
-                mensajeTrama.Add("C MANGERA 1");
-                mensajeTrama.Add("C $: " + dinero.ToString()
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + " MANGERA 1");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + " $: " + dinero.ToString()
                     + " | G: " + dtDatosApertura.Rows[0]["g1"].ToString());
             }
             //MANGERA 2
             if ((int)dtDatosApertura.Rows[0]["p2"] != 0)
             {
                 int dinero = (int)dtDatosApertura.Rows[0]["p2"];
-                mensajeTrama.Add("C MANGERA 2");
-                mensajeTrama.Add("C $: " + dinero.ToString()
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + " MANGERA 2");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + " $: " + dinero.ToString()
                     + " | G: " + dtDatosApertura.Rows[0]["g2"].ToString());
             }
             //MANGERA 3
             if ((int)dtDatosApertura.Rows[0]["p3"] != 0)
             {
                 int dinero = (int)dtDatosApertura.Rows[0]["p3"];
-                mensajeTrama.Add("C MANGERA 3");
-                mensajeTrama.Add("C $: " + dinero.ToString()
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + " MANGERA 3");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + " $: " + dinero.ToString()
                     + " | G: " + dtDatosApertura.Rows[0]["g3"].ToString());
             }
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
