@@ -7,12 +7,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Data;
 using XbeeUtils;
+using Singleton;
 
 namespace DataAccess
 {
 
     public class ModeloDispensador : Connection, IDisposable
     {
+        XbeeSingleton instancia = XbeeSingleton.Instance;
 
         #region Enviar Totales
 
@@ -85,16 +87,24 @@ namespace DataAccess
 
             try
             {
-                var dtCreditosEnCara = GetTable("select idVehiculo,idUsuario,idCredito,cara,cast(descuento as signed) as descuento,cupo,saldo,dia,pendiente,estadoCredito from credito where cara = " + cara + " and pendiente = 1");
+                var credito = instancia.ListaCreditosPendientes.Find(x => x.cara == cara);
+                DataTable dtCreditosEnCara = null;
+                if (credito != null)
+                {
+                    //instancia.ListaCreditosPendientes.Remove(credito);
+                    dtCreditosEnCara = credito.datos;
+                }
+
+
                 //Parte para crédito
-                
-                if (dtCreditosEnCara.Rows.Count > 0)
+
+                if (dtCreditosEnCara != null && dtCreditosEnCara.Rows.Count > 0)
                 {
                     ImprimeTiquete = 1;
 
-                    if (Convert.ToInt32(dtCreditosEnCara.Rows[0]["descuento"].ToString()) != 0)
+                    if (credito.descuento != 0)
                     {
-                        descuentoporGalon = Convert.ToInt32(dtCreditosEnCara.Rows[0]["descuento"].ToString());
+                        descuentoporGalon = credito.descuento;
                         var valGalonDescuento = Convert.ToDecimal(ppu) + descuentoporGalon;
                         valCredito = Convert.ToDecimal(galones) * Convert.ToDecimal(valGalonDescuento);
                     }
@@ -113,7 +123,24 @@ namespace DataAccess
                         saldoAntiguo = Convert.ToDecimal(dtCreditosEnCara.Rows[0]["saldo"]);
                     }
                     decimal nuevoSaldo = saldoAntiguo - DineroDescontar;
-                    ExecuteQuery("update credito set pendiente = 0, saldo = " + nuevoSaldo.ToString().Replace(',', '.') + " where idCredito = " + dtCreditosEnCara.Rows[0]["idCredito"].ToString());
+                    ExecuteQuery("update planes set saldo = " + nuevoSaldo.ToString().Replace(',', '.') + " where id = " + dtCreditosEnCara.Rows[0]["idPlan"].ToString());
+
+
+                    //si acumula puntos
+                    if(dtCreditosEnCara.Rows[0]["acumulaPuntos"] != DBNull.Value && Convert.ToBoolean(dtCreditosEnCara.Rows[0]["acumulaPuntos"]) == true)
+                    {
+                        DataTable dtFidelizado = ObtenerFidelizadoPorIdUsuario(dtCreditosEnCara.Rows[0]["propietario"].ToString());
+                        if (dtFidelizado.Rows.Count > 0)
+                        {
+                            idVehiculo = dtFidelizado.Rows[0]["idVehiculo"].ToString();
+                            int valorDinero = Convert.ToInt32(dtFidelizado.Rows[0]["valorDinero"]);
+                            int valorPuntos = Convert.ToInt32(dtFidelizado.Rows[0]["valorPuntos"]);
+
+                            puntos = ((Convert.ToInt32(dinero) / valorDinero) * valorPuntos).ToString();
+                            ExecuteQuery("update puntos set puntos = puntos + " + puntos + " where idPuntos = " + dtFidelizado.Rows[0]["idPuntos"] + "");
+                            ExecuteQuery("update puntos set pendiente = 0 where idPuntos = " + dtFidelizado.Rows[0]["idPuntos"].ToString());
+                        }
+                    }
                 }
             }
             catch (Exception e)
@@ -124,7 +151,6 @@ namespace DataAccess
 
 
             var dtFidelizadoEnCara = GetTable("select * from puntos where cara = " + cara + " and pendiente = 1");
-
             try
             {
                 //Parte para fidelizado

@@ -26,7 +26,7 @@ namespace DataAccess
 
         public DataTable ObtenerXbeeCoordinador()
         {
-            return GetTable("select idXbee, nomXbee, macXbee, puertoXbee, velocidadXbee from xbee where tipoXbee = " + (int)Enumeraciones.TipoDispositivo.Cordinador + "");
+            return GetTable("select idXbee, nomXbee, macXbee, puertoXbee, velocidadXbee from xbee where estado = 1 and tipoXbee = " + (int)Enumeraciones.TipoDispositivo.Cordinador + "");
         }
 
         public DataTable ObtenerTodosLosXbee()

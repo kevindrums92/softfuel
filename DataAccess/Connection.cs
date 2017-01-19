@@ -127,7 +127,7 @@ namespace DataAccess
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 throw e;
             }
             finally

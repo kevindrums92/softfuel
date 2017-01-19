@@ -412,7 +412,31 @@ namespace DataAccess
         #region Credito
         public DataTable ObtenerCreditoPorSerial(string serial)
         {
-            return GetTable("select V.id, V.placa, C.idCredito, C.descuento, C.cupo, C.saldo, C.dia, V.propietario from  vehiculo V LEFT OUTER JOIN  credito C ON C.idVehiculo = V.id WHERE C.estadoCredito = 'activo' and `serial`  = '" + serial + "' and V.estado = 'activo'");
+            var sql = "select " +
+                " v.id as idVehiculo, p.id as idPlan, vp.exigeRestricciones, v.propietario, p.cupo, p.saldo, " +
+                " p.acumulaPuntos, rv.id as idRestriccionesVehiculo,  rv.diario, rv.semanal,rv.restriccionProd, " +
+                " rv.limiteTanqueo, rv.limiteGalones, rv.limitePrecio, vp.descuento as descuentoVehiculo, p.descuento as descuentoUsuario, vp.id as idVP " +
+                " from ticketsoft.vehiculo v inner join " +
+                " ticketsoft.vehiculo_plan vp on vp.idVehiculo = v.id inner join " +
+                " ticketsoft.planes p on p.id = vp.idPlanes left join " +
+                " ticketsoft.restricciones_vehiculo rv on rv.idVehiculo = v.id " +
+                 " where v.serial = '1075227951' and p.tipoFormaPago = 1 ";
+            return GetTable(sql);
+        }
+
+        public int ObtenerVentasVechiculoXRangoFechas(string fechaIni, string fechaFin, string idVehiculo)
+        {
+            var sql = "select count(*) from ventas where  " +
+            " fecha between '" + fechaIni + "' and '" + fechaFin + "' and idVehiculo = " + idVehiculo + " and tipoCuenta = 1";
+            var _datos = GetTable(sql);
+            return Convert.ToInt32(_datos.Rows[0][0]);
+        }
+
+        public bool ConocerSiProductoEsValidoParaTanqueo(string idProducto, string idVehiculo)
+        {
+            var sql = "select count(*) from restricciones_producto where idProducto = " + idProducto + " and idVehiculo =" + idVehiculo;
+            return Convert.ToInt32(GetTable(sql).Rows[0][0]) > 0;
+            
         }
 
         public DataTable ObtenerCreditoPorIdVehiculo(string id)

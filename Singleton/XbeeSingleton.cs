@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -30,12 +31,36 @@ namespace Singleton
         #endregion
 
         #region "Propiedades"
+        public List<XBeeNode> ListadoPruebas { get; set; } = new List<XBeeNode>();
+
         public List<NodosXbee> ListNodes { get; set; }
-        public XBeeController Controller { get; set; }
+        private List<XBeeController> controllers;
+        public List<XBeeController> Controllers {
+            get {
+                if(controllers == null)
+                {
+                    controllers = new List<XBeeController>();
+                }
+                return controllers;
+            }
+        }
         public string SqlServidor { get; set; }
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
+        private List<CreditoPendiente> listaCreditosPendientes;
+        public List<CreditoPendiente> ListaCreditosPendientes
+        {
+            get
+            {
+                if (listaCreditosPendientes == null)
+                {
+                    listaCreditosPendientes = new List<CreditoPendiente>();
+                }
+                return listaCreditosPendientes;
+            }
+        }
+
         public List<TiquetesPorImprimir> ListaTiquetesPorImprimir;
         private List<FidelizadoCreditoPendiente> _listaFidelizadosCreditosPendientes;
         public List<FidelizadoCreditoPendiente> ListaFidelizadosCreditosPendientes 
@@ -50,6 +75,8 @@ namespace Singleton
                 _listaFidelizadosCreditosPendientes = value;
             }
         }
+
+        
 
         public delegate void NodoAgregadoEventHandler(NodosXbee e);
         public event NodoAgregadoEventHandler NodoAgregadoEvent;
@@ -125,6 +152,16 @@ namespace Singleton
         public string cara { get; set; }
         public int descuento { get; set; }
         public ETipoSolicitudSerial tipoSolicitud { get; set; }
+    }
+
+    public class CreditoPendiente
+    {
+        public string serial { get; set; }
+        public string cara { get; set; }
+        public int descuento { get; set; }
+        public DataTable datos { get; set; }
+        public string valor { get; set; }
+        public bool exigeRestriccion { get; set; }
     }
     public class TiquetesPorImprimir
     {

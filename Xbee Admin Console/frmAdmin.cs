@@ -623,7 +623,7 @@ namespace XbeeAdminConsole
                     var _trama = LineRecibida[0];
                     var _idXbeeImprimir = LineRecibida[1];
 
-                    NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.IdXbee == Convert.ToInt16(_idXbeeImprimir)).FirstOrDefault();
+                    NodosXbee nodeXbee = instancia.ListNodes.FindAll(x => x.IdXbee == Convert.ToInt32(_idXbeeImprimir)).FirstOrDefault();
                     if (nodeXbee != null)
                     {
                         string[] arrayTramaRecibida = UtilidadesTramas.ObtieneArrayTrama(_trama);

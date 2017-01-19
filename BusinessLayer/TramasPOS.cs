@@ -16,7 +16,8 @@ namespace BusinessLayer
     {
         XbeeSingleton instancia = XbeeSingleton.Instance;
 
-
+        const char _CARACTERDIVISOR = '*';
+        const string _CARACTERINICIALIMPRESION = "{";
 
         #region "Actualizar Dispensador"
         /// <summary>
@@ -113,7 +114,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -143,7 +144,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -193,7 +194,162 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Función para preparar crédito
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public ResultadoTrama PrepararCredito(string[] data)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string cara = data[1];
+                string serial = data[2];
+                string valor = data[3];
+
+                //se debe anular el credito en la cara cuando el valor sea cero
+                if (valor == "0" || Convert.ToInt32(valor) == 0)
+                {
+                    var item = instancia.ListaCreditosPendientes.Find(x => x.cara == cara);
+                    if(item != null)
+                    {
+                        instancia.ListaCreditosPendientes.Remove(item);
+                        return new ResultadoTrama(true,
+                                        AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito cancelado en cara", cara }),
+                                        "Credito cancelado en la cara " + cara);
+                    }
+                }
+
+                string NomApeUsuario = "";
+                DataTable dtCredito;
+                using (ModeloPOS modPOS = new ModeloPOS())
+                {
+                    dtCredito = modPOS.ObtenerCreditoPorSerial(serial);
+                }
+
+                if (dtCredito.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se encontro credito", "con serial: " + serial }), "No se encontro credito con serial " + serial);
+               
+                DataTable dtUsuario;
+                int idXbee = 0;
+                using (Generales modGenerales = new Generales())
+                {
+                    dtUsuario = modGenerales.ObtenerUsuario(dtCredito.Rows[0]["propietario"].ToString());
+                    if (dtUsuario.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Usuario no existe o incorrecto" }), "Usuario no existe o incorrecto");
+                    NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
+                    using (ModeloPOS modPOS = new ModeloPOS())
+                    {
+                        DataTable dtPosicion = modPOS.ObtenerPosicionesPorCara(cara);
+                        idXbee = (int)dtPosicion.Rows[0]["idXbee"];
+                        if (dtPosicion.Rows.Count == 0) return new ResultadoTrama(false, null, "No se pudo obtener la posición.");
+                        var DatosTurno = modPOS.ObtenerTurnoPorPosicionyEstado(dtPosicion.Rows[0]["idPosicion"].ToString());
+                        if (DatosTurno.Rows.Count == 0) return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno en la cara " + cara }), "No hay turno en la cara " + cara);
+
+
+                        //validaciones de credito
+                        var idVehiculo = dtCredito.Rows[0]["idVehiculo"].ToString();
+                        if (dtCredito.Rows[0]["idVP"] != DBNull.Value && Convert.ToBoolean(dtCredito.Rows[0]["exigeRestricciones"]) == true)
+                        {
+                            //validación de ventas por semana
+                            if (dtCredito.Rows[0]["semanal"] != DBNull.Value && dtCredito.Rows[0]["semanal"].ToString() != "0")
+                            {
+                                var fechaHoy = DateTime.Now;
+                                while (fechaHoy.DayOfWeek != DayOfWeek.Monday)
+                                {
+                                    fechaHoy = fechaHoy.AddDays(-1);
+                                }
+
+                                var fechaInicial = fechaHoy.ToString("yyyy-MM-dd"); 
+                                var fechaFinal = fechaHoy.AddDays(7).ToString("yyyy-MM-dd");
+
+                                if (modPOS.ObtenerVentasVechiculoXRangoFechas(fechaInicial, fechaFinal, idVehiculo) >=
+                                    Convert.ToInt32(dtCredito.Rows[0]["semanal"].ToString()))
+                                {
+                                    return new ResultadoTrama(true,
+                                        AsistenteMensajes.GenerarMensajeAlerta(new string[] { "El vehiculo ya ocupo", "el máximo de tanqueos", "permitidos por semana" }),
+                                        "El vehículo ya ocupó el máximo de tanqueos por semana");
+                                }
+                            }
+
+                            //validación de ventas por día
+                            if (dtCredito.Rows[0]["diario"] != DBNull.Value && dtCredito.Rows[0]["diario"].ToString() != "0")
+                            {
+                                var fechaHoy = DateTime.Now;
+                               
+
+                                var fechaInicial = fechaHoy.ToString("yyyy-MM-dd"); ;
+                                var fechaFinal = fechaHoy.AddDays(1).ToString("yyyy-MM-dd");
+
+                                if (modPOS.ObtenerVentasVechiculoXRangoFechas(fechaInicial, fechaFinal, idVehiculo) >=
+                                    Convert.ToInt32(dtCredito.Rows[0]["diario"].ToString()))
+                                {
+                                    return new ResultadoTrama(true,
+                                        AsistenteMensajes.GenerarMensajeAlerta(new string[] { "El vehiculo ya ocupo", "el máximo de tanqueos", "permitidos por dia" }),
+                                        "El vehículo ya ocupó el máximo de tanqueos por día");
+                                }
+                            }
+
+                            var limTanqueo = dtCredito.Rows[0]["limiteTanqueo"];
+                            
+                            //Limite de tanqueo por dinero
+                            if (limTanqueo != DBNull.Value && limTanqueo.ToString() == "2")
+                            {
+                                if(dtCredito.Rows[0]["limitePrecio"] != DBNull.Value)
+                                {
+                                    var limPrecio = Convert.ToDecimal(dtCredito.Rows[0]["limitePrecio"]);
+                                    if(Convert.ToDecimal(valor)> limPrecio)
+                                    {
+                                        return new ResultadoTrama(true,
+                                        AsistenteMensajes.GenerarMensajeAlerta(new string[] { "El valor del tanqueo", "es superior al permitido", "valor max: $" + limPrecio.ToString() }),
+                                        "El valor a tanquear es superior al permitido para este vechiculo, valor máximo: $" + limPrecio.ToString());
+                                    }
+                                }
+                            }
+
+                            //validación por saldo
+                            if (dtCredito.Rows[0]["saldo"] != DBNull.Value &&
+                                Convert.ToDecimal(valor) > Convert.ToDecimal(dtCredito.Rows[0]["saldo"]))
+                            {
+                                return new ResultadoTrama(true,
+                                        AsistenteMensajes.GenerarMensajeAlerta(new string[] { "El valor del tanqueo", "es superior saldo", "valor saldo: $" + dtCredito.Rows[0]["saldo"].ToString() }),
+                                        "El valor a tanquear es superior al saldo, valor saldo: $" + dtCredito.Rows[0]["saldo"].ToString());
+                            }
+                        }
+
+                        var descuento = 0;
+                        if (dtCredito.Rows[0]["descuentoUsuario"] != DBNull.Value)
+                        {
+                            descuento = Convert.ToInt32(dtCredito.Rows[0]["descuentoUsuario"]);
+                        }
+
+                        if (dtCredito.Rows[0]["descuentoVehiculo"] != DBNull.Value)
+                        {
+                            descuento = Convert.ToInt32(dtCredito.Rows[0]["descuentoVehiculo"]);
+                        }
+
+                        instancia.ListaCreditosPendientes.Add(new CreditoPendiente() {
+                            cara = cara,
+                            datos = dtCredito,
+                            descuento = descuento,
+                            serial = serial,
+                            valor = valor,
+                            exigeRestriccion = Convert.ToBoolean(dtCredito.Rows[0]["exigeRestricciones"])
+                        });
+                        ResultadoTrama _resultado = new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Venta autorizada ","en la cara:" + cara }), "Venta autorizada en la cara: " + cara, idXbee, true);
+
+                        return _resultado;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -236,15 +392,15 @@ namespace BusinessLayer
                             NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
                             //Devuelvo trama exitosa
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CONSIGNACION #" + consecutivo.ToString(),
-                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(NomApeUsuario,
                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(DateTime.Now.ToString("yyyy-MM-dd H:mm:ss"),
                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("$" + Dinero.ToString(""),
                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
-                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
                             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
@@ -266,7 +422,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -304,15 +460,15 @@ namespace BusinessLayer
                         NomApeUsuario = dtUsuario.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtUsuario.Rows[0]["apeUsuario"].ToString().Trim();
                         //Devuelvo trama exitosa
                         mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CONSIGNACION #" + consecutivo.ToString(),
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                         mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(NomApeUsuario,
                             Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
                         mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(DateTime.Now.ToString("yyyy-MM-dd H:mm:ss"),
                             Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
                         mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("$" + Dinero.ToString(""),
                             Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.izquierda, ' '));
-                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                            Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                         mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
                             Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
                         mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
@@ -323,7 +479,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -408,7 +564,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -464,13 +620,13 @@ namespace BusinessLayer
                     {
 
                         //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CANASTA VENTA",
-                        //                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        //                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                         //mensajeTrama.Add("C SE VENDIO EL PRODUCTO:");
                         //mensajeTrama.Add("C " + producto.Rows[0]["nomProducto"].ToString().Trim());
                         //mensajeTrama.Add("C CANTIDAD: " + cantidad);
                         //mensajeTrama.Add("C TOTAL: $" + valorVenta.ToString());
-                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                        //   Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, '-'));
+                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR,
+                        //   Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                         //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
                         //    Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
                         //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
@@ -488,7 +644,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -526,7 +682,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
             finally 
@@ -564,7 +720,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -594,7 +750,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -611,7 +767,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 return new ResultadoTrama(false, null, e.Message);
             }
         }
@@ -628,13 +784,13 @@ namespace BusinessLayer
         {
             List<string> mensajeTrama = new List<string>();
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CIERRE DE TURNO",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             mensajeTrama.Add("CCara: " + infoVenta.Cara);
             mensajeTrama.Add("CIslero: " + infoVenta.Usuario);
             mensajeTrama.Add("CNum de Turno: " + infoVenta.NumTurno);
             mensajeTrama.Add("CFecha: " + infoVenta.Fecha.ToString("yyyy-MM-dd") + " " + infoVenta.Fecha.ToString("H:mm:ss"));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL MANGUERAS",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             
             mensajeTrama.Add("CMANGUERA1");
             mensajeTrama.Add("C$: " + infoVenta.TotalDineroMang1.ToString() + " | G: " + infoVenta.TotalGalonesMang1.ToString());
@@ -649,13 +805,13 @@ namespace BusinessLayer
                 mensajeTrama.Add("C$: " + infoVenta.TotalDineroMang3.ToString() + " | G: " + infoVenta.TotalGalonesMang3.ToString());
             }
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL CARA",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             mensajeTrama.Add("C$: " + infoVenta.TotalCaraDin.ToString() + " | G: " + infoVenta.TotalCaraGal.ToString());
 
             if (infoVenta.TotalCredTran != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL CREDITO",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                 //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
                 //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
                 mensajeTrama.Add("C$: " + infoVenta.TotalCredTran);
@@ -664,7 +820,7 @@ namespace BusinessLayer
             if (infoVenta.TotalPrepago != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL PREPAGO",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                 //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
                 //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
                 mensajeTrama.Add("C$: " + infoVenta.TotalPrepago);
@@ -673,7 +829,7 @@ namespace BusinessLayer
             if (infoVenta.TotalTarjetaCredito != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL DATAFONO",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                 //mensajeTrama.Add("CTransacciones: " + infoVenta.TotalCredTran.ToString());
                 //mensajeTrama.Add("C$: " + infoVenta.TotalCredDin.ToString() + " | G: " + infoVenta.TotalCredGal.ToString());
                 mensajeTrama.Add("C$: " + infoVenta.TotalTarjetaCredito);
@@ -682,7 +838,7 @@ namespace BusinessLayer
             if (infoVenta.TotalProdTran != "0")
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL PRODUCTO",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                 mensajeTrama.Add("CTransacciones: " + infoVenta.TotalProdTran.ToString());
                 mensajeTrama.Add("C$ :" + infoVenta.TotalProdDin.ToString() + " | G: " + infoVenta.TotalProdCant.ToString());
             }
@@ -690,12 +846,12 @@ namespace BusinessLayer
             if (infoVenta.TotalReversado != Convert.ToDouble(0)) 
             {
                 mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL REVERSADO",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
                 mensajeTrama.Add("CReversado: $" + infoVenta.TotalReversado.ToString());
             }
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL EFECTIVO",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             var totalEfectivo = Convert.ToDecimal(infoVenta.TotalEfectivo.ToString());
             var totalCredito = Convert.ToDecimal(infoVenta.TotalCredTran);
             var totalPrepago = Convert.ToDecimal(infoVenta.TotalPrepago);
@@ -703,10 +859,10 @@ namespace BusinessLayer
             var totalVendidoEfectivo = totalEfectivo - totalCredito - totalPrepago - totalTarjCredito;
             
             mensajeTrama.Add("C$: " + totalVendidoEfectivo);
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL ELECTRONICOS INICIALES",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             if (infoVenta.IniDineroMang1 > 0) {
                 mensajeTrama.Add("CMANGUERA1");
                 mensajeTrama.Add("C$: " + infoVenta.IniDineroMang1.ToString() + " | G: " + infoVenta.IniGalMang1.ToString());
@@ -726,7 +882,7 @@ namespace BusinessLayer
             }
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("TOTAL ELECTRONICOS FINALES",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             mensajeTrama.Add("CMANGUERA1");
             mensajeTrama.Add("C$: " + infoVenta.FinDineroMang1.ToString() + " | G: " + infoVenta.FinGalMang1.ToString());
 
@@ -737,8 +893,8 @@ namespace BusinessLayer
                 mensajeTrama.Add("CMANGUERA3");
                 mensajeTrama.Add("C$: " + infoVenta.FinDineroMang3.ToString() + " | G: " + infoVenta.FinGalMang3.ToString());
             }
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' '));
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
@@ -755,7 +911,7 @@ namespace BusinessLayer
             }
             List<string> mensajeTrama = new List<string>();
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("ABRIR TURNO",
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
 
             mensajeTrama.Add("C Consecutivo: " + idConsecutivo);
 
@@ -766,7 +922,7 @@ namespace BusinessLayer
             mensajeTrama.Add("C " + dtDatosApertura.Rows[0]["abrirTurno"].ToString());
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("INICIO DE TURNO",
-                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
 
             //MANGERA 1
             if ((int)dtDatosApertura.Rows[0]["p1"] != 0)
@@ -792,8 +948,8 @@ namespace BusinessLayer
                 mensajeTrama.Add("C $: " + dinero.ToString()
                     + " | G: " + dtDatosApertura.Rows[0]["g3"].ToString());
             }
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
 
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
                 Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, ' '));
@@ -828,20 +984,20 @@ namespace BusinessLayer
             string fecha = Convert.ToDateTime(dtInfo.Rows[0]["fecha"]).ToString("yyyy-MM-dd");
             string hora = Convert.ToDateTime(dtInfo.Rows[0]["fecha"]).ToString(" H:mm:ss");
             mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(textoEncabezado,
-                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            mensajeTrama.Add("CFecha: " + fecha + " " + hora);
-            mensajeTrama.Add("CTiquete: " + idVenta.ToString() + " Placa: " + dtInfo.Rows[0]["placa"].ToString());
-            mensajeTrama.Add("CKilometraje: " + dtInfo.Rows[0]["kilometraje"].ToString());
-            mensajeTrama.Add("CCara: " + dtInfo.Rows[0]["cara"].ToString() + " Mang: " + dtInfo.Rows[0]["manguera"].ToString());
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            mensajeTrama.Add("CProd: " + dtInfo.Rows[0]["nomProducto"].ToString());
-            mensajeTrama.Add("CCant: " + dtInfo.Rows[0]["galones"].ToString() + " PPG: $" + dtInfo.Rows[0]["ppu"].ToString() + "");
-            mensajeTrama.Add("CTotal: $" + dtInfo.Rows[0]["precio"].ToString());
+                                                Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Fecha: " + fecha + " " + hora);
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Tiquete: " + idVenta.ToString() + " Placa: " + dtInfo.Rows[0]["placa"].ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Kilometraje: " + dtInfo.Rows[0]["kilometraje"].ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Cara: " + dtInfo.Rows[0]["cara"].ToString() + " Mang: " + dtInfo.Rows[0]["manguera"].ToString());
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                               Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Prod: " + dtInfo.Rows[0]["nomProducto"].ToString());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Cant: " + dtInfo.Rows[0]["galones"].ToString() + " PPG: $" + dtInfo.Rows[0]["ppu"].ToString() + "");
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Total: $" + dtInfo.Rows[0]["precio"].ToString());
 
             if (object.Equals(dtInfo.Rows[0]["tipoCuenta"],DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "1")
             {
-                mensajeTrama.Add("CForma de Pago: Credito");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Forma de Pago: Credito");
                 string descuento = "0";
                 if (object.Equals(dtInfo.Rows[0]["descuento"], DBNull.Value) == false && dtInfo.Rows[0]["descuento"].ToString().Trim() != "")
                 {
@@ -853,23 +1009,23 @@ namespace BusinessLayer
                 {
                     if (Convert.ToDecimal(descuento) < 0)
                     {
-                        mensajeTrama.Add("CIncremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
+                        mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Incremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
                     }
                     else
                     {
-                        mensajeTrama.Add("CDescuento: $" + descuento + "");
+                        mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Descuento: $" + descuento + "");
                     }
                 }
                 
-                mensajeTrama.Add("CTotal acreditado: $" + DineroDescontar + "");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Total acreditado: $" + DineroDescontar + "");
             }
             else if (object.Equals(dtInfo.Rows[0]["tipoCuenta"], DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "2")
             {
-                mensajeTrama.Add("CForma de Pago: Contado");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Forma de Pago: Contado");
             }
             else if (object.Equals(dtInfo.Rows[0]["tipoCuenta"], DBNull.Value) == false && dtInfo.Rows[0]["tipoCuenta"].ToString() == "3")
             {
-                mensajeTrama.Add("CForma de Pago: Prepago");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Forma de Pago: Prepago");
                 string descuento = "0";
                 if (object.Equals(dtInfo.Rows[0]["descuento"], DBNull.Value) == false && dtInfo.Rows[0]["descuento"].ToString().Trim() != "")
                 {
@@ -881,26 +1037,27 @@ namespace BusinessLayer
                 {
                     if (Convert.ToDecimal(descuento) < 0)
                     {
-                        mensajeTrama.Add("CIncremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
+                        mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Incremento: $" + Math.Abs(Convert.ToDecimal(descuento)) + "");
                     }
                     else
                     {
-                        mensajeTrama.Add("CDescuento: $" + descuento + "");
+                        mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Descuento: $" + descuento + "");
                     }
                 }
-                mensajeTrama.Add("CTotal Venta Prepago:");
-                mensajeTrama.Add("C$" + DineroDescontar + "");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Total Venta Prepago:");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "$" + DineroDescontar + "");
             }
             else
             {
-                mensajeTrama.Add("CForma de Pago: Datafono");
+                mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Forma de Pago: Datafono");
             }
-            mensajeTrama.Add("CCliente: " + dtInfo.Rows[0]["cliente"].ToString());
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                                           Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
-            mensajeTrama.Add("CAtendido: " + dtInfo.Rows[0]["nomUsuario"].ToString() + " " + dtInfo.Rows[0]["apeUsuario"].ToString());
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                                                       Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Cliente: " + dtInfo.Rows[0]["cliente"].ToString());
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                                           Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "Atendido por:");
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + "" + dtInfo.Rows[0]["nomUsuario"].ToString() + " " + dtInfo.Rows[0]["apeUsuario"].ToString());
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                                                       Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
             string puntosVenta = "0";
             string puntosTotal = "0";
             if (object.Equals(dtInfo.Rows[0]["puntosEnVenta"], DBNull.Value) == false && dtInfo.Rows[0]["puntosEnVenta"].ToString().Trim() != "")
@@ -918,8 +1075,8 @@ namespace BusinessLayer
                 mensajeTrama.Add("?COMPRA: " + puntosVenta);
                 mensajeTrama.Add("?TOTAL: " + puntosTotal);
             }
-            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("-",
-                                                                       Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, '-'));
+            mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR.ToString(),
+                                                                       Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
 
             return mensajeTrama;
         }

@@ -2,6 +2,7 @@
 using Singleton;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -13,9 +14,51 @@ using XbeeUtils;
 
 namespace BusinessLayer
 {
+    
+
     public  class Main : IDisposable
     {
+        #region Background Envio de datos"
+        public class EnvioTrama
+        {
+            public NodosXbee nodo { get; set; }
+            public List<byte[]> Trama { get; set; }
+        }
+        BackgroundWorker BW_EnvioDatos;
+
+        private void BW_EnvioDatos_DoWork(object sender, DoWorkEventArgs e)
+        {
+            EnvioTrama datos = (EnvioTrama)e.Argument;
+            foreach (Byte[] data in datos.Trama)
+            {
+                string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
+                var dato = UtilidadesTramas.ObtenerByteDeString(texto);
+                datos.nodo.EnviarTrama(dato);
+            }
+
+            e.Result = e.Argument;
+        }
+
+        private void BW_EnvioDatos_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            EnvioTrama datos = (EnvioTrama)e.Result;
+            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(datos.Trama), ETipoEvento.Exitoso, datos.nodo.IdXbee, "", datos.nodo.Nombre));
+        }
+
+
+        #endregion
+
+        #region Constructor
+        public Main() {
+            BW_EnvioDatos = new BackgroundWorker();
+            BW_EnvioDatos.DoWork += BW_EnvioDatos_DoWork;
+            BW_EnvioDatos.RunWorkerCompleted += BW_EnvioDatos_RunWorkerCompleted;
+        }
+       
+        #endregion
+
         #region "Variables"
+
         bool EnviarVentaConDifNegativa = true;
         XbeeSingleton instancia = XbeeSingleton.Instance;
         TramasPOS _tramasPOS = new TramasPOS();
@@ -44,8 +87,24 @@ namespace BusinessLayer
                     }
                     if (XbeeCoordinador != null && XbeeCoordinador.Rows.Count > 0)
                     {
-                        puerto = XbeeCoordinador.Rows[0]["puertoXbee"].ToString().Trim();
-                        velocidadTrasmision = (int)XbeeCoordinador.Rows[0]["velocidadXbee"];
+                        foreach(DataRow _item in XbeeCoordinador.Rows)
+                        {
+                            puerto = _item["puertoXbee"].ToString().Trim();
+                            velocidadTrasmision = (int)_item["velocidadXbee"];
+
+                            XBeeController controller = null;
+                            controller = new XBeeController();
+                            //Configuro el manejador para escuchar los datos recibidos
+                            controller.DataReceived += DataReceivedXbee;
+                            //Configuro manejador para escuchar el metodo que descubre los xbee en red
+                            controller.NodeDiscovered += NodeDiscovered_controller;
+                            controller.OpenAsync(puerto, velocidadTrasmision);
+                            controller.DiscoverNetwork();
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " ", ETipoEvento.Exitoso, 0, ""));
+                            instancia.Controllers.Add(controller);
+                            Thread.Sleep(2000);
+                        }
+                        
                     }
                     else
                     {
@@ -53,13 +112,7 @@ namespace BusinessLayer
                         return;
                     }
                 }
-                if (instancia.Controller == null) instancia.Controller = new XBeeController();
-                //Configuro el manejador para escuchar los datos recibidos
-                instancia.Controller.DataReceived += DataReceivedXbee;
-                //Configuro manejador para escuchar el metodo que descubre los xbee en red
-                instancia.Controller.NodeDiscovered += NodeDiscovered_controller;
-                instancia.Controller.OpenAsync(puerto, velocidadTrasmision);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " ", ETipoEvento.Exitoso, 0, ""));
+                
                 //instancia.Controller.Dispose();
             }
             catch (Exception e)
@@ -74,16 +127,16 @@ namespace BusinessLayer
         /// </summary>
         public void ConectaryDescubrirRed()
         {
-            if (instancia.Controller == null || instancia.Controller.IsOpen == false)
+            if (instancia.Controllers.Count == 0)
             {
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Realizando Conexión...", ETipoEvento.Exitoso, 0, ""));
                 Conectar();
             }
-            if (instancia.Controller != null)
+
+            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se va a escanear Red!", ETipoEvento.Exitoso, 0, ""));
+            foreach (var item in instancia.Controllers)
             {
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se va a escanear Red!",ETipoEvento.Exitoso,0,""));
-                instancia.Controller.DiscoverNetwork();
-                //EscanearRed();
+                //item.DiscoverNetwork();
             }
         }
 
@@ -96,6 +149,7 @@ namespace BusinessLayer
         {
             try
             {
+                instancia.ListadoPruebas.Add(args.Node);
                 if (instancia.ListNodes == null)
                 {
                     if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red...", ETipoEvento.Exitoso, 0, ""));
@@ -129,10 +183,11 @@ namespace BusinessLayer
                         if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se encontro dispositivo pero no esta registrado en base de datos: " + args.Name + " MAC: " + _macNodoEncontrado + "", ETipoEvento.Exitoso, 0, ""));
                     }
                 }
+                Thread.Sleep(2000);
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
             }
             
@@ -193,11 +248,14 @@ namespace BusinessLayer
         {
             try
             {
-                if (instancia.Controller != null)
+                if (instancia.Controllers.Count > 0)
                 {
-                    instancia.Controller.Dispose();
-                    instancia.Controller.Close();
-                    instancia.Controller = null;
+                    foreach(var item in instancia.Controllers)
+                    {
+                        item.Dispose();
+                        item.Close();
+                    }
+                    instancia.Controllers.Clear();
                     if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se ha cerrado la conexión!", ETipoEvento.Exitoso, 0, ""));
                 }
                 if (instancia.ListNodes != null && instancia.ListNodes.Count > 0)
@@ -207,62 +265,62 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
             }
         }
 
-        public async void EscanearRed()
-        {
-            try
-            {
-                if (instancia.ListNodes == null)
-                {
-                    if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red...", ETipoEvento.Exitoso, 0, ""));
-                    instancia.ListNodes = new List<NodosXbee>();
-                }
-                string _macNodoEncontrado;
-                string _macImpresora = "";
-                int _tiempoEspera = 0;
-                int _idXbee = 0;
-                Enumeraciones.TipoDispositivo _tipDisp;
-                DataTable dtXbees;
-                using (Generales modGEN = new Generales())
-                {
-                    dtXbees = modGEN.ObtenerTodosLosXbee();
-                }
-                foreach (DataRow _row in dtXbees.Rows)
-                {
-                    _macNodoEncontrado = (string)_row["macXbee"];
-                    _macImpresora = (string)_row["impresoraXbee"];
-                    _tiempoEspera = (int)_row["tiempoEspXbee"];
-                    _idXbee = (int)_row["idXbee"];
-                    _tipDisp = (Enumeraciones.TipoDispositivo)_row["tipoXbee"];
-                    NodosXbee newDispositivo = new NodosXbee(null, (string)_row["nomXbee"].ToString(), _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
+        //public async void EscanearRed()
+        //{
+        //    try
+        //    {
+        //        if (instancia.ListNodes == null)
+        //        {
+        //            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Escaneando Red...", ETipoEvento.Exitoso, 0, ""));
+        //            instancia.ListNodes = new List<NodosXbee>();
+        //        }
+        //        string _macNodoEncontrado;
+        //        string _macImpresora = "";
+        //        int _tiempoEspera = 0;
+        //        int _idXbee = 0;
+        //        Enumeraciones.TipoDispositivo _tipDisp;
+        //        DataTable dtXbees;
+        //        using (Generales modGEN = new Generales())
+        //        {
+        //            dtXbees = modGEN.ObtenerTodosLosXbee();
+        //        }
+        //        foreach (DataRow _row in dtXbees.Rows)
+        //        {
+        //            _macNodoEncontrado = (string)_row["macXbee"];
+        //            _macImpresora = (string)_row["impresoraXbee"];
+        //            _tiempoEspera = (int)_row["tiempoEspXbee"];
+        //            _idXbee = (int)_row["idXbee"];
+        //            _tipDisp = (Enumeraciones.TipoDispositivo)_row["tipoXbee"];
+        //            NodosXbee newDispositivo = new NodosXbee(null, (string)_row["nomXbee"].ToString(), _macNodoEncontrado, _macImpresora, _tiempoEspera, _tipDisp, _idXbee);
 
-                    //Buscar nodo en red
-                    ulong _ulong = Convert.ToUInt64(_row["macXbee"].ToString(), 16);
-                    NodeAddress Address = new NodeAddress(new LongAddress(_ulong));
-                    XBeeNode nodoXbee = null;
-                    nodoXbee = await instancia.Controller.GetRemoteAsync(Address);
-                    if (nodoXbee != null)
-                    {
-                        newDispositivo.Nodo = nodoXbee;
-                        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + newDispositivo.Nombre + " MAC:" + _macNodoEncontrado + "", ETipoEvento.Exitoso, newDispositivo.IdXbee, ""));
-                        if (_tipDisp == Enumeraciones.TipoDispositivo.Dispensador)
-                        {
-                            ActualizarDatosDispensador(newDispositivo.IdXbee);
-                        }
-                    }
-                    instancia.AgregarNodo(newDispositivo);
-                }
-            }
-            catch (Exception e)
-            {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
-                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
-            }
-        }
+        //            //Buscar nodo en red
+        //            ulong _ulong = Convert.ToUInt64(_row["macXbee"].ToString(), 16);
+        //            NodeAddress Address = new NodeAddress(new LongAddress(_ulong));
+        //            XBeeNode nodoXbee = null;
+        //            nodoXbee = await instancia.Controller.GetRemoteAsync(Address);
+        //            if (nodoXbee != null)
+        //            {
+        //                newDispositivo.Nodo = nodoXbee;
+        //                if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se conectó el dispositivo: " + newDispositivo.Nombre + " MAC:" + _macNodoEncontrado + "", ETipoEvento.Exitoso, newDispositivo.IdXbee, ""));
+        //                if (_tipDisp == Enumeraciones.TipoDispositivo.Dispensador)
+        //                {
+        //                    ActualizarDatosDispensador(newDispositivo.IdXbee);
+        //                }
+        //            }
+        //            instancia.AgregarNodo(newDispositivo);
+        //        }
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+        //        if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, ""));
+        //    }
+        //}
 
         /// <summary>
         /// Metodo que autoriza ventas en dispensador
@@ -295,7 +353,7 @@ namespace BusinessLayer
             }
             catch (Exception e)
             {
-                LocalLogManager.EscribeLog(e.Message, LocalLogManager.TipoImagen.TipoError);
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
                 if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se detectó un error:\n" + e.Message, ETipoEvento.Error, 0, "",nodo.Nombre));
             }
         }
@@ -370,11 +428,12 @@ namespace BusinessLayer
                         var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
                         if (resultFid.Resultado == true)
                         {
-                            foreach (Byte[] data in resultFid.TramaResultado)
+                            var TramaTotal = TramaExtensa(resultFid.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultFid.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                             if (resultFid.Fidelizado_o_Credito == true)
                             {
                                 FidelizadoCreditoPendiente _newFid = new FidelizadoCreditoPendiente();
@@ -391,16 +450,35 @@ namespace BusinessLayer
                         }
                         _tramasPOS.Dispose();
                         break;
+
+                    case "PC":
+                        var resultCredito = _tramasPOS.PrepararCredito(arrayTramaRecibida);
+                        if (resultCredito.Resultado == true)
+                        {
+                            var TramaTotal = TramaExtensa(resultCredito.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCredito.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
                     ///Petición Consignación en efectivo
                     case "H":
                         var result = _tramasPOS.ConsignacionEfectivo(arrayTramaRecibida);
                         if (result.Resultado == true)
                         {
-                            foreach (Byte[] data in result.TramaResultado)
+                            var TramaTotal = TramaExtensa(result.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(result.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
                         else
                         {
@@ -414,11 +492,12 @@ namespace BusinessLayer
                         var resultHC = _tramasPOS.ConsecutivoConsignacionEfectivo(arrayTramaRecibida);
                         if (resultHC.Resultado == true)
                         {
-                            foreach (Byte[] data in resultHC.TramaResultado)
+                            var TramaTotal = TramaExtensa(resultHC.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultHC.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
                         else
                         {
@@ -432,12 +511,12 @@ namespace BusinessLayer
                         var resultAbrirTurno = _tramasPOS.AbrirTurno(arrayTramaRecibida);
                         if (resultAbrirTurno.Resultado == true)
                         {
-                            foreach (Byte[] data in resultAbrirTurno.TramaResultado)
+                            var TramaTotal = TramaExtensa(resultAbrirTurno.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
-
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultAbrirTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
                         else
                         {
@@ -453,7 +532,8 @@ namespace BusinessLayer
                         var resultVentaCanasta = _tramasPOS.VentaCanasta(arrayTramaRecibida);
                         if (resultVentaCanasta.Resultado == true)
                         {
-                            foreach (Byte[] data in resultVentaCanasta.TramaResultado)
+                            var TramaTotal = TramaExtensa(resultVentaCanasta.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
@@ -470,7 +550,8 @@ namespace BusinessLayer
                         var resultCerrarTurno = _tramasPOS.CerrarTurno(arrayTramaRecibida);
                         if (resultCerrarTurno.Resultado == true)
                         {
-                            foreach (Byte[] data in resultCerrarTurno.TramaResultado)
+                            var TramaTotal = TramaExtensa(resultCerrarTurno.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
@@ -488,11 +569,12 @@ namespace BusinessLayer
                         var resultConsecutivoTurno = _tramasPOS.ConsecutivoCierre_AperturaTurno(arrayTramaRecibida);
                         if (resultConsecutivoTurno.Resultado == true)
                         {
-                            foreach (Byte[] data in resultConsecutivoTurno.TramaResultado)
+                            var TramaTotal = TramaExtensa(resultConsecutivoTurno.TramaResultado);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultConsecutivoTurno.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
                         else
                         {
@@ -506,11 +588,32 @@ namespace BusinessLayer
                         var resultUltimaVenta = _tramasPOS.UltimaVenta(arrayTramaRecibida);
                         if (resultUltimaVenta.Resultado == true)
                         {
-                            foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado))
+
+                            var TramaConEncabezado = AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado);
+                            var TramaTotal = TramaExtensa(TramaConEncabezado);
+
+                            foreach(var item in instancia.ListadoPruebas)
                             {
-                                nodo.EnviarTrama(data);
+                                var XX = "";
+                                //item.WriteChanges();
+                                foreach (Byte[] data in TramaTotal)
+                                {
+                                    //item.Reset();
+                                    item.TransmitDataAsync(data,false);
+                                    Thread.Sleep(200);
+                                }
+                                
+                                
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVenta.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+
+                            //foreach (Byte[] data in TramaTotal)
+                            //{
+                            //    string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
+                            //    var dato = UtilidadesTramas.ObtenerByteDeString(texto);
+                            //    nodo.EnviarTrama(dato);
+                            //}
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+
                         }
                         else
                         {
@@ -523,11 +626,14 @@ namespace BusinessLayer
                         var resultUltimaVentaConsecutivo = _tramasPOS.ConsecutivoUltimaVenta(arrayTramaRecibida);
                         if (resultUltimaVentaConsecutivo.Resultado == true)
                         {
-                            foreach (Byte[] data in AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado))
+                            var TramaConEncabezado = AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado);
+                            var TramaTotal = TramaExtensa(TramaConEncabezado);
+
+                            foreach (Byte[] data in TramaConEncabezado)
                             {
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(resultUltimaVentaConsecutivo.TramaResultado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaConEncabezado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
                         else
                         {
@@ -573,6 +679,11 @@ namespace BusinessLayer
                         string caraProceso = arrayTramaRecibida[1];
                         if (resultEnvioTotales.Resultado == true)
                         {
+                            var credito = instancia.ListaCreditosPendientes.Find(x => x.cara == caraProceso);
+                            if (credito != null)
+                            {
+                                instancia.ListaCreditosPendientes.Remove(credito);
+                            }
                             EnviarVentaConDifNegativa = true;
                             if (instancia.ListaTiquetesPorImprimir != null)
                             {
@@ -629,6 +740,10 @@ namespace BusinessLayer
         }
         #endregion
 
+        /// <summary>
+        /// Función para obtener tramas manuales o tramas POS de la base de datos
+        /// </summary>
+        /// <returns></returns>
         public DataTable GetTramasManuales()
         {
             using (Generales modGenerales = new Generales())
@@ -638,6 +753,52 @@ namespace BusinessLayer
                 
         }
 
+        /// <summary>
+        /// Funcion para formatear la trama con respecto a si estamos imprimiento de a 90 caracteres o 32
+        /// </summary>
+        /// <param name="tramaInicial"></param>
+        /// <returns></returns>
+        public List<Byte[]> TramaExtensa(List<byte[]> tramaInicial)
+        {
+            //array temporal que va guardando por linea la información a devolver
+            List<Byte[]> temporalBytes = new List<byte[]>();
+            //Array final que va a guardar la infomación final a devolver
+            List<Byte[]> TramasADevolver = new List<byte[]>();
+
+            //Le coloco el enacbezado a la trama que quiero devolver
+            var TramaConEncabezado = tramaInicial;
+
+            //recorro cada linea a devolver que esta de a 32 caracteres
+            for (var i = 0; i < TramaConEncabezado.Count - 1; i++)
+            {
+                //almaceno la trama en el array temporal con un ] al final indicando que hay un salto de linea cada 32 caracteres
+                string tramaConcatenada = UtilidadesTramas.ObtenerStringDeBytes(TramaConEncabezado[i]) + "]";
+                temporalBytes.Add(UtilidadesTramas.ObtenerByteDeString(tramaConcatenada));
+
+                if (!(i == TramaConEncabezado.Count - 2))
+                {
+                    //entro aqui si no es la ultima iteración
+                    //debo saber si lo que hay actualmente mas lo que habria en la proxima iteración se excede del maximo permitido
+                    //(en este caso 90 caracteres por trama), debo enviarlo ya en otra linea, de lo contrario sigo acumulando 
+                    var textoEnTramaDeMomento = UtilidadesTramas.MensajeQueEnvióTrama(temporalBytes, false);
+                    var textoSiguienteTrama = UtilidadesTramas.ObtenerStringDeBytes(TramaConEncabezado[i + 1]) + "]";
+                    if (string.Concat(textoEnTramaDeMomento, textoSiguienteTrama).Length > 90)
+                    {
+                        var textoTrama = UtilidadesTramas.MensajeQueEnvióTrama(temporalBytes, false);
+                        TramasADevolver.Add(UtilidadesTramas.ObtenerByteDeString(textoTrama));
+                        temporalBytes.Clear();
+                    }
+                }
+                else {
+                    //si es la ultima iteracion
+                    var textoTrama = UtilidadesTramas.MensajeQueEnvióTrama(temporalBytes, false);
+                    TramasADevolver.Add(UtilidadesTramas.ObtenerByteDeString(textoTrama));
+                    temporalBytes.Clear();
+                }
+            }
+            return TramasADevolver;
+        }
+ 
         #region "IDisposable"
         private IntPtr nativeResource = Marshal.AllocHGlobal(100);
         // Dispose() calls Dispose(true)

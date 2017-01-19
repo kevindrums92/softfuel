@@ -57,7 +57,7 @@ namespace XbeeUtils
             }
             else
             {
-                LetraTipoMensaje = "C";
+                LetraTipoMensaje = "{";
             }
 
             char pad = caracter;
@@ -151,19 +151,27 @@ namespace XbeeUtils
             return resultado;
         }
 
-        public static string MensajeQueEnvióTrama(List<Byte[]> listBytes)
+        public static string MensajeQueEnvióTrama(List<Byte[]> listBytes, bool conEspacio = true)
         {
             string mensaje = "";
             foreach(Byte[] _item in listBytes)
             {
-                mensaje = mensaje + ObtenerStringDeBytes(_item) + " ";
+                if (conEspacio)
+                {
+                    mensaje = mensaje + ObtenerStringDeBytes(_item) + " ";
+                }
+                else
+                {
+                    mensaje = mensaje + ObtenerStringDeBytes(_item) + "";
+                }
+                
             }
             return mensaje;
         }
 
-        public static string ConcatenarCerosIzquiera(string _txt)
+        public static string ConcatenarCerosIzquiera(string _txt, int cantidadceros = 5)
         {
-            return _txt.PadLeft(5, '0');
+            return _txt.PadLeft(cantidadceros, '0');
         }
         #endregion
     }

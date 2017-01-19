@@ -31,6 +31,9 @@ namespace BusinessLayer
                 resultado.Estado = false;
                 List<byte[]> TramasDevolver = new List<byte[]> { };
                 resultado.ResultadoDevolver = TramasDevolver;
+
+                //obtener credito pendiente
+                var credito = instancia.ListaCreditosPendientes.Find(x => x.cara == cara);
                 using (var modPOS = new ModeloPOS())
                 {
                     //Validar si el dispensador requiere autorización para vender
@@ -42,17 +45,58 @@ namespace BusinessLayer
                             DataTable dtAutorizados = modPOS.EstaTurnoAbiertoPorIdXbee(idXbee.ToString());
                             if (dtAutorizados.Select("numPosicion = " + cara).Length > 0)
                             {
-                                resultado.Estado = true;
-                                TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("OK" + cara));
+                                if (credito != null && credito.exigeRestriccion == true)
+                                {
+                                    var dtInfoProducto = modPOS.ObtenerPosicionesPorCarayManguera(cara, manguera);
+                                    var limTanqueo = credito.datos.Rows[0]["limiteTanqueo"];
+                                    //Limite de tanqueo por galones
+                                    if (limTanqueo != DBNull.Value && limTanqueo.ToString() == "1")
+                                    {
+                                        var numGalones = credito.datos.Rows[0]["limiteGalones"];
+                                        if (numGalones != DBNull.Value)
+                                        {
+                                            decimal galonesATanquear = Convert.ToDecimal(credito.valor) / Convert.ToDecimal(dtInfoProducto.Rows[0]["precioVentaProducto"]);
+                                            if (galonesATanquear > Convert.ToDecimal(numGalones))
+                                            {
+                                                resultado.ResultadoDevolver = AsistenteMensajes.GenerarMensajeAlerta(
+                                                new string[] { "El numero de galones", "es superior al permitido", "num gal max: " + numGalones.ToString() });
+                                                return resultado;
+                                            }
+                                        }
+                                    }
+
+                                    if (credito.datos.Rows[0]["restriccionProd"] != DBNull.Value &&
+                                        Convert.ToBoolean(credito.datos.Rows[0]["restriccionProd"]) == true)
+                                    {
+
+                                        if (!modPOS.ConocerSiProductoEsValidoParaTanqueo(dtInfoProducto.Rows[0]["idProducto"].ToString(), credito.datos.Rows[0]["idVehiculo"].ToString()))
+                                        {
+                                            resultado.ResultadoDevolver = AsistenteMensajes.GenerarMensajeAlerta(
+                                                new string[] { "El producto ", dtInfoProducto.Rows[0]["nomProducto"].ToString(), "no es permitido" });
+                                            return resultado;
+                                        }
+                                    }
+                                }
                             }
-                        }
-                        else {
-                            return null;
+                            else {
+                                resultado.ResultadoDevolver = AsistenteMensajes.GenerarMensajeAlerta(
+                                                new string[] { "No hay turno en la cara", cara});
+                                return resultado;
+                            }
                         }
                     }
                 }
 
                 //Validar si hay credito y si puede tanquear el producto que contiene la maguera
+                resultado.Estado = true;
+                if (credito != null && credito.exigeRestriccion == true)
+                {
+                    TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("VC:" + cara + ":" + UtilidadesTramas.ConcatenarCerosIzquiera(credito.valor,7)));
+                }
+                else {
+                    TramasDevolver.Add(UtilidadesTramas.ObtenerByteDeString("OK" + cara));
+                }
+                    
                 return resultado;
             }
             catch (Exception e)
@@ -96,26 +140,7 @@ namespace BusinessLayer
                 string serialFidelizado = "";
                 string serialCredito = "";
                 int descuentoCredito = 0;
-                ////Capturo si es venta fidelizado 
-                //if (instancia.ListaFidelizadosCreditosPendientes.Count > 0)
-                //{
-                //    FidelizadoCreditoPendiente objFidelizado = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Fidelizado);
-                //    if (objFidelizado != null)
-                //    {
-                //        serialFidelizado = objFidelizado.serial;
-                //        instancia.ListaFidelizadosCreditosPendientes.Remove(objFidelizado);
-                //    }
-                //    FidelizadoCreditoPendiente objCredito = instancia.ListaFidelizadosCreditosPendientes.Find(item => item.cara == cara && item.tipoSolicitud == ETipoSolicitudSerial.Credito);
-                //    if (objCredito != null)
-                //    {
-                //        esCredito = true;
-                //        serialCredito = objCredito.serial;
-                //        descuentoCredito = objCredito.descuento;
-                //        instancia.ListaFidelizadosCreditosPendientes.Remove(objCredito);
-                //    }
-                //}
-
-                //obtengo el id de la posición por la cara, y traigo el idProducto tambien
+                
                 //Obtengo el ultimo registro de ventas en la cara
                 using (ModeloPOS modPOS = new ModeloPOS())
                 {
@@ -167,7 +192,7 @@ namespace BusinessLayer
 
                                     if(ppu_m1 != Convert.ToInt32(dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"])){
                                         return new ResultadoTrama(false, null, "ET_002 El valor del producto " 
-                                            + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString()
+                                            + dtPosicionProductoCorrecto.Rows[0]["nomProducto"].ToString() + " en la cara " + cara
                                             + " es diferente al que llego en la venta\nppu venta: "+ ppu_m1 + "\nppu parametrizado:" + dtPosicionProductoCorrecto.Rows[0]["precioVentaProducto"].ToString());
                                     }
 
