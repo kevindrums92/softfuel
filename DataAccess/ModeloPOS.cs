@@ -40,7 +40,7 @@ namespace DataAccess
 
         public DataTable EstaTurnoAbiertoPorIdXbee(string idXbee)
         {
-            return GetTable("select * from posicion where idXbee = " + idXbee + " and estadoPosicion = 'activo'");
+            return GetTable("select * from posicion where idXbee = " + idXbee + " and (estadoPosicion = 'activo' or estadoPosicion = 'bloqueado')");
         }
 
         public DataTable ObtieneInformacionCara(string cara)
@@ -522,6 +522,23 @@ namespace DataAccess
             string fecha = DateTime.Now.ToString("yyyy-MM-dd");
             ExecuteQuery("insert into comunicacion (xbee,trama,fecha, estado) values('" + idXbee.ToString() + "','" + mensaje + "','" + fecha + "',1)");
             return true;
+        }
+        #endregion
+
+        #region BLoqueo y desbloqueo de cara
+        public DataTable ObtenerTurnoUsuarioXPosicion(string idUsuario, string idPosicion)
+        {
+            return GetTable("SELECT * FROM turno where idPosicion = " + idPosicion + " and idUsuario = '" + idUsuario + "' and estadoTurno = 'activo'");
+        }
+
+        public void BloqueoCara(string idPosicion)
+        {
+            ExecuteQuery("update posicion set estadoPosicion = 'bloqueado' where idPosicion = " + idPosicion);
+        }
+
+        public void DesbloqueoCara(string idPosicion)
+        {
+            ExecuteQuery("update posicion set estadoPosicion = 'activo' where idPosicion = " + idPosicion);
         }
         #endregion
 

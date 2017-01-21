@@ -97,6 +97,81 @@ namespace BusinessLayer
 
         #region "Procesos Tramas"
 
+        public ResultadoTrama BloqueoCara(string[] data, int idXbee)
+        {
+            try
+            {
+                var cara = data[2];
+                var usuario = data[1];
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string dato = data[1];
+
+                using (var modPOS = new ModeloPOS())
+                {
+                    DataTable dtAutorizados = modPOS.EstaTurnoAbiertoPorIdXbee(idXbee.ToString());
+                    if (dtAutorizados.Select("numPosicion = " + cara).Length > 0)
+                    {
+                        var dtPosicion = dtAutorizados.Select("numPosicion = " + cara);
+                        //Validar si el usuario es el del turno
+                        var turnoUsuario = modPOS.ObtenerTurnoUsuarioXPosicion(usuario, dtPosicion[0]["idPosicion"].ToString());
+                        if(turnoUsuario.Rows.Count == 0)
+                        {
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Este Usuario" + usuario,"No tiene turno abierto" }), "Este usuario " + usuario + " No tiene turno abierto");
+                        }
+                        modPOS.BloqueoCara(dtPosicion[0]["idPosicion"].ToString());
+                        return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Se bloqueo la cara " + cara }), "Se bloqueo la cara " + cara);
+                    }
+                    else {
+                        return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno abierto", "en la cara " + cara }), "No hay turno abierto en cara " + cara);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
+        public ResultadoTrama DesbloqueoCara(string[] data, int idXbee)
+        {
+            try
+            {
+                var cara = data[2];
+                var usuario = data[1];
+                List<string> mensajeTrama = new List<string>();
+                string _FechaActual = DateTime.Now.ToString("yyyy-MM-dd H:mm:ss");
+                string dato = data[1];
+
+                using (var modPOS = new ModeloPOS())
+                {
+                    DataTable dtAutorizados = modPOS.EstaTurnoAbiertoPorIdXbee(idXbee.ToString());
+                    if (dtAutorizados.Select("numPosicion = " + cara).Length > 0)
+                    {
+                        var dtPosicion = dtAutorizados.Select("numPosicion = " + cara);
+                        //Validar si el usuario es el del turno
+                        var turnoUsuario = modPOS.ObtenerTurnoUsuarioXPosicion(usuario, dtPosicion[0]["idPosicion"].ToString());
+                        if (turnoUsuario.Rows.Count == 0)
+                        {
+                            return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Este Usuario" + usuario, "No tiene turno abierto" }), "Este usuario " + usuario + " No tiene turno abierto");
+                        }
+                        modPOS.DesbloqueoCara(dtPosicion[0]["idPosicion"].ToString());
+                        return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Se desbloqueo la cara " + cara }), "Se desbloqueó la cara " + cara);
+                    }
+                    else {
+                        return new ResultadoTrama(true, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno abierto", "en la cara " + cara }), "No hay turno abierto en cara " + cara);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
+
         public ResultadoTrama GuardarTramaCTD(string[] data, int idXbee)
         {
             try
@@ -149,6 +224,11 @@ namespace BusinessLayer
             }
         }
         
+        /// <summary>
+        /// Trama de fidelizado; ej= F:{cara}:{serial}
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
         public ResultadoTrama Fidelizado(string[] data)
         {
             try
@@ -191,6 +271,40 @@ namespace BusinessLayer
                         return _resultado;
                     }
                 }
+            }
+            catch (Exception e)
+            {
+                LocalLogManager.EscribeLog(e.Message + "\n\n" + e.StackTrace, LocalLogManager.TipoImagen.TipoError);
+                return new ResultadoTrama(false, null, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Función para cancelar crédito
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public ResultadoTrama CancelarCredito(string[] data)
+        {
+            try
+            {
+                List<string> mensajeTrama = new List<string>();
+                string cara = data[1];
+
+                var item = instancia.ListaCreditosPendientes.Find(x => x.cara == cara);
+                if (item != null)
+                {
+                    instancia.ListaCreditosPendientes.Remove(item);
+                    return new ResultadoTrama(true,
+                                    AsistenteMensajes.GenerarMensajeAlerta(new string[] { "Credito cancelado en cara", cara }),
+                                    "Credito cancelado en la cara " + cara);
+                }
+                else {
+                    return new ResultadoTrama(true,
+                                    AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay credito", "pendiente en cara", cara }),
+                                    "No hay credito pendiente en la cara " + cara);
+                }
+
             }
             catch (Exception e)
             {
@@ -618,19 +732,6 @@ namespace BusinessLayer
                     var result = modPOS.GuardaVentaCanasta(idProducto, cara, valorVenta.ToString(), _FechaActual, turno.Rows[0]["idUSuario"].ToString(), turno.Rows[0]["idXbee"].ToString(), cantidad, serialFidelizado, serialCredito, descuentoCredito);
                     if (result > 0)
                     {
-
-                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama("CANASTA VENTA",
-                        //                        Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                        //mensajeTrama.Add("C SE VENDIO EL PRODUCTO:");
-                        //mensajeTrama.Add("C " + producto.Rows[0]["nomProducto"].ToString().Trim());
-                        //mensajeTrama.Add("C CANTIDAD: " + cantidad);
-                        //mensajeTrama.Add("C TOTAL: $" + valorVenta.ToString());
-                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(_CARACTERDIVISOR,
-                        //   Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
-                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                        //    Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
-                        //mensajeTrama.Add(UtilidadesTramas.CentrarConcatenarMensajeTrama(" ",
-                        //    Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' '));
                         return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(ArmarMensajeVenta(true, result.ToString())), "");
                     }
                     else
@@ -638,9 +739,6 @@ namespace BusinessLayer
                         return new ResultadoTrama(false, null, "No se pudo guardar la venta, porfavor contacte al administrador");
                     }
                 }
-
-
-                return new ResultadoTrama(true, UtilidadesTramas.ConvertirListadoStringaByte(mensajeTrama), "");
             }
             catch (Exception e)
             {
@@ -917,7 +1015,7 @@ namespace BusinessLayer
 
             mensajeTrama.Add(_CARACTERINICIALIMPRESION + " " + dtDatosApertura.Rows[0]["nomUsuario"].ToString().Trim() + " " + dtDatosApertura.Rows[0]["apeUsuario"].ToString().Trim());
 
-            mensajeTrama.Add(_CARACTERINICIALIMPRESION + " CARA: " + dtDatosApertura.Rows[0][_CARACTERINICIALIMPRESION + "ara"].ToString().Trim());
+            mensajeTrama.Add(_CARACTERINICIALIMPRESION + " CARA: " + dtDatosApertura.Rows[0]["Cara"].ToString().Trim());
 
             mensajeTrama.Add(_CARACTERINICIALIMPRESION + " " + dtDatosApertura.Rows[0]["abrirTurno"].ToString());
 
@@ -925,7 +1023,7 @@ namespace BusinessLayer
                 Enumeraciones.TipodeMensaje.SinAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR));
 
             //MANGERA 1
-            if ((int)dtDatosApertura.Rows[0]["p1"] != 0)
+            if (dtDatosApertura.Rows[0]["p1"] != DBNull.Value && (int)dtDatosApertura.Rows[0]["p1"] != 0)
             {
                 int dinero = (int)dtDatosApertura.Rows[0]["p1"];
                 mensajeTrama.Add(_CARACTERINICIALIMPRESION + " MANGERA 1");
@@ -933,7 +1031,7 @@ namespace BusinessLayer
                     + " | G: " + dtDatosApertura.Rows[0]["g1"].ToString());
             }
             //MANGERA 2
-            if ((int)dtDatosApertura.Rows[0]["p2"] != 0)
+            if (dtDatosApertura.Rows[0]["p2"] != DBNull.Value && (int)dtDatosApertura.Rows[0]["p2"] != 0)
             {
                 int dinero = (int)dtDatosApertura.Rows[0]["p2"];
                 mensajeTrama.Add(_CARACTERINICIALIMPRESION + " MANGERA 2");
@@ -941,7 +1039,7 @@ namespace BusinessLayer
                     + " | G: " + dtDatosApertura.Rows[0]["g2"].ToString());
             }
             //MANGERA 3
-            if ((int)dtDatosApertura.Rows[0]["p3"] != 0)
+            if (dtDatosApertura.Rows[0]["p3"] != DBNull.Value && (int)dtDatosApertura.Rows[0]["p3"] != 0)
             {
                 int dinero = (int)dtDatosApertura.Rows[0]["p3"];
                 mensajeTrama.Add(_CARACTERINICIALIMPRESION + " MANGERA 3");

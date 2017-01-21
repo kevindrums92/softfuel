@@ -73,9 +73,12 @@ namespace BusinessLayer
         public static List<Byte[]> GenerarMensajeAlerta(string[] texto)
         {
             List<Byte[]> newListado = new List<byte[]>() { };
-            newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama("ALERTA",
+            newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama("",
                                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR)));
-            foreach(string _txt in texto)
+            newListado.Add(UtilidadesTramas.ObtenerByteDeString("?  ** ALERTA **"));
+            newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama("",
+                                                Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, _CARACTERDIVISOR)));
+            foreach (string _txt in texto)
             {
                 newListado.Add(UtilidadesTramas.ObtenerByteDeString(UtilidadesTramas.CentrarConcatenarMensajeTrama(_txt,
                                                 Enumeraciones.TipodeMensaje.ConAlerta, Enumeraciones.Direccion.ambos, ' ')));

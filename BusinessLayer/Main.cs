@@ -99,7 +99,7 @@ namespace BusinessLayer
                             controller.DataReceived += DataReceivedXbee;
                             //Configuro manejador para escuchar el metodo que descubre los xbee en red
                             controller.NodeDiscovered += NodeDiscovered_controller;
-                            await controller.DiscoverNetworkAsync(TimeSpan.FromSeconds(5));
+                            await controller.DiscoverNetworkAsync(TimeSpan.FromSeconds(instancia.TiempoSegundosDescubriendoRed));
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs("Se abrió conexión en el puerto " + puerto + " con velocidad de trasmisión " + velocidadTrasmision.ToString() + " ", ETipoEvento.Exitoso, 0, ""));
                             instancia.Controllers.Add(controller);
                         }
@@ -383,6 +383,7 @@ namespace BusinessLayer
                 {
                     //Trama para avisarle a los dispensadores que deben actualizar el modo operación MO:1|3
                     case "MO":
+                        Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                         foreach (NodosXbee _nodo in instancia.ListNodes.FindAll(item => item.TipoDispositivo== Enumeraciones.TipoDispositivo.Dispensador)) {
                             ActualizarDatosDispensador(_nodo.IdXbee);
                         }
@@ -420,12 +421,13 @@ namespace BusinessLayer
                         _tramasPOS.Dispose();
                         break;
 
-
+                        //Trama de fidelizado; ej = F:{ cara}:{ serial}
                     case "F":
                         var resultFid = _tramasPOS.Fidelizado(arrayTramaRecibida);
                         if (resultFid.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultFid.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
@@ -448,11 +450,13 @@ namespace BusinessLayer
                         _tramasPOS.Dispose();
                         break;
 
+                        //Trama para preparar crédito PC:{cara}:{serial}:{valor}
                     case "PC":
                         var resultCredito = _tramasPOS.PrepararCredito(arrayTramaRecibida);
                         if (resultCredito.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultCredito.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
@@ -465,12 +469,74 @@ namespace BusinessLayer
                         }
                         _tramasPOS.Dispose();
                         break;
+
+                        //Trama de cancelar crédito CC:{cara}
+                    case "CC":
+                        var resultCancelarCredito = _tramasPOS.CancelarCredito(arrayTramaRecibida);
+                        if (resultCancelarCredito.Resultado == true)
+                        {
+                            var TramaTotal = TramaExtensa(resultCancelarCredito.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
+                            foreach (Byte[] data in TramaTotal)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultCancelarCredito.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Bloqueo de cara BC:usuario:cara
+                    case "BC":
+                        var resultBloqCara = _tramasPOS.BloqueoCara(arrayTramaRecibida,nodo.IdXbee);
+                        if (resultBloqCara.Resultado == true)
+                        {
+                            var TramaTotal = TramaExtensa(resultBloqCara.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
+                            foreach (Byte[] data in TramaTotal)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultBloqCara.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Desbloqueo de cara
+                    case "DC":
+                        var resultDescCara = _tramasPOS.DesbloqueoCara(arrayTramaRecibida,nodo.IdXbee);
+                        if (resultDescCara.Resultado == true)
+                        {
+                            var TramaTotal = TramaExtensa(resultDescCara.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
+                            foreach (Byte[] data in TramaTotal)
+                            {
+                                nodo.EnviarTrama(data);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultDescCara.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
                     ///Petición Consignación en efectivo
                     case "H":
                         var result = _tramasPOS.ConsignacionEfectivo(arrayTramaRecibida);
                         if (result.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(result.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
@@ -487,6 +553,7 @@ namespace BusinessLayer
                     ///Petición Impresion Consecutivo Consignación en efectivo
                     case "HC":
                         var resultHC = _tramasPOS.ConsecutivoConsignacionEfectivo(arrayTramaRecibida);
+                        Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                         if (resultHC.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultHC.TramaResultado);
@@ -509,6 +576,7 @@ namespace BusinessLayer
                         if (resultAbrirTurno.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultAbrirTurno.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
@@ -530,6 +598,7 @@ namespace BusinessLayer
                         if (resultVentaCanasta.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultVentaCanasta.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
@@ -545,6 +614,7 @@ namespace BusinessLayer
                     //Cerrar Turno
                     case "E":
                         var resultCerrarTurno = _tramasPOS.CerrarTurno(arrayTramaRecibida);
+                        Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                         if (resultCerrarTurno.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultCerrarTurno.TramaResultado);
@@ -567,6 +637,7 @@ namespace BusinessLayer
                         if (resultConsecutivoTurno.Resultado == true)
                         {
                             var TramaTotal = TramaExtensa(resultConsecutivoTurno.TramaResultado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
@@ -590,7 +661,7 @@ namespace BusinessLayer
 
                             var TramaConEncabezado = AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVenta.TramaResultado);
                             var TramaTotal = TramaExtensa(TramaConEncabezado);
-
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                             foreach (Byte[] data in TramaTotal)
                             {
                                 string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
@@ -613,12 +684,12 @@ namespace BusinessLayer
                         {
                             var TramaConEncabezado = AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaConsecutivo.TramaResultado);
                             var TramaTotal = TramaExtensa(TramaConEncabezado);
-
-                            foreach (Byte[] data in TramaConEncabezado)
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
-                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaConEncabezado), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
                         }
                         else
                         {
@@ -636,8 +707,10 @@ namespace BusinessLayer
 
                         if(resultAutorizarVenta != null)
                         {
+                            var TramaTotal = TramaExtensa(resultAutorizarVenta.ResultadoDevolver);
                             //si autorizo
-                            foreach (Byte[] data in resultAutorizarVenta.ResultadoDevolver)
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
+                            foreach (Byte[] data in TramaTotal)
                             {
                                 nodo.EnviarTrama(data);
                             }
@@ -651,6 +724,7 @@ namespace BusinessLayer
                         //Trama para solicitar Totales en una cara específica
                     case "ST":
                         var resultSolicitudTotales = _tramaDIS.SolicitudTotales(arrayTramaRecibida[1]);
+                        Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
                         foreach (Byte[] data in resultSolicitudTotales)
                         {
                             nodo.EnviarTrama(data);
@@ -745,6 +819,7 @@ namespace BusinessLayer
         /// <returns></returns>
         public List<Byte[]> TramaExtensa(List<byte[]> tramaInicial)
         {
+            if (instancia.ImpresionTramaMaxima == false) return tramaInicial;
             //array temporal que va guardando por linea la información a devolver
             List<Byte[]> temporalBytes = new List<byte[]>();
             //Array final que va a guardar la infomación final a devolver

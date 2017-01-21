@@ -45,6 +45,13 @@ namespace BusinessLayer
                             DataTable dtAutorizados = modPOS.EstaTurnoAbiertoPorIdXbee(idXbee.ToString());
                             if (dtAutorizados.Select("numPosicion = " + cara).Length > 0)
                             {
+                                var _row = dtAutorizados.Select("numPosicion = " + cara)[0];
+                                if(_row["estadoPosicion"].ToString() == "bloqueado")
+                                {
+                                    resultado.ResultadoDevolver = AsistenteMensajes.GenerarMensajeAlerta(
+                                                new string[] { "La cara esta", "bloqueada"});
+                                    return resultado;
+                                }
                                 if (credito != null && credito.exigeRestriccion == true)
                                 {
                                     var dtInfoProducto = modPOS.ObtenerPosicionesPorCarayManguera(cara, manguera);
@@ -201,7 +208,7 @@ namespace BusinessLayer
                             }
                             
                         }
-                        if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]) != galon_m2)
+                        if (dtVentasTotales.Rows[0]["g2"] != DBNull.Value &&  Convert.ToDecimal(dtVentasTotales.Rows[0]["g2"]) != galon_m2)
                         {
                             DataTable dtPosicionProductoCorrecto;
                             dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara, "2");
@@ -230,7 +237,7 @@ namespace BusinessLayer
                             }
                             
                         }
-                        if (Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]) != galon_m3)
+                        if (dtVentasTotales.Rows[0]["g3"] != DBNull.Value && Convert.ToDecimal(dtVentasTotales.Rows[0]["g3"]) != galon_m3)
                         {
                             DataTable dtPosicionProductoCorrecto;
                             dtPosicionProductoCorrecto = modPOS.ObtenerPosicionesPorCarayManguera(cara, "3");

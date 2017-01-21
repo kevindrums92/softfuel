@@ -48,6 +48,9 @@ namespace Singleton
         public string SqlUsuario { get; set; }
         public string SqlPassword { get; set; }
         public string SqlBaseDatos { get; set; }
+        public double TiempoSegundosDescubriendoRed { get; set; }
+        public int DelayAntesDeEnviarTrama { get; set; }
+        public bool ImpresionTramaMaxima { get; set; }
         private List<CreditoPendiente> listaCreditosPendientes;
         public List<CreditoPendiente> ListaCreditosPendientes
         {

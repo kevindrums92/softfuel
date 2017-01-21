@@ -60,13 +60,11 @@ namespace XbeeAdminConsole
         }
         #endregion
 
-
-
         #region Constructor
         public frmAdmin()
         {
             InitializeComponent();
-            CargarConfiguracionMysql();
+            CargarConfiguracionAppConfig();
             EstablecerVersion();
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.ResizeRedraw, true);
@@ -517,12 +515,17 @@ namespace XbeeAdminConsole
             SFlbFechaHora.Text = DateTime.Now.ToLongDateString();
         }
 
-        void CargarConfiguracionMysql()
+        void CargarConfiguracionAppConfig()
         {
             instancia.SqlServidor = ConfigurationManager.AppSettings["servidor"];
             instancia.SqlUsuario = ConfigurationManager.AppSettings["usuario"];
             instancia.SqlPassword = ConfigurationManager.AppSettings["password"];
             instancia.SqlBaseDatos = ConfigurationManager.AppSettings["bd"];
+            instancia.TiempoSegundosDescubriendoRed = Convert.ToDouble(ConfigurationManager.AppSettings["tiempoSegundosDescubriendoRed"]);
+            if (instancia.TiempoSegundosDescubriendoRed == 0) instancia.TiempoSegundosDescubriendoRed = 5;
+            instancia.ImpresionTramaMaxima = Convert.ToBoolean(ConfigurationManager.AppSettings["impresionTramaMaxima"]);
+            instancia.DelayAntesDeEnviarTrama = Convert.ToInt32(ConfigurationManager.AppSettings["delayAntesDeEnviarTrama"]);
+            
         }
 
         void ExpandirPanelLogs(bool expandir)
