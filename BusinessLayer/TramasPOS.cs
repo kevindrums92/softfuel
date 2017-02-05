@@ -823,7 +823,7 @@ namespace BusinessLayer
             }
         }
 
-        public ResultadoTrama UltimaVenta(string[] data)
+        public ResultadoTrama UltimaVenta(string[] data, bool restriccionDeTiempo)
         {
             try
             {
@@ -838,6 +838,24 @@ namespace BusinessLayer
                     DataTable dtTurno = modPOS.ObtenerTurnoPorCara(cara);
                     if (dtTurno.Rows.Count == 0) return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No hay turno abierto ", "en la cara: " + cara}), "No hay turno abierto en la cara:" + cara);
                     DataTable dtUltimaVenta = modPOS.ObtenerUltimaVentaPorCara(cara);
+                    if (restriccionDeTiempo)
+                    {
+                        var tiempoSegundos = modPOS.TiempoSegundosParaImprimirUltimaVenta();
+                        if(tiempoSegundos > 0)
+                        {
+                            var fechaAct = DateTime.Now;
+                            var fechaVenta = Convert.ToDateTime(dtUltimaVenta.Rows[0]["fecha"]);
+                            double segundosDiff = (fechaAct - fechaVenta).TotalSeconds;
+                            if(segundosDiff > tiempoSegundos)
+                            {
+                                return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(
+                                    new string[] { "Se supero el tiempo limite", "de impresion de venta"}
+                                    ), "Se supero el tiempo limite de impresion de venta");
+                            }
+                        }
+                    }
+
+
                     if (dtUltimaVenta.Rows.Count == 0) return new ResultadoTrama(false, AsistenteMensajes.GenerarMensajeAlerta(new string[] { "No se obtuvo ultima ", "venta en la cara: " + cara }), "No se pudo obtener ultima venta en cara:" + cara);
                     if (modPOS.ActualizarPlacaKmUltimaVenta(placa, km, dtUltimaVenta.Rows[0]["idVenta"].ToString()) == false)
                     {

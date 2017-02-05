@@ -270,7 +270,14 @@ namespace DataAccess
         /// <returns></returns>
         public DataTable ObtenerUltimaVentaPorCara(string cara)
         {
-            return GetTable("select idVenta from ventas where cara = '" + cara + "' ORDER by fecha desc limit 1");
+            return GetTable("select idVenta, fecha from ventas where cara = '" + cara + "' ORDER by fecha desc limit 1");
+        }
+
+        public int TiempoSegundosParaImprimirUltimaVenta()
+        {
+            var dt = GetTable("select  IFNULL(valor,0) from parametros where id = 5");
+            if (dt.Rows.Count == 0) return 0;
+            return Convert.ToInt32(dt.Rows[0][0]);
         }
 
         public DataTable ObtenerUltimaVentaPorId(string id)

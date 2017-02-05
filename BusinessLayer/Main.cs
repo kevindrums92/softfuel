@@ -655,7 +655,7 @@ namespace BusinessLayer
 
                     //Imprimir Ultima venta
                     case "I":
-                        var resultUltimaVenta = _tramasPOS.UltimaVenta(arrayTramaRecibida);
+                        var resultUltimaVenta = _tramasPOS.UltimaVenta(arrayTramaRecibida,true);
                         if (resultUltimaVenta.Resultado == true)
                         {
 
@@ -674,6 +674,31 @@ namespace BusinessLayer
                         else
                         {
                             if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVenta.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
+                        }
+                        _tramasPOS.Dispose();
+                        break;
+
+                    //Imprimir Ultima venta
+                    case "IZ":
+                        var resultUltimaVentaZ = _tramasPOS.UltimaVenta(arrayTramaRecibida,false);
+                        if (resultUltimaVentaZ.Resultado == true)
+                        {
+
+                            var TramaConEncabezado = AsistenteMensajes.CocarEncabezadoAListadosDeTramas(resultUltimaVentaZ.TramaResultado);
+                            var TramaTotal = TramaExtensa(TramaConEncabezado);
+                            Thread.Sleep(instancia.DelayAntesDeEnviarTrama);
+                            foreach (Byte[] data in TramaTotal)
+                            {
+                                string texto = UtilidadesTramas.ObtenerStringDeBytes(data);
+                                var dato = UtilidadesTramas.ObtenerByteDeString(texto);
+                                nodo.EnviarTrama(dato);
+                            }
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(UtilidadesTramas.MensajeQueEnvióTrama(TramaTotal), ETipoEvento.Exitoso, nodo.IdXbee, "", nodo.Nombre));
+
+                        }
+                        else
+                        {
+                            if (MonitoreoEvent != null) MonitoreoEvent(this, new MonitoreoEventArgs(resultUltimaVentaZ.Mensaje, ETipoEvento.Error, nodo.IdXbee, "", nodo.Nombre));
                         }
                         _tramasPOS.Dispose();
                         break;

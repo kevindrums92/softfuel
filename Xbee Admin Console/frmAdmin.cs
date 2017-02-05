@@ -85,6 +85,8 @@ namespace XbeeAdminConsole
 
             //instancia.ListNodes = new List<NodosXbee>();
             //instancia.AgregarNodo(_nodoPrueba);
+            //SFTimerCambioPrecios.Enabled = true;
+            //SFTimerCambioPrecios.Start();
             //instancia.AgregarNodo(_nodoPrueba2);
             //instancia.AgregarNodo(_nodoPrueba3);
             //instancia.AgregarNodo(_nodoPrueba4);
