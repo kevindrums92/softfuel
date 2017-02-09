@@ -450,7 +450,7 @@ namespace DataAccess
                 " ticketsoft.vehiculo_plan vp on vp.idVehiculo = v.id inner join " +
                 " ticketsoft.planes p on p.id = vp.idPlanes left join " +
                 " ticketsoft.restricciones_vehiculo rv on rv.idVehiculo = v.id " +
-                 " where v.serial = '1075227951' and p.tipoFormaPago = 1 ";
+                 " where v.serial = '" + serial + "' and p.tipoFormaPago = 1 ";
             return GetTable(sql);
         }
 
